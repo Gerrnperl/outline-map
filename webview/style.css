@@ -1,0 +1,31 @@
+body {
+	padding: 0 10px !important;
+	width: fit-content;
+	background: var(--vscode-editor-background);
+	font-family: var(--font-family);
+}
+
+.outline-label {
+	font-size: 0.8rem;
+	display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 4px;
+}
+
+.outline-label span{
+	color: var(--color);
+}
+
+.outline-children {
+	margin-left: 0.5rem;
+	padding-left: 1ch;
+	border-left: 1px dashed var(--color);
+	height: 0;
+	opacity: 0;
+}
+
+.outline-children[visible="true"] {
+	height: auto;
+	opacity: 1;
+}

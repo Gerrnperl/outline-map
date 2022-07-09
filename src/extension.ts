@@ -22,8 +22,11 @@ export function activate(context: vscode.ExtensionContext) {
 	// });
 
 	// context.subscriptions.push(disposable);
-
-	new OutlineProvider(context);
+	// console.log(fetch, global.fetch);
+	
+	let outlineProvider = new OutlineProvider(context);
+	context.subscriptions.push(
+		vscode.window.registerWebviewViewProvider(outlineProvider.viewType, outlineProvider));
 }
 console.log('Congratulations, your extension "outline-map" is now active!');
 

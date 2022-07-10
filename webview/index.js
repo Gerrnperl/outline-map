@@ -1,8 +1,10 @@
 // import {SymbolNode} from '../src/outline'; // Only for type intelligence
-
+(function() {
 let root = document.querySelector('#outline-root');
 
 let outlineRoot;
+
+let vscode = acquireVsCodeApi();
 
 window.addEventListener('message', event=>{
 	let message = event.data;
@@ -15,7 +17,6 @@ window.addEventListener('message', event=>{
 			break;
 		case 'update':
 			let changes = message.changes;
-			console.log(changes);
 			updateOutline(changes);
 			break;
 	}
@@ -63,6 +64,12 @@ function renderNode(item, parent, isLeaf) {
 		<span class="codicon codicon-symbol-${type}" title="${type}"></span>
 		<span class="symbol-name">${item.name}</span>
 	`;
+	thisLabel.addEventListener('click', () => {
+		vscode.postMessage({
+			type: 'goto',
+			range: item.range,
+		});
+	});
 	node.appendChild(thisLabel);
 	node.label = thisLabel;
 	return node;
@@ -70,10 +77,10 @@ function renderNode(item, parent, isLeaf) {
 
 function renderChildren(item, node){
 	let type = item.type.toLowerCase();
-	if(type === 'file'){
-		rebuildOutline(outlineRoot);
-		return;
-	}
+	// if(type === 'file'){
+	// 	rebuildOutline(outlineRoot);
+	// 	return;
+	// }
 
 	if(node.childrenContainer){
 		node.removeChild(node.childrenContainer);
@@ -129,7 +136,12 @@ function updateOutline(changes){
 
 				break;
 			case 'open':
-				pointer.element.childrenContainer.setAttribute('visible', item.open);
+				pointer.element.childrenContainer?.setAttribute('visible', change.newValue);
+				break;
+
+			case 'highlight':
+				pointer.element.label.setAttribute('highlight', change.newValue);
+				// pointer.element.label.setAttribute('style', pointer.element.label.getAttribute('style') + '--high'
 				break;
 		
 			default:
@@ -226,3 +238,5 @@ let style = {
 		color: 'var(--vscode-symbolIcon-typeParameterForeground)',
 	}, 
 };
+
+})();

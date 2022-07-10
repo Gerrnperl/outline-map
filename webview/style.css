@@ -1,6 +1,6 @@
 body {
 	padding: 0 10px !important;
-	width: fit-content;
+	width: max-content;
 	background: var(--vscode-editor-background);
 	font-family: var(--font-family);
 }
@@ -28,4 +28,13 @@ body {
 .outline-children[visible="true"] {
 	height: auto;
 	opacity: 1;
+}
+
+.outline-label[highlight="true"]::after {
+	content: "";
+	position: absolute;
+	width: 100%;
+	height: 21.6px;
+	left: 5px;
+	background-color: var(--vscode-scrollbarSlider-background);
 }

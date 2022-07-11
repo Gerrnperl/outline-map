@@ -154,6 +154,9 @@ function updateOutline(changes){
 			secondLastPointer.children[change.path[i]] = change.newValue;
 			renderChildren(secondLastPointer, secondLastPointer.element);
 		}
+		else if(!isNaN(+modifyKey) && change.path[i-1] === 'diagnostics'){
+			console.log(change);
+		}
 		else{
 			pointer[change.path[i]] = change.newValue;
 		}

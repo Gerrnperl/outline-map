@@ -23,11 +23,14 @@ body {
 	border-left: 1px dashed var(--color);
 	height: 0;
 	opacity: 0;
+	pointer-events: none;
+	transition: all 0.3s ease;
 }
 
 .outline-children[visible="true"] {
 	height: auto;
 	opacity: 1;
+	pointer-events: all;
 }
 
 .outline-label[highlight="true"]::after {

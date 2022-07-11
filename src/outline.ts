@@ -17,9 +17,22 @@ import {
 	Range,
 	ThemeIcon,
 	workspace,
-	Position
+	Position,
+	languages,
+	DiagnosticSeverity
 	// SnippetString,
 } from 'vscode';
+
+interface Change {
+	path: string[];
+	newValue: any;
+	oldValue: any;
+}
+
+interface Diagnostic {
+	level: string;
+	message: string;
+}
 
 export class SymbolNode {
 
@@ -37,6 +50,8 @@ export class SymbolNode {
 
 	children: Array<SymbolNode>;
 
+	diagnostics: Array<Diagnostic>;
+
 	constructor(symbolInfo: DocumentSymbol) {
 		this.type = SymbolKind[symbolInfo.kind];
 		this.range = symbolInfo.range;
@@ -46,6 +61,7 @@ export class SymbolNode {
 		this.children = [];
 		this.display = true;
 		this.highlight = false;
+		this.diagnostics = [];
 	}
 
 	appendChildren(...child: SymbolNode[]) {
@@ -67,22 +83,24 @@ export class OutlineProvider implements WebviewViewProvider {
 	#extensionUri: Uri;
 
 
-	indexes: Map<number, SymbolNode> | undefined;
+	indexes: Map<number, SymbolNode>;
 
 	constructor(context: ExtensionContext) {
 		this.context = context;
 		this.#extensionUri = context.extensionUri;
 
 		this.#initEventListeners();
-
+		this.indexes = new Map<number, SymbolNode>();
 	}
 
 	#initEventListeners() {
+		// switch tabs
 		window.onDidChangeActiveTextEditor(event => {
 			if (event) {
 				this.#rebuild(event.document);
 			}
 		}, this);
+		// scroll
 		window.onDidChangeTextEditorVisibleRanges(event => {
 			let oldOutlineRoot = JSON.parse(JSON.stringify(this.outlineRoot));
 			let range = event.visibleRanges[0];
@@ -117,8 +135,9 @@ export class OutlineProvider implements WebviewViewProvider {
 			}
 			
 		});
+		// edit
 		workspace.onDidChangeTextDocument(event => {
-			let newOutline = new OutlineTree(event.document);
+			let newOutline = new OutlineTree(window.activeTextEditor?.document || event.document);
 			newOutline.init().then(newOutlineRoot => {
 				this.indexes = newOutline.indexes;
 				if(this.outlineRoot?.children.length !== newOutlineRoot.children.length && window.activeTextEditor){
@@ -134,6 +153,69 @@ export class OutlineProvider implements WebviewViewProvider {
 					});
 				}
 			});
+		});
+
+		// Diagnostics
+		languages.onDidChangeDiagnostics(event=>{
+			let activeUri = window.activeTextEditor?.document.uri!;
+			if(event.uris.includes(activeUri)){
+				let oldOutlineRoot = JSON.parse(JSON.stringify(this.outlineRoot));
+				let diagnostics = languages.getDiagnostics(activeUri);
+				let diagnosticsMap: Map<number, Diagnostic[]> = new Map();
+				
+				diagnostics.forEach(diagnostic=>{
+					let aDiagnostic:Diagnostic = {
+						level: DiagnosticSeverity[diagnostic.severity],
+						message: diagnostic.message,
+					};
+					
+					let item = diagnosticsMap.get(diagnostic.range.start.line);
+					if(!item){
+						diagnosticsMap.set(diagnostic.range.start.line, [aDiagnostic]);
+					}
+					else{
+						item.push(aDiagnostic);
+					}
+				});
+
+				let i = 0;
+				let keys = Array.from(this.indexes.keys());
+				let withinASymbol = true;
+
+				diagnosticsMap?.forEach((diagnostic, index)=>{
+					// Move i to the symbol before the index of diagnostic
+					while(i < keys.length && keys[i+1] < index){
+						i++;
+						withinASymbol = false;
+						// if withinASymbol is false, it means that i has changed.
+						// If i has not changed, newer diagnostics should be added to the existing list
+						// otherwise, the diagnostics list should be re-created
+					}
+					let symbol = this.indexes.get(i)!;
+					if(withinASymbol){
+						symbol.diagnostics.push(...diagnostic);
+					}
+					else{
+						symbol.diagnostics = diagnostic;
+					}
+				
+				});
+
+				
+				
+				let changes = diff(oldOutlineRoot, this.outlineRoot);
+				if (changes) {
+					console.log(oldOutlineRoot, this.outlineRoot, changes);
+					this.#view?.webview.postMessage({
+						type: 'update',
+						changes: changes,
+					});
+				}
+			}
+		});
+
+		window.onDidChangeTextEditorSelection(event=>{
+			console.log(event, event.selections);
 		});
 	}
 
@@ -230,6 +312,7 @@ class OutlineTree {
 	indexes: Map<number, SymbolNode>;
 
 	constructor(textDocument: TextDocument) {
+		
 		this.textDocument = textDocument;
 		this.indexes = new Map<number, SymbolNode>();
 	}
@@ -255,13 +338,19 @@ class OutlineTree {
 
 	}
 
+	// Get symbols of the document
 	async getSymbols(textDocument: TextDocument): Promise<DocumentSymbol[]> {
+		console.log(textDocument);
+		
 		let result = await commands.executeCommand<DocumentSymbol[]>(
 			"vscode.executeDocumentSymbolProvider",
 			textDocument.uri
 		);
+
+		if(!result){
+			
+		}
 		console.log(result);
-		
 		
 		return result;
 	};
@@ -280,6 +369,14 @@ class OutlineTree {
 
 }
 
+/**
+ * Get the changes between two object;
+ * 
+ * @param oldObj 
+ * @param newObj 
+ * @returns An Array contains description of changes,
+ *  each change contains the path to access the data & the new value
+ */
 function diff(oldObj: any, newObj: any): Change[] | void {
 	let changes: Change[] = [];
 
@@ -319,6 +416,7 @@ function diff(oldObj: any, newObj: any): Change[] | void {
 				Object.prototype.hasOwnProperty.call(oldObj, key)
 				&& !Object.prototype.hasOwnProperty.call(newObj, key)
 			) {
+				// CASE: the data exists in the old object but has been deleted
 				let clonePaths = paths.concat(key);
 				changes.push({ path: clonePaths, newValue: undefined, oldValue: oldObj[key] });
 			}
@@ -328,8 +426,3 @@ function diff(oldObj: any, newObj: any): Change[] | void {
 	return changes.length > 0 ? changes : undefined;
 }
 
-interface Change {
-	path: string[];
-	newValue: any;
-	oldValue: any;
-}

@@ -26,7 +26,7 @@ import {
 interface Change {
 	path: string[];
 	newValue: any;
-	oldValue: any;
+	oldValue?: any;
 }
 
 interface Diagnostic {
@@ -37,7 +37,7 @@ interface Diagnostic {
 export class SymbolNode {
 
 	type: string;
-	range: Range;
+	range: {start: Position, end: Position};
 	name: string;
 	details: string;
 
@@ -54,7 +54,10 @@ export class SymbolNode {
 
 	constructor(symbolInfo: DocumentSymbol) {
 		this.type = SymbolKind[symbolInfo.kind];
-		this.range = symbolInfo.range;
+		this.range = {
+			start: symbolInfo.range?.start,
+			end: symbolInfo.range?.end,
+		};
 		this.name = symbolInfo.name;
 		this.details = symbolInfo?.detail;
 		this.open = true;
@@ -96,47 +99,31 @@ export class OutlineProvider implements WebviewViewProvider {
 	#initEventListeners() {
 		// switch tabs
 		window.onDidChangeActiveTextEditor(event => {
-			if (event) {
-				this.#rebuild(event.document);
-			}
+			let document = event?.document || window.activeTextEditor?.document;
+			document && this.#rebuild(document);
 		}, this);
 		// scroll
 		window.onDidChangeTextEditorVisibleRanges(event => {
-			let oldOutlineRoot = JSON.parse(JSON.stringify(this.outlineRoot));
 			let range = event.visibleRanges[0];
-			let lastKey = -1;
-			let visibleRangeStart: number = 0;
-			let visibleRangeEnd: number = 0;
-			let index = 0;
+			range && this.#view?.webview.postMessage({
+				type: 'scroll',
+				range: {
+					start: range.start,
+					end: range.end,
+				},
+			})
 			
-			this.indexes?.forEach((symbolNode, key)=>{
-				if(!visibleRangeStart && lastKey < range.start.line && key >= range.start.line){
-					visibleRangeStart = index - 1;
-				}
-				if(!visibleRangeEnd && lastKey < range.end.line && key >= range.end.line){
-					visibleRangeEnd = index - 1;
-				}
-				lastKey = key;
-				symbolNode.open = !!symbolNode.range.intersection(range);
-				if(symbolNode.open && visibleRangeStart!== 0 && visibleRangeEnd === 0){
-					symbolNode.highlight = true;
-				}
-				else {
-					symbolNode.highlight = false;
-				}
-				index++;
-			});
-			let changes = diff(oldOutlineRoot, this.outlineRoot);
-			if (changes) {
-				this.#view?.webview.postMessage({
-					type: 'update',
-					changes: changes,
-				});
-			}
-			
+		});
+
+		window.onDidChangeTextEditorSelection(event=>{
+			this.#view?.webview.postMessage({
+				type: 'focus',
+				position: event.selections[0].start,
+			})
 		});
 		// edit
 		workspace.onDidChangeTextDocument(event => {
+			console.log('EDIT', event.contentChanges, event.reason);
 			let newOutline = new OutlineTree(window.activeTextEditor?.document || event.document);
 			newOutline.init().then(newOutlineRoot => {
 				this.indexes = newOutline.indexes;
@@ -154,9 +141,10 @@ export class OutlineProvider implements WebviewViewProvider {
 				}
 			});
 		});
-
+		
 		// Diagnostics
 		languages.onDidChangeDiagnostics(event=>{
+			return;
 			let activeUri = window.activeTextEditor?.document.uri!;
 			if(event.uris.includes(activeUri)){
 				let oldOutlineRoot = JSON.parse(JSON.stringify(this.outlineRoot));
@@ -214,19 +202,15 @@ export class OutlineProvider implements WebviewViewProvider {
 			}
 		});
 
-		window.onDidChangeTextEditorSelection(event=>{
-			console.log(event, event.selections);
-		});
 	}
 
 	#rebuild(textDocument: TextDocument) {
 		let outlineTree = new OutlineTree(textDocument);
 		outlineTree.init().then((outlineRoot) => {
-			this.indexes = outlineTree.indexes;
 			this.outlineRoot = outlineRoot;
 
 			this.#view?.webview.postMessage({
-				type: 'rebuild',
+				type: 'build',
 				outline: outlineRoot,
 			});
 		});
@@ -290,10 +274,16 @@ export class OutlineProvider implements WebviewViewProvider {
 			}
 		});
 
+		this.#view.onDidChangeVisibility(()=>{
+			if(this.#view?.visible && window.activeTextEditor){
+				this.#rebuild(window.activeTextEditor.document);
+			}
+		})
+
 		webviewView.webview.onDidReceiveMessage(data => {
 			switch (data.type) {
 				case 'goto':
-					let start = new Position(data.range[0].line, data.range[0].character);
+					let start = new Position(data.range.start.line, data.range.start.character);
 					commands.executeCommand('editor.action.goToLocations', window.activeTextEditor?.document.uri, start, [], 'goto', '');
 			}
 		});
@@ -347,21 +337,17 @@ class OutlineTree {
 			textDocument.uri
 		);
 
-		if(!result){
-			
-		}
 		console.log(result);
 		
 		return result;
 	};
 
 	buildOutline(symbols: DocumentSymbol[], parent: SymbolNode) {
-		symbols.sort((symbolA, symbolB) => {
-			return symbolA.range.start.line - symbolB.range.start.line;
+		symbols.sort((symbolA, symbolB) =>{
+			return symbolA.range.start.line - symbolB.range.end.line;
 		});
 		symbols?.forEach(symbol => {
 			let symbolNode = new SymbolNode(symbol);
-			this.indexes.set(symbol.range.start.line, symbolNode);
 			parent.appendChildren(symbolNode);
 			this.buildOutline(symbol.children, symbolNode);
 		});
@@ -397,6 +383,20 @@ function diff(oldObj: any, newObj: any): Change[] | void {
 		if (isSameObject(oldObj, newObj)) {
 			return;
 		}
+
+		if(oldObj instanceof Array && newObj instanceof Array
+			&& oldObj.length !== newObj.length
+		){
+			changes.push({path: paths, newValue: newObj, oldValue: oldObj});
+			return;
+		}
+
+		
+		if(paths.at(-1) === 'range'){
+			changes.push({ path: paths, newValue: {start: newObj.start, end: newObj.end}});
+			return;
+		}
+
 		for (const key in newObj) {
 			if (Object.prototype.hasOwnProperty.call(newObj, key)) {
 				const a = oldObj[key];

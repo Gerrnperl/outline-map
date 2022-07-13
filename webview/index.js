@@ -1,245 +1,507 @@
-// import {SymbolNode} from '../src/outline'; // Only for type intelligence
-(function() {
-let root = document.querySelector('#outline-root');
+/**
+ * @typedef {{
+ *		level: string;
+ *		message: string;
+ *}} Diagnostic
+ * @typedef {{
+ * 		line: number;
+ * 		character: number;
+ * }} Position
+ * @typedef {{
+ * 		start: Position;
+ * 		end: Position;
+ * }} Range;
+ * @typedef {{
+ * 		newValue: any;
+ *		oldValue: any;
+ *		path: string[];
+ * }} Change;
+ */
 
-let outlineRoot;
-
+// import { SymbolNode } from '../src/outline';
 let vscode = acquireVsCodeApi();
 
-window.addEventListener('message', event=>{
+let outlineHTML = document.querySelector('#outline-root');
+
+/** @type {{element: OutlineElement, children: OutlineNode[]}} */
+let outlineTree;
+
+/** @type {Map<Range, OutlineNode>} */
+let indexes;
+
+window.addEventListener('message', event => {
 	let message = event.data;
-	switch(message.type) {
-		case 'style':
-			style = message.style;
-			break;
-		case 'rebuild':
-			rebuildOutline(message.outline);
-			break;
-		case 'update':
-			let changes = message.changes;
-			updateOutline(changes);
-			break;
+
+	// console.log(message);
+	switch (message.type){
+	case 'style':
+		style = message.style;
+		break;
+	case 'build':
+		outlineHTML.innerHTML = '';
+		buildOutline(message.outline);
+		break;
+	case 'scroll':
+		// console.log(message.range);
+		updateVisibleRange(message.range);
+		break;
+	case 'focus':
+		updateFocusPosition(message.position);
+		break;
+	case 'update':
+		updateOutline(message.changes);
+		break;
 	}
 });
 
+
+/**
+ * Highlight the visible range of the outline
+ * Expand a branch when a child node is visible.
+ * @param {Range} range 
+ */
+function updateVisibleRange(range){
+	indexes?.forEach((node, itemRange)=>{
+		node.open = itemRange.end.line > range.start.line && itemRange.start.line < range.end.line;
+		node.highlight = itemRange.start.line > range.start.line && itemRange.start.line < range.end.line;
+		if(!node.open && node.focus){
+			bubblePropertyUpward(node, 'focus');
+		}
+		if(node.open && node.fromChild && node.fromChild.focus){
+			node.focus = false;
+		}
+	});
+}
+
+/**
+ * Show the cursor's position on outline
+ * @param {Position} position 
+ */
+function updateFocusPosition(position){
+	let closestNode;
+	let closest = Infinity;
+
+	indexes.forEach((node, itemRange)=>{
+		let diff = Math.abs(itemRange.start.line - position.line);
+
+		if(diff < closest){
+			closest = diff;
+			closestNode = node;
+		}
+		node.focus = false;
+	});
+
+	closestNode.focus = true;
+	closestNode.element.root.scrollIntoView({behavior: 'smooth', block: 'center'});
+}
+
 /**
  * 
- * @param {SymbolNode} outlineTree 
- * @param {?HTMLDivElement} parent
- * @return {?HTMLDivElement}
+ * @param {Change[]} changes 
  */
-function renderOutline(outlineTree, parent){
-	if(!parent && outlineTree.type === 'File' && outlineTree.name === '__root__'){
-		let root = document.createElement('div');
-		root.className = 'outline-node outline-internal outline-root';
-		renderOutline(outlineTree, root);
-		return root;
-	}
-	for (const item of outlineTree.children) {
-		let isLeaf = item.children?.length === 0;
-		let node = renderNode(item, parent, isLeaf);
-		item.element = node;
-
-		if(!isLeaf){
-			renderChildren(item, node);
-		}
-
-	}
-
-}
-
-function renderNode(item, parent, isLeaf) {
-	let type = item.type.toLowerCase();
-	let color = style[type].color;
-
-	let node = document.createElement('div');
-	node.className = `outline-node outline-${isLeaf ? 'leaf' : 'internal'} outline-${item.type}`;
-	parent.appendChild(node);
-	node.setAttribute('style', `--color: ${color}`);
-
-	let thisLabel = document.createElement('div');
-	thisLabel.className = `outline-label outline-${item.type}`;
-	thisLabel.setAttribute('visible', item.display);
-	thisLabel.innerHTML = `
-		<span class="codicon codicon-symbol-${type}" title="${type}"></span>
-		<span class="symbol-name">${item.name}</span>
-	`;
-	thisLabel.addEventListener('click', () => {
-		vscode.postMessage({
-			type: 'goto',
-			range: item.range,
-		});
-	});
-	node.appendChild(thisLabel);
-	node.label = thisLabel;
-	return node;
-}
-
-function renderChildren(item, node){
-	let type = item.type.toLowerCase();
-	// if(type === 'file'){
-	// 	rebuildOutline(outlineRoot);
-	// 	return;
-	// }
-
-	if(node.childrenContainer){
-		node.removeChild(node.childrenContainer);
-	}
-	let childrenContainer = document.createElement('div');
-	childrenContainer.setAttribute('visible', item.open);
-	childrenContainer.className = 'outline-children';
-	node.appendChild(childrenContainer);
-	node.childrenContainer = childrenContainer;
-
-	renderOutline(item, childrenContainer);
-}
-
-function rebuildOutline(outline){
-	let outlineElement = renderOutline(outline);
-	root.innerHTML = '';
-	root.appendChild(outlineElement);
-	outlineRoot = outline;
-}
-
 function updateOutline(changes){
 	changes.forEach(change=>{
-		// Move to the changed node
-		let secondLastPointer = outlineRoot;
+	// Move to the changed node
+		/** @type {OutlineNode} */
+		let node = outlineTree;
 		let i = 0;
-		for (; i < change.path.length-2; i++) {
-			const key = change.path[i];
-			secondLastPointer = secondLastPointer[key];
-		}
-		pointer = secondLastPointer[change.path[i++]];
 
-		// Modify & update
-		let modifyKey = change.path[i];
-		
-		switch (modifyKey) {
-			case 'type':
-				let isLeaf = pointer.children?.length === 0;
-				let type = change.newValue.toLowerCase();
-				let color = style[type].color;
-				pointer.element.className = `outline-node outline-${isLeaf ? 'leaf' : 'internal'} outline-${type}`;
-				pointer.element.setAttribute('style', `--color: ${color}`);
-
-				pointer.element.label.className = `outline-label outline-${type}`;
-
-				let icon = pointer.element.label.querySelector('.codicon');
-				icon.className = `codicon codicon-symbol-${type}`;
-				icon.title = type;
-
-				break;
-			case 'name':
-				let name = pointer.element.label.querySelector('.symbol-name');
-				name.innerHTML = change.newValue;
-
-				break;
-			case 'open':
-				pointer.element.childrenContainer?.setAttribute('visible', change.newValue);
-				break;
-
-			case 'highlight':
-				pointer.element.label.setAttribute('highlight', change.newValue);
-				// pointer.element.label.setAttribute('style', pointer.element.label.getAttribute('style') + '--high'
-				break;
-		
-			default:
-				break;
+		for (; i < change.path.length - 1; i++){
+			if(node === undefined){
+				// eslint-disable-next-line no-debugger
+				debugger;
+			}
+			node = node[change.path[i]];
 		}
 
-		if(!isNaN(+modifyKey) && change.path[i-1] === 'children'){
-			// case children
-			// secondLastPointer is directing to the changed children
-			secondLastPointer.children[change.path[i]] = change.newValue;
-			renderChildren(secondLastPointer, secondLastPointer.element);
+		let property = change.path[i];
+
+		if(node === undefined){
+			return;
 		}
-		else if(!isNaN(+modifyKey) && change.path[i-1] === 'diagnostics'){
-			console.log(change);
-		}
-		else{
-			pointer[change.path[i]] = change.newValue;
+
+		let oldValue = change.oldValue || node[property];
+
+		node[property] = change.newValue;
+
+		if(property === 'range'){
+			let siblingNodes = [].concat(node.parent.children);
+
+			siblingNodes = siblingNodes.splice(siblingNodes.indexOf(node), 1);
+
+			let j = 0;
+
+			for (; j < siblingNodes.length; j++){
+				let hit = change.newValue.start.line > siblingNodes[j].range.start.line
+						&& change.newValue.start.line < siblingNodes[j + 1].range.start.line;
+
+				if(hit){
+					break;
+				}
+				if(j === 0 && !hit){
+					j--;
+					break;
+				}
+			}
+			if(siblingNodes[j + 1]){
+				node.parent.element.childrenContainer.insertBefore(
+					node.element.root,
+					siblingNodes[j + 1].element.root
+				);
+			}
+			else{
+				node.parent.element.childrenContainer.appendChild(
+					node.element.root
+				);
+			}
+			indexes.delete(oldValue);
+			indexes.set(change.newValue, node);
 		}
 	});
 }
 
+/**
+ * Bubble a property upward to its parent node when the parent is 'collapsed'
+ * 
+ * **Note:** It will mark `fromChild: property` on the parent node
+ * 
+ * **Note:** bubble will stop if the attribute value of the parent node is not a falsy value
+ * @param {OutlineNode} node node starting to bubble
+ * @param {string} property the name of the property to bubble
+ */
+function bubblePropertyUpward(node, property){
+	let parent = node.parent;
+
+	if(!parent || parent.open){
+		return;
+	}
+	if(!parent.fromChild){
+		parent.fromChild = {};
+	}
+	if(!parent[property]){
+		parent[property] = node[property];
+		parent.fromChild[property] = true;
+		bubblePropertyUpward(parent, property);
+	}
+	else if(parent[property] instanceof Array && node[property] instanceof Array){
+		parent[property].push(...node[property]);
+		if(!parent.fromChild[property]){
+			parent.fromChild[property] = 0;
+		}
+		parent.fromChild[property] += node[property].length;
+		bubblePropertyUpward(parent, property);
+	}
+}
+
+/**
+ * Clear the property bubbled by {@link bubblePropertyUpward}
+ * 
+ * **Note:** It will set the property value of the parent node to defaultValue
+ * 			when property `fromChild` is set
+ * 
+ * **Note:** The defaultValue will be cloned if it's a object
+ * 
+ * **Note:** progress will stop when `fromChild` is unset
+ * @param {OutlineNode} node node starting to clear
+ * @param {string} property the name of the property to clear
+ * @param {?any} defaultValue the value to set to the property
+ */
+function clearPropertyUpward(node, property, defaultValue){
+	let parent = node.parent;
+
+	if(!parent || !parent.fromChild[property]){
+		return;
+	}
+	if(parent[property] instanceof Array && node[property] instanceof Array){
+		node[property].forEach(item=>{
+			parent[property].splice(parent[property].indexOf(item), 1);
+			parent.fromChild[property]--;
+		});
+		clearPropertyUpward(parent, property, defaultValue);
+	}
+	else if(parent[property]){
+		parent[property] = defaultValue;
+		parent.fromChild[property] = false;
+	}
+}
+
+/**
+ * 
+ * @param {SymbolNode} outline 
+ * @param {?OutlineNode} parent
+ * @return {OutlineNode}
+ */
+function buildOutline(outline, parent){
+	if (!parent && outline.type === 'File' && outline.name === '__root__'){
+		// Create the root
+		indexes = new Map();
+		let root = document.createElement('div');
+
+		root.className = 'outline-node outline-internal outline-root';
+		outlineHTML.appendChild(root);
+
+		// A minified OutlineNode
+		outlineTree = {
+			element: {
+				root: root,
+				childrenContainer: root,
+			},
+			children: [],
+		};
+		// console.log(outline);
+
+		outline.children.sort((symbolA, symbolB) =>{
+			return symbolA.range.start.line - symbolB.range.end.line;
+		});
+
+		for (const child of outline.children){
+			let node = buildOutline(child, outlineTree);
+
+			outlineTree.children.push(node);
+			root.appendChild(node.element.root);
+		}
+		return outlineTree;
+	}
+	let outlineNode = new OutlineNode(outline);
+
+	indexes.set(outlineNode.range, outlineNode);
+
+	// set the reverse pointer point to parent for retrospective
+	outlineNode.parent = parent;
+	if (outline.children.length > 0){
+		// Is not a leaf node
+		outlineNode.children = outline.children;
+	}
+	return outlineNode;
+}
+
+class OutlineNode{
+
+	element = new OutlineElement();
+	/** @type {string} */		_name = undefined;
+	/** @type {string} */		_type = undefined;
+	/** @type {boolean} */		_open = undefined;
+	/** @type {boolean} */		_visibility = undefined;
+	/** @type {boolean} */		_highlight = undefined;
+	/** @type {boolean} */		_focus = undefined;
+	/** @type {Diagnostic[]} */	_diagnostics = undefined;
+	/** @type {OutlineNode[]} */	_children = [];
+	/** @type {OutlineNode} */	parent = [];
+	/** @type {Range} */		_range;
+	/**
+	 * 
+	 * @param {SymbolNode} outline 
+	 */
+	constructor(outline){
+		this.name = outline.name;
+		this.type = outline.type.toLowerCase();
+		this.highlight = false;
+		this.focus = false;
+		this.open = outline.open;
+		this.display = outline.display;
+		this.range = outline.range;
+		this.element.label.addEventListener('click', () => {
+			vscode.postMessage({
+				type: 'goto',
+				range: this.range,
+			});
+		});
+	}
+	get name(){
+		return this._name;
+	}
+	set name(name){
+		this._name = name;
+		this.element.name.innerText = name;
+	}
+	get type(){
+		return this._type;
+	}
+	set type(type){
+		let color = style[type].color;
+
+		this._type = type;
+		this.element.root.setAttribute('type', type);
+		this.element.root.setAttribute('style', `--color: ${color}`);
+		this.element.icon.className = `codicon codicon-symbol-${type}`;
+	}
+	get open(){
+		return this._open;
+	}
+	set open(open){
+		this._open = open;
+		this.element.root.setAttribute('open', open.toString());
+	}
+	get range(){
+		return this._range;
+	}
+	set range(range){
+		this._range = range;
+	}
+	get visibility(){
+		return this._visibility;
+	}
+	set visibility(visibility){
+		this._visibility = visibility;
+		this.element.root.setAttribute('visibility', visibility.toString());
+	}
+	get highlight(){
+		return this._highlight;
+	}
+	set highlight(highlight){
+		this._highlight = highlight;
+		this.element.root.setAttribute('highlight', highlight.toString());
+	}
+	get focus(){
+		return this._focus;
+	}
+	set focus(focus){
+		this._focus = focus;
+		this.element.root.setAttribute('focus', focus.toString());
+	}
+	get diagnostics(){
+		return this._diagnostics;
+	}
+	set diagnostics(diagnostics){
+		this._diagnostics = diagnostics;
+	}
+	get children(){
+		return this._children;
+	}
+	set children(children){
+		let childrenContainer = document.createElement('div');
+
+		childrenContainer.className = 'outline-children';
+		this.element.childrenContainer && this.element.root.removeChild(this.element.childrenContainer);
+		this.element.root.appendChild(childrenContainer);
+		this.element.childrenContainer = childrenContainer;
+
+		this._children = [];
+		this.appendChildren(...children);
+	}
+	/**
+	 * 
+	 * @param  {...SymbolNode} children 
+	 */
+	appendChildren(...children){
+		children.sort((symbolA, symbolB) => {
+			return symbolA.range.start.line - symbolB.range.start.line;
+		});
+		for (const child of children){
+			let childNode = buildOutline(child, this);
+
+			this._children.push(childNode);
+			this.element.childrenContainer.appendChild(childNode.element.root);
+		}
+	}
+
+}
+
+class OutlineElement{
+
+	root;
+	label;
+	icon;
+	name;
+	/** @type {HTMLDivElement | undefined} */
+	childrenContainer;
+	constructor(){
+		let root = document.createElement('div');
+
+		root.classList.add('outline-node');
+		let label = document.createElement('div');
+
+		label.classList.add('outline-label');
+		let icon = document.createElement('span');
+		let name = document.createElement('span');
+
+		name.className = 'symbol-name';
+		label.appendChild(icon);
+		label.appendChild(name);
+		root.appendChild(label);
+		this.root = root;
+		this.label = label;
+		this.icon = icon;
+		this.name = name;
+	}
+
+}
 
 let style = {
 	module: {
 		color: 'var(--vscode-symbolIcon-moduleForeground)',
-	}, 
+	},
 	namespace: {
 		color: 'var(--vscode-symbolIcon-namespaceForeground)',
-	}, 
+	},
 	package: {
 		color: 'var(--vscode-symbolIcon-packageForeground)',
-	}, 
+	},
 	class: {
 		color: 'var(--vscode-symbolIcon-classForeground)',
-	}, 
+	},
 	method: {
 		color: 'var(--vscode-symbolIcon-methodForeground)',
-	}, 
+	},
 	property: {
 		color: 'var(--vscode-symbolIcon-propertyForeground)',
-	}, 
+	},
 	field: {
 		color: 'var(--vscode-symbolIcon-fieldForeground)',
-	}, 
+	},
 	constructor: {
 		color: 'var(--vscode-symbolIcon-constructorForeground)',
-	}, 
+	},
 	enum: {
 		color: 'var(--vscode-symbolIcon-enumeratorForeground)',
-	}, 
+	},
 	interface: {
 		color: 'var(--vscode-symbolIcon-interfaceForeground)',
-	}, 
+	},
 	function: {
 		color: 'var(--vscode-symbolIcon-functionForeground)',
-	}, 
+	},
 	variable: {
 		color: 'var(--vscode-symbolIcon-variableForeground)',
-	}, 
+	},
 	constant: {
 		color: 'var(--vscode-symbolIcon-constantForeground)',
-	}, 
+	},
 	string: {
 		color: 'var(--vscode-symbolIcon-stringForeground)',
-	}, 
+	},
 	number: {
 		color: 'var(--vscode-symbolIcon-numberForeground)',
-	}, 
+	},
 	boolean: {
 		color: 'var(--vscode-symbolIcon-booleanForeground)',
-	}, 
+	},
 	array: {
 		color: 'var(--vscode-symbolIcon-arrayForeground)',
-	}, 
+	},
 	object: {
 		color: 'var(--vscode-symbolIcon-objectForeground)',
-	}, 
+	},
 	key: {
 		color: 'var(--vscode-symbolIcon-keyForeground)',
-	}, 
+	},
 	null: {
 		color: 'var(--vscode-symbolIcon-nullForeground)',
-	}, 
+	},
 	enumMember: {
 		color: 'var(--vscode-symbolIcon-enumeratorMemberForeground)',
-	}, 
+	},
 	struct: {
 		color: 'var(--vscode-symbolIcon-structForeground)',
-	}, 
+	},
 	event: {
 		color: 'var(--vscode-symbolIcon-eventForeground)',
-	}, 
+	},
 	operator: {
 		color: 'var(--vscode-symbolIcon-operatorForeground)',
-	}, 
+	},
 	typeParameter: {
 		color: 'var(--vscode-symbolIcon-typeParameterForeground)',
-	}, 
+	},
 };
 
-})();

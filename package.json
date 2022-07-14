@@ -24,7 +24,7 @@
 	},
 	"license": "MIT",
 	"engines": {
-		"vscode": "^1.68.0"
+		"vscode": "^1.60.0"
 	},
 	"categories": [
 		"Other"
@@ -64,7 +64,7 @@
 		"run-in-browser": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. ."
 	},
 	"devDependencies": {
-		"@types/vscode": "^1.69.0",
+		"@types/vscode": "^1.60.0",
 		"@types/mocha": "^9.1.1",
 		"eslint": "^8.18.0",
 		"@typescript-eslint/eslint-plugin": "^5.30.0",

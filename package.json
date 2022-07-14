@@ -1,7 +1,7 @@
 {
 	"name": "outline-map",
 	"displayName": "Outline Map",
-	"description": "Combine the advantages of outline and minimap",
+	"description": "A visual, interactive outline map. Alternative Minimap.",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.68.0"

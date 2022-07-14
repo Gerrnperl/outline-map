@@ -9,7 +9,7 @@ body {
     white-space: nowrap;
 }
 div#outline-root {
-    padding-left: 5px;
+    padding-left: 10px;
 }
 .outline-label {
 	font-size: 0.8rem;
@@ -69,4 +69,45 @@ div#outline-root {
 	background: var(--vscode-editorCursor-foreground);
 	opacity: 0.3;
 	z-index: -1;
+}
+
+.outline-label[diagnostic-error]::before,
+.outline-label[diagnostic-warning]::before,
+.outline-label[diagnostic-information]::before,
+.outline-label[diagnostic-hint]::before {
+    box-sizing: border-box;
+    width: 10px;
+    height: 10px;
+    position: absolute;
+    left: 7px;
+    font-size: 8px;
+    font-weight: 900;
+    text-align: center;
+    line-height: 8px;
+    border: 1px solid;
+}
+
+.outline-label[diagnostic-hint]::before {
+    content: attr(diagnostic-hint);
+    color: var(--vscode-editorHint-foreground);
+    border-right: 1px solid var(--vscode-editorHint-foreground);
+}
+
+.outline-label[diagnostic-information]::before {
+    content: attr(diagnostic-information);
+    color: var(--vscode-editorInfo-foreground);
+    border-bottom: 1px solid var(--vscode-editorInfo-foreground);
+}
+
+.outline-label[diagnostic-warning]::before {
+    content: attr(diagnostic-warning);
+    color: var(--vscode-editorWarning-foreground);
+    border-top: 1px solid var(--vscode-editorWarning-foreground);
+}
+
+.outline-label[diagnostic-error]::before {
+    content: attr(diagnostic-error);
+    color: var(--vscode-editorError-foreground);
+    border-left: 1px solid var(--vscode-editorError-foreground);
+
 }

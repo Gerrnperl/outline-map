@@ -1,7 +1,9 @@
 /**
  * @typedef {{
+ * 		id: string,
  *		level: string;
  *		message: string;
+ *		range: Range;
  *}} Diagnostic
  * @typedef {{
  * 		line: number;
@@ -51,6 +53,9 @@ window.addEventListener('message', event => {
 	case 'update':
 		updateOutline(message.changes);
 		break;
+	case 'diagnostics':
+		updateDiagnostics(message.diagnostics);
+		break;
 	}
 });
 
@@ -67,8 +72,14 @@ function updateVisibleRange(range){
 		if(!node.open && node.focus){
 			bubblePropertyUpward(node, 'focus');
 		}
+		if(!node.open && node.diagnostics.length){
+			bubblePropertyUpward(node, 'diagnostics');
+		}
 		if(node.open && node.fromChild && node.fromChild.focus){
 			node.focus = false;
+		}
+		if(node.open && node.diagnostics.length){
+			clearPropertyUpward(node, 'diagnostics');
 		}
 	});
 }
@@ -78,6 +89,10 @@ function updateVisibleRange(range){
  * @param {Position} position 
  */
 function updateFocusPosition(position){
+	if(!indexes){
+		setTimeout(updateFocusPosition, 300, position);
+		return;
+	}
 	let closestNode;
 	let closest = Infinity;
 
@@ -107,10 +122,6 @@ function updateOutline(changes){
 		let i = 0;
 
 		for (; i < change.path.length - 1; i++){
-			if(node === undefined){
-				// eslint-disable-next-line no-debugger
-				debugger;
-			}
 			node = node[change.path[i]];
 		}
 
@@ -161,6 +172,39 @@ function updateOutline(changes){
 }
 
 /**
+ * 
+ * @param {Diagnostic[]} diagnostics 
+ */
+function updateDiagnostics(diagnostics){
+	if(!indexes){
+		setTimeout(updateDiagnostics, 300, diagnostics);
+		return;
+	}
+	// console.log(diagnostics);
+	diagnostics.forEach((diagnostic, index)=>{
+		let range = diagnostic.range;
+		let closest = Infinity;
+		let closestNode;
+
+		indexes.forEach((node, itemRange)=>{
+			if(index === 0){
+				node.diagnostics = [];
+			}
+			let diff = Math.abs(itemRange.start.line - range.start.line);
+
+			if(diff < closest){
+				closest = diff;
+				closestNode = node;
+			}
+			node.focus = false;
+		});
+
+		closestNode.pushDiagnostics(diagnostic);
+		// console.log(closestNode);
+	});
+}
+
+/**
  * Bubble a property upward to its parent node when the parent is 'collapsed'
  * 
  * **Note:** It will mark `fromChild: property` on the parent node
@@ -172,7 +216,7 @@ function updateOutline(changes){
 function bubblePropertyUpward(node, property){
 	let parent = node.parent;
 
-	if(!parent || parent.open){
+	if(!parent || parent.name === undefined || parent.open){
 		return;
 	}
 	if(!parent.fromChild){
@@ -184,12 +228,14 @@ function bubblePropertyUpward(node, property){
 		bubblePropertyUpward(parent, property);
 	}
 	else if(parent[property] instanceof Array && node[property] instanceof Array){
-		parent[property].push(...node[property]);
-		if(!parent.fromChild[property]){
-			parent.fromChild[property] = 0;
+		if(parent[property].length === 0){
+			parent[property] = node[property];
+			if(!parent.fromChild[property]){
+				parent.fromChild[property] = 0;
+			}
+			parent.fromChild[property] += node[property].length;
+			bubblePropertyUpward(parent, property);
 		}
-		parent.fromChild[property] += node[property].length;
-		bubblePropertyUpward(parent, property);
 	}
 }
 
@@ -209,14 +255,11 @@ function bubblePropertyUpward(node, property){
 function clearPropertyUpward(node, property, defaultValue){
 	let parent = node.parent;
 
-	if(!parent || !parent.fromChild[property]){
+	if(!parent || parent.name === undefined || !parent.fromChild || !parent.fromChild[property]){
 		return;
 	}
 	if(parent[property] instanceof Array && node[property] instanceof Array){
-		node[property].forEach(item=>{
-			parent[property].splice(parent[property].indexOf(item), 1);
-			parent.fromChild[property]--;
-		});
+		parent[property] = [];
 		clearPropertyUpward(parent, property, defaultValue);
 	}
 	else if(parent[property]){
@@ -284,7 +327,7 @@ class OutlineNode{
 	/** @type {boolean} */		_visibility = undefined;
 	/** @type {boolean} */		_highlight = undefined;
 	/** @type {boolean} */		_focus = undefined;
-	/** @type {Diagnostic[]} */	_diagnostics = undefined;
+	/** @type {Diagnostic[]} */	_diagnostics = [];
 	/** @type {OutlineNode[]} */	_children = [];
 	/** @type {OutlineNode} */	parent = [];
 	/** @type {Range} */		_range;
@@ -313,17 +356,20 @@ class OutlineNode{
 	set name(name){
 		this._name = name;
 		this.element.name.innerText = name;
+		this.element.name.title = `${name} [${this.type}]`;
 	}
 	get type(){
 		return this._type;
 	}
 	set type(type){
+		type = type.toLocaleLowerCase();
 		let color = style[type].color;
 
 		this._type = type;
 		this.element.root.setAttribute('type', type);
 		this.element.root.setAttribute('style', `--color: ${color}`);
 		this.element.icon.className = `codicon codicon-symbol-${type}`;
+		this.element.name.title = `${this.name} [${type}]`;
 	}
 	get open(){
 		return this._open;
@@ -363,7 +409,12 @@ class OutlineNode{
 		return this._diagnostics;
 	}
 	set diagnostics(diagnostics){
-		this._diagnostics = diagnostics;
+		this._diagnostics = [];
+		this.element.label.removeAttribute('diagnostic-Hint');
+		this.element.label.removeAttribute('diagnostic-Information');
+		this.element.label.removeAttribute('diagnostic-Warning');
+		this.element.label.removeAttribute('diagnostic-Error');
+		this.pushDiagnostics(...diagnostics);
 	}
 	get children(){
 		return this._children;
@@ -392,6 +443,20 @@ class OutlineNode{
 
 			this._children.push(childNode);
 			this.element.childrenContainer.appendChild(childNode.element.root);
+		}
+	}
+
+	/**
+	 * 
+	 * @param  {...Diagnostic} diagnostics 
+	 */
+	pushDiagnostics(...diagnostics){
+		for (const diagnostic of diagnostics){
+			this._diagnostics.push(diagnostic);
+
+			let count = +this.element.label.getAttribute(`diagnostic-${diagnostic.level}`) || 0;
+
+			this.element.label.setAttribute(`diagnostic-${diagnostic.level}`, count + 1);
 		}
 	}
 

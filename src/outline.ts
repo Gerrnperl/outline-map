@@ -85,6 +85,7 @@ export class OutlineProvider implements WebviewViewProvider {
 
 	#extensionUri: Uri;
 
+	lastSelectedLine: number | undefined;
 
 	indexes: Map<number, SymbolNode>;
 
@@ -96,11 +97,39 @@ export class OutlineProvider implements WebviewViewProvider {
 		this.indexes = new Map<number, SymbolNode>();
 	}
 
+	handleDiagnostics = (uri:Uri)=>{
+		let diagnostics = languages.getDiagnostics(uri);
+		let fmtDiagnostics = 
+		diagnostics.map(diagnostic=>{
+			let id = `${diagnostic.code}-${diagnostic.range.start.line}`;
+			return {
+				id,
+				level: DiagnosticSeverity[diagnostic.severity],
+				message: diagnostic.message,
+				range: {
+					start: diagnostic.range.start,
+					end: diagnostic.range.end,
+				}
+			}
+		})
+		
+		this.#view?.webview.postMessage({
+			type: 'diagnostics',
+			diagnostics: fmtDiagnostics,
+		})
+	}
+
 	#initEventListeners() {
 		// switch tabs
 		window.onDidChangeActiveTextEditor(event => {
 			let document = event?.document || window.activeTextEditor?.document;
 			document && this.#rebuild(document);
+
+			setTimeout(()=>{
+				if(window.activeTextEditor?.document.uri){
+					this.handleDiagnostics(window.activeTextEditor?.document.uri);
+				}
+			}, 500);
 		}, this);
 		// scroll
 		window.onDidChangeTextEditorVisibleRanges(event => {
@@ -116,14 +145,24 @@ export class OutlineProvider implements WebviewViewProvider {
 		});
 
 		window.onDidChangeTextEditorSelection(event=>{
-			this.#view?.webview.postMessage({
-				type: 'focus',
-				position: event.selections[0].start,
-			})
+			if(event.selections[0].start.line !== this.lastSelectedLine){
+				this.lastSelectedLine = event.selections[0].start.line;
+				this.#view?.webview.postMessage({
+					type: 'focus',
+					position: event.selections[0].start,
+				})
+			}
 		});
 		// edit
 		workspace.onDidChangeTextDocument(event => {
-			console.log('EDIT', event.contentChanges, event.reason);
+			if(event.contentChanges[0] && event.contentChanges[0].range.start.line !== this.lastSelectedLine){
+				this.lastSelectedLine = event.contentChanges[0].range.start.line;
+				this.#view?.webview.postMessage({
+					type: 'focus',
+					position: event.contentChanges[0].range.start,
+				})
+			}
+			// console.log('EDIT', event.contentChanges, event.reason);
 			let newOutline = new OutlineTree(window.activeTextEditor?.document || event.document);
 			newOutline.init().then(newOutlineRoot => {
 				this.indexes = newOutline.indexes;
@@ -144,61 +183,9 @@ export class OutlineProvider implements WebviewViewProvider {
 		
 		// Diagnostics
 		languages.onDidChangeDiagnostics(event=>{
-			return;
 			let activeUri = window.activeTextEditor?.document.uri!;
 			if(event.uris.includes(activeUri)){
-				let oldOutlineRoot = JSON.parse(JSON.stringify(this.outlineRoot));
-				let diagnostics = languages.getDiagnostics(activeUri);
-				let diagnosticsMap: Map<number, Diagnostic[]> = new Map();
-				
-				diagnostics.forEach(diagnostic=>{
-					let aDiagnostic:Diagnostic = {
-						level: DiagnosticSeverity[diagnostic.severity],
-						message: diagnostic.message,
-					};
-					
-					let item = diagnosticsMap.get(diagnostic.range.start.line);
-					if(!item){
-						diagnosticsMap.set(diagnostic.range.start.line, [aDiagnostic]);
-					}
-					else{
-						item.push(aDiagnostic);
-					}
-				});
-
-				let i = 0;
-				let keys = Array.from(this.indexes.keys());
-				let withinASymbol = true;
-
-				diagnosticsMap?.forEach((diagnostic, index)=>{
-					// Move i to the symbol before the index of diagnostic
-					while(i < keys.length && keys[i+1] < index){
-						i++;
-						withinASymbol = false;
-						// if withinASymbol is false, it means that i has changed.
-						// If i has not changed, newer diagnostics should be added to the existing list
-						// otherwise, the diagnostics list should be re-created
-					}
-					let symbol = this.indexes.get(i)!;
-					if(withinASymbol){
-						symbol.diagnostics.push(...diagnostic);
-					}
-					else{
-						symbol.diagnostics = diagnostic;
-					}
-				
-				});
-
-				
-				
-				let changes = diff(oldOutlineRoot, this.outlineRoot);
-				if (changes) {
-					console.log(oldOutlineRoot, this.outlineRoot, changes);
-					this.#view?.webview.postMessage({
-						type: 'update',
-						changes: changes,
-					});
-				}
+				this.handleDiagnostics(activeUri);
 			}
 		});
 
@@ -241,7 +228,7 @@ export class OutlineProvider implements WebviewViewProvider {
 					<title>Outline Map</title>
 				</head>
 				<body>
-					<div id="outline-root">Outline Map Initializing</div>
+					<div id="outline-root"></div>
 					<script src="${scriptUri}"></script>
 				</body>
 			</html>
@@ -312,6 +299,10 @@ class OutlineTree {
 			this.getSymbols(this.textDocument).then(
 				symbolInformation => {
 					// console.log(symbolInformation);
+					if(!symbolInformation){
+						reject('Failed to get symbols');
+						return;
+					}
 					
 					this.symbols = symbolInformation;
 
@@ -330,14 +321,14 @@ class OutlineTree {
 
 	// Get symbols of the document
 	async getSymbols(textDocument: TextDocument): Promise<DocumentSymbol[]> {
-		console.log(textDocument);
+
 		
 		let result = await commands.executeCommand<DocumentSymbol[]>(
 			"vscode.executeDocumentSymbolProvider",
 			textDocument.uri
 		);
 
-		console.log(result);
+		// console.log(result);
 		
 		return result;
 	};

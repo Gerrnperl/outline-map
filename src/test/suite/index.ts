@@ -1,38 +1,30 @@
-import * as path from 'path';
-import * as Mocha from 'mocha';
-import * as glob from 'glob';
+// imports mocha for the browser, defining the `mocha` global.
+require('mocha/mocha');
 
 export function run(): Promise<void> {
-	// Create the mocha test
-	const mocha = new Mocha({
-		ui: 'tdd',
-		color: true
-	});
-
-	const testsRoot = path.resolve(__dirname, '..');
 
 	return new Promise((c, e) => {
-		glob('**/**.test.js', { cwd: testsRoot }, (err, files) => {
-			if (err) {
-				return e(err);
-			}
-
-			// Add files to the test suite
-			files.forEach(f => mocha.addFile(path.resolve(testsRoot, f)));
-
-			try {
-				// Run the mocha test
-				mocha.run(failures => {
-					if (failures > 0) {
-						e(new Error(`${failures} tests failed.`));
-					} else {
-						c();
-					}
-				});
-			} catch (err) {
-				console.error(err);
-				e(err);
-			}
+		mocha.setup({
+			ui: 'tdd',
+			reporter: undefined
 		});
+
+		// bundles all files in the current directory matching `*.test`
+		const importAll = (r: __WebpackModuleApi.RequireContext) => r.keys().forEach(r);
+		importAll(require.context('.', true, /\.test$/));
+
+		try {
+			// Run the mocha test
+			mocha.run(failures => {
+				if (failures > 0) {
+					e(new Error(`${failures} tests failed.`));
+				} else {
+					c();
+				}
+			});
+		} catch (err) {
+			console.error(err);
+			e(err);
+		}
 	});
 }

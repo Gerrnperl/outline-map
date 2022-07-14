@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="512" height="512" viewBox="0 0 512 512" xml:space="preserve">
+<desc>Created with Fabric.js 3.6.3</desc>
+<defs>
+</defs>
+<g transform="matrix(1 0 0 1 256.25 256.25)"  >
+<g style=""   >
+		<g transform="matrix(0.5 0 0 0.5 0 0)"  >
+<linearGradient id="SVGID_4" gradientUnits="userSpaceOnUse" gradientTransform="matrix(1 0 0 1 0 0)"  x1="0" y1="512" x2="1024" y2="512">
+<stop offset="0%" style="stop-color:rgba(11, 249, 241, 1);"/>
+<stop offset="31.22%" style="stop-color:rgba(21, 234, 250, 1);"/>
+<stop offset="40%" style="stop-color:rgba(26, 216, 250, 1);"/>
+<stop offset="46.341%" style="stop-color:rgba(92, 203, 242, 1);"/>
+<stop offset="87.317%" style="stop-color:rgba(33, 161, 252, 1);"/>
+</linearGradient>
+<path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: url(#SVGID_4); fill-rule: nonzero; opacity: 1;"  transform=" translate(-512, -512)" d="M 0 153.4 l 358.6 -153.4 l 305.78 153.4 l 322.03 -138.16 q 7.11 -2.03 13.21 -2.03 q 7.11 1.01 12.19 5.08 q 6.09 3.04 8.13 9.14 q 4.06 5.08 4.06 12.19 l 0 830.98 l -359.62 153.4 l -305.78 -153.4 l -323.04 138.16 q -7.12 2.03 -13.21 2.03 q -6.1 -1.01 -10.16 -5.08 q -6.09 -3.04 -9.14 -9.14 q -3.05 -5.08 -3.05 -12.19 l 0 -830.98 Z M 660.32 264.13 l -305.78 -153.4 l -251.94 108.7 l 0 647.11 l 259.05 -110.73 l 306.79 153.4 l 250.93 -108.7 l 0 -647.11 l -259.05 110.73 Z" stroke-linecap="round" />
+</g>
+		<g transform="matrix(0.17 0 0 0.17 -51.46 70)"  >
+<linearGradient id="SVGID_5" gradientUnits="userSpaceOnUse" gradientTransform="matrix(1 0 0 1 0 0)"  x1="0" y1="289.1845694831385" x2="1024" y2="289.1845694831385">
+<stop offset="0%" style="stop-color:rgba(161, 205, 247, 1);"/>
+<stop offset="31.22%" style="stop-color:rgba(161, 191, 247, 1);"/>
+<stop offset="36.585%" style="stop-color:rgba(114, 138, 244, 1);"/>
+<stop offset="100%" style="stop-color:rgba(114, 116, 244, 1);"/>
+</linearGradient>
+<path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: url(#SVGID_5); fill-rule: nonzero; opacity: 1;"  transform=" translate(-512, -289.18)" d="M 11.67 382.18 l 8.75 -5.84 l 320.91 -137.11 l 671 335.49 q 11.67 5.84 11.67 -8.75 l 0 -224.64 q 0 -11.67 -11.67 -17.5 l -644.74 -323.83 l -355.92 154.62 q -11.67 5.84 -11.67 17.51 l 0 201.29 q 0 11.67 11.67 8.76 Z" stroke-linecap="round" />
+</g>
+		<g transform="matrix(0.17 0 0 0.17 49.38 7.28)"  >
+<linearGradient id="SVGID_6" gradientUnits="userSpaceOnUse" gradientTransform="matrix(1 0 0 1 0 -1.98)"  x1="0" y1="288.54725703795884" x2="1024" y2="288.54725703795884">
+<stop offset="0%" style="stop-color:rgba(160, 169, 242, 1);"/>
+<stop offset="60.488%" style="stop-color:rgba(136, 90, 255, 1);"/>
+<stop offset="69.756%" style="stop-color:rgba(170, 92, 251, 1);"/>
+<stop offset="100%" style="stop-color:rgba(192, 92, 251, 1);"/>
+</linearGradient>
+<path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: url(#SVGID_6); fill-rule: nonzero; opacity: 1;"  transform=" translate(-512, -286.56)" d="M 1012.3 194.77 l -8.78 5.85 l -20.48 8.78 l -301.35 128.73 l -669.99 -336.46 q -11.7 -5.85 -11.7 8.78 l 0 225.28 q 0 11.7 8.78 17.55 l 646.58 321.83 l 356.94 -152.14 q 11.7 -5.85 11.7 -17.55 l 0 -201.87 q 0 -11.71 -11.7 -8.78 Z" stroke-linecap="round" />
+</g>
+		<g transform="matrix(0.17 0 0 0.17 -51.07 -93.48)"  >
+<linearGradient id="SVGID_7" gradientUnits="userSpaceOnUse" gradientTransform="matrix(1 0 0 1 0 0)"  x1="0" y1="289.10662779424547" x2="1024" y2="289.10662779424547">
+<stop offset="0%" style="stop-color:rgba(143, 245, 248, 1);"/>
+<stop offset="33.659%" style="stop-color:rgba(136, 214, 255, 1);"/>
+<stop offset="35.122%" style="stop-color:rgba(82, 203, 255, 1);"/>
+<stop offset="100%" style="stop-color:rgba(93, 142, 255, 1);"/>
+</linearGradient>
+<path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: url(#SVGID_7); fill-rule: nonzero; opacity: 1;"  transform=" translate(-512, -289.11)" d="M 11.67 382.18 l 8.75 -5.84 l 320.91 -137.11 l 671 335.49 q 11.67 5.84 11.67 -11.67 l 0 -221.72 q 0 -11.67 -11.67 -17.5 l -644.74 -323.83 l -355.92 154.62 q -11.67 2.92 -11.67 17.51 l 0 201.29 q 0 11.67 11.67 8.76 Z" stroke-linecap="round" />
+</g>
+</g>
+</g>
+</svg>

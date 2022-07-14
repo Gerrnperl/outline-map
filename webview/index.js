@@ -72,7 +72,7 @@ function updateVisibleRange(range){
 		if(!node.open && node.focus){
 			bubblePropertyUpward(node, 'focus');
 		}
-		if(!node.open && node.diagnostics.length){
+		if(node.parent.children.includes(node) && !node.open && node.diagnostics.length){
 			bubblePropertyUpward(node, 'diagnostics');
 		}
 		if(node.open && node.fromChild && node.fromChild.focus){
@@ -187,7 +187,7 @@ function updateDiagnostics(diagnostics){
 		let closestNode;
 
 		indexes.forEach((node, itemRange)=>{
-			if(index === 0){
+			if(index === 0 && node.diagnostics.length !== 0){
 				node.diagnostics = [];
 			}
 			let diff = Math.abs(itemRange.start.line - range.start.line);
@@ -196,7 +196,6 @@ function updateDiagnostics(diagnostics){
 				closest = diff;
 				closestNode = node;
 			}
-			node.focus = false;
 		});
 
 		closestNode.pushDiagnostics(diagnostic);
@@ -216,7 +215,7 @@ function updateDiagnostics(diagnostics){
 function bubblePropertyUpward(node, property){
 	let parent = node.parent;
 
-	if(!parent || parent.name === undefined || parent.open){
+	if(!parent || parent.name === undefined || parent.open || parent.fromChild?.[property] || parent.children.length === 0 || !parent.children.includes(node)){
 		return;
 	}
 	if(!parent.fromChild){
@@ -291,7 +290,7 @@ function buildOutline(outline, parent){
 			},
 			children: [],
 		};
-		// console.log(outline);
+		console.log(outlineTree, indexes);
 
 		outline.children.sort((symbolA, symbolB) =>{
 			return symbolA.range.start.line - symbolB.range.end.line;
@@ -420,6 +419,9 @@ class OutlineNode{
 		return this._children;
 	}
 	set children(children){
+		this._children.forEach(child => {
+			indexes?.delete(child.range);
+		});
 		let childrenContainer = document.createElement('div');
 
 		childrenContainer.className = 'outline-children';

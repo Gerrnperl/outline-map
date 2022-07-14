@@ -8,3 +8,5 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### [0.0.1] - 2022-07-14
  - Initial release
+### [0.0.2] - 2022-07-14
+ - Update presentation

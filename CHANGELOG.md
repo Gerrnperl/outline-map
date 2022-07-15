@@ -10,3 +10,5 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
  - Initial release
 ### [0.0.2] - 2022-07-14
  - Update presentation
+### [0.1.1] - 2022-07-15
+ - Add support for vscode.dev

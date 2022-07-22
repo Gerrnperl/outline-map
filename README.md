@@ -10,12 +10,17 @@ A visual, interactive outline map. Alternative Minimap.
 ![Quick navigation](images/quick-navigation.gif)
 - ### Flag diagnostics
 ![Flag diagnostics](images/flag-diagnostics.gif)
+- ### Color customization
+![Color customization](images/color-customization.png)
 
 ---
 
-## Initialize settings
+## Set the view container position
 ![Initialize settings](images/init.gif)
 
 ---
+
+## Extension Settings
+- `outline-map.color`: color table for specific symbols
 
 **Enjoy!**

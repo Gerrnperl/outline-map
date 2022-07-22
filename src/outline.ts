@@ -200,6 +200,7 @@ export class OutlineProvider implements WebviewViewProvider {
 				type: 'build',
 				outline: outlineRoot,
 			});
+
 		});
 	}
 
@@ -257,12 +258,14 @@ export class OutlineProvider implements WebviewViewProvider {
 		this.#render(webviewView.webview).then(html => {
 			webviewView.webview.html = html;
 			if (window.activeTextEditor) {
+				this.loadStyle();
 				this.#rebuild(window.activeTextEditor.document);
 			}
 		});
 
 		this.#view.onDidChangeVisibility(()=>{
 			if(this.#view?.visible && window.activeTextEditor){
+				this.loadStyle();
 				this.#rebuild(window.activeTextEditor.document);
 			}
 		})
@@ -274,6 +277,16 @@ export class OutlineProvider implements WebviewViewProvider {
 					commands.executeCommand('editor.action.goToLocations', window.activeTextEditor?.document.uri, start, [], 'goto', '');
 			}
 		});
+	}
+
+	loadStyle(){
+		let colors = workspace.getConfiguration('outline-map')?.get('color');
+		if(colors){
+			this.#view?.webview.postMessage({
+				type: 'style',
+				style: colors,
+			});
+		}
 	}
 
 };

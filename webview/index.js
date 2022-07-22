@@ -37,7 +37,7 @@ window.addEventListener('message', event => {
 	// console.log(message);
 	switch (message.type){
 	case 'style':
-		style = message.style;
+		configStyle(message.style);
 		break;
 	case 'build':
 		outlineHTML.innerHTML = '';
@@ -59,6 +59,17 @@ window.addEventListener('message', event => {
 	}
 });
 
+function configStyle(userStyle){
+	console.log(userStyle);
+	for (const key in userStyle){
+		if (Object.hasOwnProperty.call(userStyle, key)){
+			const color = userStyle[key];
+
+			style[key] = color;
+		}
+	}
+	console.log(style);
+}
 
 /**
  * Highlight the visible range of the outline
@@ -362,7 +373,7 @@ class OutlineNode{
 	}
 	set type(type){
 		type = type.toLocaleLowerCase();
-		let color = style[type].color;
+		let color = style[type];
 
 		this._type = type;
 		this.element.root.setAttribute('type', type);
@@ -495,80 +506,30 @@ class OutlineElement{
 }
 
 let style = {
-	module: {
-		color: 'var(--vscode-symbolIcon-moduleForeground)',
-	},
-	namespace: {
-		color: 'var(--vscode-symbolIcon-namespaceForeground)',
-	},
-	package: {
-		color: 'var(--vscode-symbolIcon-packageForeground)',
-	},
-	class: {
-		color: 'var(--vscode-symbolIcon-classForeground)',
-	},
-	method: {
-		color: 'var(--vscode-symbolIcon-methodForeground)',
-	},
-	property: {
-		color: 'var(--vscode-symbolIcon-propertyForeground)',
-	},
-	field: {
-		color: 'var(--vscode-symbolIcon-fieldForeground)',
-	},
-	constructor: {
-		color: 'var(--vscode-symbolIcon-constructorForeground)',
-	},
-	enum: {
-		color: 'var(--vscode-symbolIcon-enumeratorForeground)',
-	},
-	interface: {
-		color: 'var(--vscode-symbolIcon-interfaceForeground)',
-	},
-	function: {
-		color: 'var(--vscode-symbolIcon-functionForeground)',
-	},
-	variable: {
-		color: 'var(--vscode-symbolIcon-variableForeground)',
-	},
-	constant: {
-		color: 'var(--vscode-symbolIcon-constantForeground)',
-	},
-	string: {
-		color: 'var(--vscode-symbolIcon-stringForeground)',
-	},
-	number: {
-		color: 'var(--vscode-symbolIcon-numberForeground)',
-	},
-	boolean: {
-		color: 'var(--vscode-symbolIcon-booleanForeground)',
-	},
-	array: {
-		color: 'var(--vscode-symbolIcon-arrayForeground)',
-	},
-	object: {
-		color: 'var(--vscode-symbolIcon-objectForeground)',
-	},
-	key: {
-		color: 'var(--vscode-symbolIcon-keyForeground)',
-	},
-	null: {
-		color: 'var(--vscode-symbolIcon-nullForeground)',
-	},
-	enumMember: {
-		color: 'var(--vscode-symbolIcon-enumeratorMemberForeground)',
-	},
-	struct: {
-		color: 'var(--vscode-symbolIcon-structForeground)',
-	},
-	event: {
-		color: 'var(--vscode-symbolIcon-eventForeground)',
-	},
-	operator: {
-		color: 'var(--vscode-symbolIcon-operatorForeground)',
-	},
-	typeParameter: {
-		color: 'var(--vscode-symbolIcon-typeParameterForeground)',
-	},
+	module: 'var(--vscode-symbolIcon-moduleForeground)',
+	namespace: 'var(--vscode-symbolIcon-namespaceForeground)',
+	package: 'var(--vscode-symbolIcon-packageForeground)',
+	class: 'var(--vscode-symbolIcon-classForeground)',
+	method: 'var(--vscode-symbolIcon-methodForeground)',
+	property: 'var(--vscode-symbolIcon-propertyForeground)',
+	field: 'var(--vscode-symbolIcon-fieldForeground)',
+	constructor: 'var(--vscode-symbolIcon-constructorForeground)',
+	enum: 'var(--vscode-symbolIcon-enumeratorForeground)',
+	interface: 'var(--vscode-symbolIcon-interfaceForeground)',
+	function: 'var(--vscode-symbolIcon-functionForeground)',
+	variable: 'var(--vscode-symbolIcon-variableForeground)',
+	constant: 'var(--vscode-symbolIcon-constantForeground)',
+	string: 'var(--vscode-symbolIcon-stringForeground)',
+	number: 'var(--vscode-symbolIcon-numberForeground)',
+	boolean: 'var(--vscode-symbolIcon-booleanForeground)',
+	array: 'var(--vscode-symbolIcon-arrayForeground)',
+	object: 'var(--vscode-symbolIcon-objectForeground)',
+	key: 'var(--vscode-symbolIcon-keyForeground)',
+	null: 'var(--vscode-symbolIcon-nullForeground)',
+	enumMember: 'var(--vscode-symbolIcon-enumeratorMemberForeground)',
+	struct: 'var(--vscode-symbolIcon-structForeground)',
+	event: 'var(--vscode-symbolIcon-eventForeground)',
+	operator: 'var(--vscode-symbolIcon-operatorForeground)',
+	typeParameter: 'var(--vscode-symbolIcon-typeParameterForeground)',
 };
 

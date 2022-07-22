@@ -2,7 +2,7 @@
 	"name": "outline-map",
 	"displayName": "Outline Map",
 	"description": "A visual, interactive outline map. Alternative Minimap.",
-	"version": "0.1.1",
+	"version": "0.2.1",
 	"repository": {
 		"url": "https://github.com/Gerrnperl/outline-map.git"
 	},
@@ -30,7 +30,7 @@
 		"Other"
 	],
 	"activationEvents": [
-        "onStartupFinished"
+        "onView:outline-map-view"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -51,7 +51,139 @@
 					"name": "Outline Map"
 				}
 			]
-		}
+		},
+		"configuration": {
+			"title": "Outline Map",
+			"properties": {
+			  "outline-map.color": {
+				"type": "object",
+				"default": {},
+				"description": "color table for specific symbols.",
+				"properties": {
+					"module": {
+						"type": "string",
+						"default": "",
+						"description": "Module symbol color"
+					},
+					"namespace": {
+						"type": "string",
+						"default": "",
+						"description": "Namespace symbol color"
+					},
+					"package": {
+						"type": "string",
+						"default": "",
+						"description": "Package symbol color"
+					},
+					"class": {
+						"type": "string",
+						"default": "",
+						"description": "Class symbol color"
+					},
+					"method": {
+						"type": "string",
+						"default": "",
+						"description": "Method symbol color"
+					},
+					"property": {
+						"type": "string",
+						"default": "",
+						"description": "Property symbol color"
+					},
+					"field": {
+						"type": "string",
+						"default": "",
+						"description": "Field symbol color"
+					},
+					"constructor": {
+						"type": "string",
+						"default": "",
+						"description": "Constructor symbol color"
+					},
+					"enum": {
+						"type": "string",
+						"default": "",
+						"description": "Enum symbol color"
+					},
+					"interface": {
+						"type": "string",
+						"default": "",
+						"description": "Interface symbol color"
+					},
+					"function": {
+						"type": "string",
+						"default": "",
+						"description": "Function symbol color"
+					},
+					"variable": {
+						"type": "string",
+						"default": "",
+						"description": "Variable symbol color"
+					},
+					"constant": {
+						"type": "string",
+						"default": "",
+						"description": "Constant symbol color"
+					},
+					"string": {
+						"type": "string",
+						"default": "",
+						"description": "String symbol color"
+					},
+					"number": {
+						"type": "string",
+						"default": "",
+						"description": "Number symbol color"
+					},
+					"boolean": {
+						"type": "string",
+						"default": "",
+						"description": "Boolean symbol color"
+					},
+					"array": {
+						"type": "string",
+						"default": "",
+						"description": "Array symbol color"
+					},
+					"object": {
+						"type": "string",
+						"default": "",
+						"description": "Object symbol color"
+					},
+					"null": {
+						"type": "string",
+						"default": "",
+						"description": "Null symbol color"
+					},
+					"enumMember": {
+						"type": "string",
+						"default": "",
+						"description": "EnumMember symbol color"
+					},
+					"struct": {
+						"type": "string",
+						"default": "",
+						"description": "Struct symbol color"
+					},
+					"event": {
+						"type": "string",
+						"default": "",
+						"description": "Event symbol color"
+					},
+					"operator": {
+						"type": "string",
+						"default": "",
+						"description": "Operator symbol color"
+					},
+					"typeParameter": {
+						"type": "string",
+						"default": "",
+						"description": "TypeParameter symbol color"
+					}
+				}
+			  }
+			}
+		  }
 	},
 	"scripts": {
 		"test": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. --extensionTestsPath=out/test/suite/index.js",

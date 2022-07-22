@@ -4,11 +4,24 @@
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.-->
 
-## [Unreleased]
-
 ### [0.0.1] - 2022-07-14
- - Initial release
+Initial release
+
 ### [0.0.2] - 2022-07-14
- - Update presentation
+Update presentation
+
 ### [0.1.1] - 2022-07-15
- - Add support for vscode.dev
+
+#### Add
+
+- support for vscode.dev
+
+### [0.1.2] - 2022-07-15
+
+#### Fix 
+- resource issue
+
+### [0.2.1] - 2022-07-22
+
+#### Add
+- configuration: color customization ~ `outline-map.color`

@@ -2,6 +2,10 @@
 
 A visual, interactive outline map. Alternative Minimap.
 
+![version](http://vsmarketplacebadge.apphb.com/version/Gerrnperl.outline-map.svg?color=8bf7c7)
+![installs](http://vsmarketplacebadge.apphb.com/installs/Gerrnperl.outline-map.svg?color=56b6c2)
+![rating](http://vsmarketplacebadge.apphb.com/rating-star/Gerrnperl.outline-map.svg?color=97dbf3)
+
 ## Features
 
 - ### Follow the cursor
@@ -20,7 +24,7 @@ A visual, interactive outline map. Alternative Minimap.
 
 ---
 
-## Extension Settings
+## Configuration
 - `outline-map.color`: color table for specific symbols
 
 **Enjoy!**

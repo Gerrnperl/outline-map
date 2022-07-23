@@ -111,3 +111,9 @@ div#outline-root {
     border-left: 1px solid var(--vscode-editorError-foreground);
 
 }
+
+.outline-children[hide-self='true']:not(.outline-root>.outline-children) {
+    padding: 0;
+    margin-left: 0 !important;
+    border-left: 1px dashed #777777;
+}

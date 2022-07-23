@@ -46,9 +46,11 @@ window.addEventListener('message', event => {
 	case 'scroll':
 		// console.log(message.range);
 		updateVisibleRange(message.range);
+		hideOverflow();
 		break;
 	case 'focus':
 		updateFocusPosition(message.position);
+		setTimeout(hideOverflow, 500);
 		break;
 	case 'update':
 		updateOutline(message.changes);
@@ -69,6 +71,22 @@ function configStyle(userStyle){
 		}
 	}
 	console.log(style);
+}
+
+function hideOverflow(){
+	indexes?.forEach((node, itemRange)=>{
+		// overflow
+		if(!node.element.childrenContainer){
+			return;
+		}
+
+		if(node.open && node.element.label.getBoundingClientRect().bottom < 0){
+			node.element.childrenContainer?.setAttribute('hide-self', 'true');
+		}
+		else{
+			node.element.childrenContainer?.removeAttribute('hide-self');
+		}
+	});
 }
 
 /**
@@ -101,7 +119,7 @@ function updateVisibleRange(range){
  */
 function updateFocusPosition(position){
 	if(!indexes){
-		setTimeout(updateFocusPosition, 300, position);
+		setTimeout(updateFocusPosition, 100, position);
 		return;
 	}
 	let closestNode;
@@ -118,7 +136,7 @@ function updateFocusPosition(position){
 	});
 
 	closestNode.focus = true;
-	closestNode.element.root.scrollIntoView({behavior: 'smooth', block: 'center'});
+	closestNode.element.label.scrollIntoView({behavior: 'smooth', block: 'center'});
 }
 
 /**
@@ -290,7 +308,7 @@ function buildOutline(outline, parent){
 		indexes = new Map();
 		let root = document.createElement('div');
 
-		root.className = 'outline-node outline-internal outline-root';
+		root.className = 'outline-node outline-internal outline-container';
 		outlineHTML.appendChild(root);
 
 		// A minified OutlineNode
@@ -311,6 +329,7 @@ function buildOutline(outline, parent){
 			let node = buildOutline(child, outlineTree);
 
 			outlineTree.children.push(node);
+			node.element.root.classList.add('outline-root');
 			root.appendChild(node.element.root);
 		}
 		return outlineTree;
@@ -359,6 +378,12 @@ class OutlineNode{
 				range: this.range,
 			});
 		});
+		this.element.label.addEventListener('mouseover', (event)=>{
+			event.stopPropagation();
+			if(this.element.childrenContainer && !this.element.childrenContainer.hasAttribute('hide-self')){
+				this.parent.element.childrenContainer.removeAttribute('hide-self');
+			}
+		});
 	}
 	get name(){
 		return this._name;
@@ -366,7 +391,7 @@ class OutlineNode{
 	set name(name){
 		this._name = name;
 		this.element.name.innerText = name;
-		this.element.name.title = `${name} [${this.type}]`;
+		this.element.root.title = `${name} [${this.type}]`;
 	}
 	get type(){
 		return this._type;
@@ -379,7 +404,7 @@ class OutlineNode{
 		this.element.root.setAttribute('type', type);
 		this.element.root.setAttribute('style', `--color: ${color}`);
 		this.element.icon.className = `codicon codicon-symbol-${type}`;
-		this.element.name.title = `${this.name} [${type}]`;
+		this.element.root.title = `${this.name} [${type}]`;
 	}
 	get open(){
 		return this._open;

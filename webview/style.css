@@ -4,7 +4,6 @@ body {
 	background: var(--vscode-editor-background);
 	font-family: var(--font-family);
     width: 100%;
-    overflow-x: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -115,5 +114,5 @@ div#outline-root {
 .outline-children[hide-self='true']:not(.outline-root>.outline-children) {
     padding: 0;
     margin-left: 0 !important;
-    border-left: 1px dashed #777777;
+    border-left: 1px dashed var(--vscode-tree-indentGuidesStroke);
 }

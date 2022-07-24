@@ -25,6 +25,9 @@ let vscode = acquireVsCodeApi();
 
 let outlineHTML = document.querySelector('#outline-root');
 
+let enableAutomaticIndentReduction = false;
+let follow = 'cursor';
+
 /** @type {{element: OutlineElement, children: OutlineNode[]}} */
 let outlineTree;
 
@@ -38,6 +41,9 @@ window.addEventListener('message', event => {
 	switch (message.type){
 	case 'style':
 		configStyle(message.style);
+		break;
+	case 'config':
+		config(message.config);
 		break;
 	case 'build':
 		outlineHTML.innerHTML = '';
@@ -73,7 +79,15 @@ function configStyle(userStyle){
 	console.log(style);
 }
 
+function config(userConfig){
+	enableAutomaticIndentReduction = userConfig.enableAutomaticIndentReduction;
+	follow = userConfig.follow;
+}
+
 function hideOverflow(){
+	if(!enableAutomaticIndentReduction){
+		return;
+	}
 	indexes?.forEach((node, itemRange)=>{
 		// overflow
 		if(!node.element.childrenContainer){
@@ -95,6 +109,8 @@ function hideOverflow(){
  * @param {Range} range 
  */
 function updateVisibleRange(range){
+	let inRange = [];
+
 	indexes?.forEach((node, itemRange)=>{
 		node.open = itemRange.end.line > range.start.line && itemRange.start.line < range.end.line;
 		node.highlight = itemRange.start.line > range.start.line && itemRange.start.line < range.end.line;
@@ -110,7 +126,17 @@ function updateVisibleRange(range){
 		if(node.open && node.diagnostics.length){
 			clearPropertyUpward(node, 'diagnostics');
 		}
+		if(follow === 'viewport' && node.open){
+			inRange.push(node);
+		}
 	});
+
+	if(follow === 'viewport'){
+		let half = Math.floor(inRange.length / 2);
+		let center = inRange[half];
+
+		center.element.label.scrollIntoView({behavior: 'smooth', block: 'center'});
+	}
 }
 
 /**

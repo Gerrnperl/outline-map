@@ -259,6 +259,7 @@ export class OutlineProvider implements WebviewViewProvider {
 			webviewView.webview.html = html;
 			if (window.activeTextEditor) {
 				this.loadStyle();
+				this.loadConfig()
 				this.#rebuild(window.activeTextEditor.document);
 			}
 		});
@@ -266,6 +267,7 @@ export class OutlineProvider implements WebviewViewProvider {
 		this.#view.onDidChangeVisibility(()=>{
 			if(this.#view?.visible && window.activeTextEditor){
 				this.loadStyle();
+				this.loadConfig();
 				this.#rebuild(window.activeTextEditor.document);
 			}
 		})
@@ -287,6 +289,20 @@ export class OutlineProvider implements WebviewViewProvider {
 				style: colors,
 			});
 		}
+	}
+
+	loadConfig(){
+		let enableAutomaticIndentReduction
+			= workspace.getConfiguration('outline-map')?.get('enableAutomaticIndentReduction');
+		let follow 
+			= workspace.getConfiguration('outline-map')?.get('follow');
+		this.#view?.webview.postMessage({
+			type: 'config',
+			config: {
+				enableAutomaticIndentReduction,
+				follow,
+			},
+		});
 	}
 
 };

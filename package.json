@@ -2,7 +2,7 @@
 	"name": "outline-map",
 	"displayName": "Outline Map",
 	"description": "A visual, interactive outline map. Alternative Minimap.",
-	"version": "0.2.1",
+	"version": "0.3.1",
 	"repository": {
 		"url": "https://github.com/Gerrnperl/outline-map.git"
 	},
@@ -181,6 +181,20 @@
 						"description": "TypeParameter symbol color"
 					}
 				}
+			  },
+			  "outline-map.enableAutomaticIndentReduction": {
+				"type": "boolean",
+				"default": false,
+				"description": "Enable automatic reduction of child node indent when parent node label goes out of view"
+			  },
+			  "outline-map.follow": {
+				"type": "string",
+				"enum": [
+					"cursor",
+					"viewport"
+				],
+				"default": "cursor",
+				"description": "Scroll the outline when the cursor moves or the viewport scrolls"
 			  }
 			}
 		  }

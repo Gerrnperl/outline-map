@@ -29,5 +29,12 @@ A visual, interactive outline map. Alternative Minimap.
 
 ## Configuration
 - `outline-map.color`: color table for specific symbols
+- `outline-map.enableAutomaticIndentReduction`: Enable automatic reduction of child node indent when parent node label goes out of view
+  ![no-reduceIndent](images/no-reduceIndent.png) -> ![reduceIndent](images/reduceIndent.png)
+- `outline-map.follow`: Scroll the outline when the cursor moves or the viewport scrolls
+	- `viewport`: When scrolling, the center outline node in the visible area of the editor will be scrolled to the center of the outline view;
+	- `cursor` (default): When the cursor position changes, the outline node where the cursor is located will be scrolled to the center of the outline view;
+
+---
 
 **Enjoy!**

@@ -25,3 +25,9 @@ Update presentation
 
 #### Add
 - configuration: color customization ~ `outline-map.color`
+
+### [0.3.1] - 2022-07-24
+
+#### Add
+- configuration: `outline-map.enableAutomaticIndentReduction`
+- configuration: `outline-map.follow`

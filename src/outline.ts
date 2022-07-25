@@ -34,6 +34,8 @@ interface Diagnostic {
 	message: string;
 }
 
+let hiddenItem:string[] = [];
+
 export class SymbolNode {
 
 	type: string;
@@ -296,6 +298,8 @@ export class OutlineProvider implements WebviewViewProvider {
 			= workspace.getConfiguration('outline-map')?.get('enableAutomaticIndentReduction');
 		let follow 
 			= workspace.getConfiguration('outline-map')?.get('follow');
+		hiddenItem
+			= workspace.getConfiguration('outline-map')?.get('hiddenItem') ?? [];
 		this.#view?.webview.postMessage({
 			type: 'config',
 			config: {
@@ -303,6 +307,7 @@ export class OutlineProvider implements WebviewViewProvider {
 				follow,
 			},
 		});
+		
 	}
 
 };
@@ -367,6 +372,9 @@ class OutlineTree {
 			return symbolA.range.start.line - symbolB.range.end.line;
 		});
 		symbols?.forEach(symbol => {
+			if(hiddenItem.includes(SymbolKind[symbol.kind].toLocaleLowerCase())){
+				return;
+			}
 			let symbolNode = new SymbolNode(symbol);
 			parent.appendChildren(symbolNode);
 			this.buildOutline(symbol.children, symbolNode);

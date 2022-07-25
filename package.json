@@ -1,8 +1,8 @@
 {
 	"name": "outline-map",
 	"displayName": "Outline Map",
-	"description": "A visual, interactive outline map. Alternative Minimap.",
-	"version": "0.3.1",
+	"description": "A visual, interactive outline map that combines the clarity of the outline with the intuitive overview of the minimap. Alternative Minimap.",
+	"version": "0.4.1",
 	"repository": {
 		"url": "https://github.com/Gerrnperl/outline-map.git"
 	},
@@ -30,7 +30,7 @@
 		"Other"
 	],
 	"activationEvents": [
-        "onView:outline-map-view"
+		"onView:outline-map-view"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -55,149 +55,183 @@
 		"configuration": {
 			"title": "Outline Map",
 			"properties": {
-			  "outline-map.color": {
-				"type": "object",
-				"default": {},
-				"description": "color table for specific symbols.",
-				"properties": {
-					"module": {
+				"outline-map.color": {
+					"type": "object",
+					"default": {},
+					"description": "color table for specific symbols.",
+					"properties": {
+						"module": {
+							"type": "string",
+							"default": "",
+							"description": "Module symbol color"
+						},
+						"namespace": {
+							"type": "string",
+							"default": "",
+							"description": "Namespace symbol color"
+						},
+						"package": {
+							"type": "string",
+							"default": "",
+							"description": "Package symbol color"
+						},
+						"class": {
+							"type": "string",
+							"default": "",
+							"description": "Class symbol color"
+						},
+						"method": {
+							"type": "string",
+							"default": "",
+							"description": "Method symbol color"
+						},
+						"property": {
+							"type": "string",
+							"default": "",
+							"description": "Property symbol color"
+						},
+						"field": {
+							"type": "string",
+							"default": "",
+							"description": "Field symbol color"
+						},
+						"constructor": {
+							"type": "string",
+							"default": "",
+							"description": "Constructor symbol color"
+						},
+						"enum": {
+							"type": "string",
+							"default": "",
+							"description": "Enum symbol color"
+						},
+						"interface": {
+							"type": "string",
+							"default": "",
+							"description": "Interface symbol color"
+						},
+						"function": {
+							"type": "string",
+							"default": "",
+							"description": "Function symbol color"
+						},
+						"variable": {
+							"type": "string",
+							"default": "",
+							"description": "Variable symbol color"
+						},
+						"constant": {
+							"type": "string",
+							"default": "",
+							"description": "Constant symbol color"
+						},
+						"string": {
+							"type": "string",
+							"default": "",
+							"description": "String symbol color"
+						},
+						"number": {
+							"type": "string",
+							"default": "",
+							"description": "Number symbol color"
+						},
+						"boolean": {
+							"type": "string",
+							"default": "",
+							"description": "Boolean symbol color"
+						},
+						"array": {
+							"type": "string",
+							"default": "",
+							"description": "Array symbol color"
+						},
+						"object": {
+							"type": "string",
+							"default": "",
+							"description": "Object symbol color"
+						},
+						"null": {
+							"type": "string",
+							"default": "",
+							"description": "Null symbol color"
+						},
+						"enummember": {
+							"type": "string",
+							"default": "",
+							"description": "EnumMember symbol color"
+						},
+						"struct": {
+							"type": "string",
+							"default": "",
+							"description": "Struct symbol color"
+						},
+						"event": {
+							"type": "string",
+							"default": "",
+							"description": "Event symbol color"
+						},
+						"operator": {
+							"type": "string",
+							"default": "",
+							"description": "Operator symbol color"
+						},
+						"typeparameter": {
+							"type": "string",
+							"default": "",
+							"description": "TypeParameter symbol color"
+						}
+					}
+				},
+				"outline-map.enableAutomaticIndentReduction": {
+					"type": "boolean",
+					"default": false,
+					"description": "Enable automatic reduction of child node indent when parent node label goes out of view"
+				},
+				"outline-map.follow": {
+					"type": "string",
+					"enum": [
+						"cursor",
+						"viewport"
+					],
+					"default": "cursor",
+					"description": "Scroll the outline when the cursor moves or the viewport scrolls"
+				},
+				"outline-map.hiddenItem": {
+					"type": "array",
+					"description": "Choose items to hide in the outline",
+					"items": {
 						"type": "string",
-						"default": "",
-						"description": "Module symbol color"
-					},
-					"namespace": {
-						"type": "string",
-						"default": "",
-						"description": "Namespace symbol color"
-					},
-					"package": {
-						"type": "string",
-						"default": "",
-						"description": "Package symbol color"
-					},
-					"class": {
-						"type": "string",
-						"default": "",
-						"description": "Class symbol color"
-					},
-					"method": {
-						"type": "string",
-						"default": "",
-						"description": "Method symbol color"
-					},
-					"property": {
-						"type": "string",
-						"default": "",
-						"description": "Property symbol color"
-					},
-					"field": {
-						"type": "string",
-						"default": "",
-						"description": "Field symbol color"
-					},
-					"constructor": {
-						"type": "string",
-						"default": "",
-						"description": "Constructor symbol color"
-					},
-					"enum": {
-						"type": "string",
-						"default": "",
-						"description": "Enum symbol color"
-					},
-					"interface": {
-						"type": "string",
-						"default": "",
-						"description": "Interface symbol color"
-					},
-					"function": {
-						"type": "string",
-						"default": "",
-						"description": "Function symbol color"
-					},
-					"variable": {
-						"type": "string",
-						"default": "",
-						"description": "Variable symbol color"
-					},
-					"constant": {
-						"type": "string",
-						"default": "",
-						"description": "Constant symbol color"
-					},
-					"string": {
-						"type": "string",
-						"default": "",
-						"description": "String symbol color"
-					},
-					"number": {
-						"type": "string",
-						"default": "",
-						"description": "Number symbol color"
-					},
-					"boolean": {
-						"type": "string",
-						"default": "",
-						"description": "Boolean symbol color"
-					},
-					"array": {
-						"type": "string",
-						"default": "",
-						"description": "Array symbol color"
-					},
-					"object": {
-						"type": "string",
-						"default": "",
-						"description": "Object symbol color"
-					},
-					"null": {
-						"type": "string",
-						"default": "",
-						"description": "Null symbol color"
-					},
-					"enumMember": {
-						"type": "string",
-						"default": "",
-						"description": "EnumMember symbol color"
-					},
-					"struct": {
-						"type": "string",
-						"default": "",
-						"description": "Struct symbol color"
-					},
-					"event": {
-						"type": "string",
-						"default": "",
-						"description": "Event symbol color"
-					},
-					"operator": {
-						"type": "string",
-						"default": "",
-						"description": "Operator symbol color"
-					},
-					"typeParameter": {
-						"type": "string",
-						"default": "",
-						"description": "TypeParameter symbol color"
+						"enum": [
+							"module",
+							"namespace",
+							"package",
+							"class",
+							"method",
+							"property",
+							"field",
+							"constructor",
+							"enum",
+							"interface",
+							"function",
+							"variable",
+							"constant",
+							"string",
+							"number",
+							"boolean",
+							"array",
+							"object",
+							"key",
+							"null",
+							"enummember",
+							"struct",
+							"event",
+							"operator",
+							"typeparameter"
+						]
 					}
 				}
-			  },
-			  "outline-map.enableAutomaticIndentReduction": {
-				"type": "boolean",
-				"default": false,
-				"description": "Enable automatic reduction of child node indent when parent node label goes out of view"
-			  },
-			  "outline-map.follow": {
-				"type": "string",
-				"enum": [
-					"cursor",
-					"viewport"
-				],
-				"default": "cursor",
-				"description": "Scroll the outline when the cursor moves or the viewport scrolls"
-			  }
 			}
-		  }
+		}
 	},
 	"scripts": {
 		"test": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. --extensionTestsPath=out/test/suite/index.js",

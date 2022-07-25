@@ -577,10 +577,10 @@ let style = {
 	object: 'var(--vscode-symbolIcon-objectForeground)',
 	key: 'var(--vscode-symbolIcon-keyForeground)',
 	null: 'var(--vscode-symbolIcon-nullForeground)',
-	enumMember: 'var(--vscode-symbolIcon-enumeratorMemberForeground)',
+	enummember: 'var(--vscode-symbolIcon-enumeratorMemberForeground)',
 	struct: 'var(--vscode-symbolIcon-structForeground)',
 	event: 'var(--vscode-symbolIcon-eventForeground)',
 	operator: 'var(--vscode-symbolIcon-operatorForeground)',
-	typeParameter: 'var(--vscode-symbolIcon-typeParameterForeground)',
+	typeparameter: 'var(--vscode-symbolIcon-typeParameterForeground)',
 };
 

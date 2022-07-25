@@ -31,3 +31,8 @@ Update presentation
 #### Add
 - configuration: `outline-map.enableAutomaticIndentReduction`
 - configuration: `outline-map.follow`
+
+### [0.4.1] - 2022-07-26
+
+#### Add
+- configuration: `outline-map.hiddenItem`

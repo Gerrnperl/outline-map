@@ -36,3 +36,8 @@ Update presentation
 
 #### Add
 - configuration: `outline-map.hiddenItem`
+
+### [0.5.1] - 2022-07-27
+
+#### Add
+- configuration: `outline-map.maxDepth`

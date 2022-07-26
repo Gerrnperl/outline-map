@@ -35,6 +35,7 @@ interface Diagnostic {
 }
 
 let hiddenItem:string[] = [];
+let maxDepth = 0;
 
 export class SymbolNode {
 
@@ -300,6 +301,8 @@ export class OutlineProvider implements WebviewViewProvider {
 			= workspace.getConfiguration('outline-map')?.get('follow');
 		hiddenItem
 			= workspace.getConfiguration('outline-map')?.get('hiddenItem') ?? [];
+		maxDepth
+			= workspace.getConfiguration('outline-map')?.get('maxDepth') || Infinity;
 		this.#view?.webview.postMessage({
 			type: 'config',
 			config: {
@@ -367,17 +370,20 @@ class OutlineTree {
 		return result;
 	};
 
-	buildOutline(symbols: DocumentSymbol[], parent: SymbolNode) {
+	buildOutline(symbols: DocumentSymbol[], parent: SymbolNode, depth = 0) {
 		symbols.sort((symbolA, symbolB) =>{
 			return symbolA.range.start.line - symbolB.range.end.line;
 		});
+		if(depth >= maxDepth){
+			return;
+		}
 		symbols?.forEach(symbol => {
 			if(hiddenItem.includes(SymbolKind[symbol.kind].toLocaleLowerCase())){
 				return;
 			}
 			let symbolNode = new SymbolNode(symbol);
 			parent.appendChildren(symbolNode);
-			this.buildOutline(symbol.children, symbolNode);
+			this.buildOutline(symbol.children, symbolNode, depth + 1);
 		});
 	}
 

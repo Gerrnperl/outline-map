@@ -22,11 +22,6 @@ A visual, interactive outline map that combines the clarity of the outline with 
 
 ---
 
-## Set the view container position
-![Initialize settings](images/init.gif)
-
----
-
 ## Configuration
 Changes will take effect after restarting the outline view
 - `outline-map.color`: color table for specific symbols
@@ -36,6 +31,17 @@ Changes will take effect after restarting the outline view
 	- `viewport`: When scrolling, the center outline node in the visible area of the editor will be scrolled to the center of the outline view;
 	- `cursor` (default): When the cursor position changes, the outline node where the cursor is located will be scrolled to the center of the outline view;
 - `outline-map.hiddenItem`: Choose items you do not want to see in the outline.
+- `outline-map.maxDepth`: Sets the maximum depth of the outline tree
+
+---
+
+## Suggestion: move view to secondary sidebar (vscode ^1.64)
+![Initialize settings](images/init.gif)
+
+---
+
+> Outline Map relies on (vscode || other extensions) to provide symbol information
+
 ---
 
 **Enjoy!**

@@ -2,7 +2,7 @@
 	"name": "outline-map",
 	"displayName": "Outline Map",
 	"description": "A visual, interactive outline map that combines the clarity of the outline with the intuitive overview of the minimap. Alternative Minimap.",
-	"version": "0.4.1",
+	"version": "0.5.1",
 	"repository": {
 		"url": "https://github.com/Gerrnperl/outline-map.git"
 	},
@@ -229,6 +229,11 @@
 							"typeparameter"
 						]
 					}
+				},
+				"outline-map.maxDepth": {
+					"type": "number",
+					"default": 0,
+					"description": "Maximum depth of the outline, if set to 0, there is no limit"
 				}
 			}
 		}

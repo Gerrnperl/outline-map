@@ -34,6 +34,14 @@ let outlineTree;
 /** @type {Map<Range, OutlineNode>} */
 let indexes;
 
+window.addEventListener('resize', ()=>{
+	let labelHeight = outlineTree?.children[0].element.label.getBoundingClientRect().height;
+
+	if(labelHeight){
+		outlineHTML.setAttribute('style', (outlineHTML.getAttribute('style') ?? '') + `--label-height: ${labelHeight}px;`);
+	}
+});
+
 window.addEventListener('message', event => {
 	let message = event.data;
 
@@ -53,6 +61,7 @@ window.addEventListener('message', event => {
 		// console.log(message.range);
 		updateVisibleRange(message.range);
 		hideOverflow();
+		scroll({top: 0, left: -1000, behavior: 'smooth'});
 		break;
 	case 'focus':
 		updateFocusPosition(message.position);
@@ -68,7 +77,6 @@ window.addEventListener('message', event => {
 });
 
 function configStyle(userStyle){
-	console.log(userStyle);
 	for (const key in userStyle){
 		if (Object.hasOwnProperty.call(userStyle, key)){
 			const color = userStyle[key];
@@ -76,7 +84,8 @@ function configStyle(userStyle){
 			style[key] = color;
 		}
 	}
-	console.log(style);
+	outlineHTML.setAttribute('style', (outlineHTML.getAttribute('style') ?? '') + `--visible-range-bgcolor: ${style.visibleRange};`);
+	outlineHTML.setAttribute('style', (outlineHTML.getAttribute('style') ?? '') + `--focus-bgcolor: ${style.focusingItem};`);
 }
 
 function config(userConfig){
@@ -135,7 +144,7 @@ function updateVisibleRange(range){
 		let half = Math.floor(inRange.length / 2);
 		let center = inRange[half];
 
-		center.element.label.scrollIntoView({behavior: 'smooth', block: 'center'});
+		center?.element.label.scrollIntoView({behavior: 'smooth', block: 'center'});
 	}
 }
 
@@ -358,6 +367,9 @@ function buildOutline(outline, parent){
 			node.element.root.classList.add('outline-root');
 			root.appendChild(node.element.root);
 		}
+		let labelHeight = outlineTree.children[0].element.label.getBoundingClientRect().height;
+
+		outlineHTML.setAttribute('style', (outlineHTML.getAttribute('style') ?? '') + `--label-height: ${labelHeight}px;`);
 		return outlineTree;
 	}
 	let outlineNode = new OutlineNode(outline);
@@ -557,6 +569,8 @@ class OutlineElement{
 }
 
 let style = {
+	visibleRange: 'var(--vscode-scrollbarSlider-background)',
+	focusingItem: 'var(--vscode-editorCursor-foreground)',
 	module: 'var(--vscode-symbolIcon-moduleForeground)',
 	namespace: 'var(--vscode-symbolIcon-namespaceForeground)',
 	package: 'var(--vscode-symbolIcon-packageForeground)',

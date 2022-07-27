@@ -2,7 +2,7 @@
 	"name": "outline-map",
 	"displayName": "Outline Map",
 	"description": "A visual, interactive outline map that combines the clarity of the outline with the intuitive overview of the minimap. Alternative Minimap.",
-	"version": "0.5.1",
+	"version": "0.5.2",
 	"repository": {
 		"url": "https://github.com/Gerrnperl/outline-map.git"
 	},
@@ -58,8 +58,18 @@
 				"outline-map.color": {
 					"type": "object",
 					"default": {},
-					"description": "color table for specific symbols.",
+					"description": "override colors of specific symbols and some ui components.",
 					"properties": {
+						"visibleRange": {
+							"type": "string",
+							"default": "",
+							"description": "the background color of the visible range."
+						},
+						"focusingItem": {
+							"type": "string",
+							"default": "",
+							"description": "the background color of the focusing item."
+						},
 						"module": {
 							"type": "string",
 							"default": "",

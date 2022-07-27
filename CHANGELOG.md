@@ -41,3 +41,11 @@ Update presentation
 
 #### Add
 - configuration: `outline-map.maxDepth`
+
+### [0.5.2] - 2022-07-27
+
+#### Add
+- two items in configuration: `outline-map.color` : `visibleRange` and `focusingItem` <br/> Now you can specify the background-color of the outline node when it is in the visible range or the outline node is focused.
+
+#### Fix
+- background overlap issue

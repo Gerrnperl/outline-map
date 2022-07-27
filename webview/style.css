@@ -51,9 +51,9 @@ div#outline-root {
 	content: "";
 	position: absolute;
 	width: 100%;
-	height: 21.6px;
+	height: calc(var(--label-height) + 4px);
 	left: 5px;
-	background-color: var(--vscode-scrollbarSlider-background);
+	background-color: var(--visible-range-bgcolor);
 	z-index: -1;
 }
 /* --vscode-list-activeSelectionBackground */
@@ -63,9 +63,9 @@ div#outline-root {
 	content: "";
 	position: absolute;
 	width: 100%;
-	height: 21.6px;
+	height: calc(var(--label-height) + 4px);
 	left: 5px;
-	background: var(--vscode-editorCursor-foreground);
+	background: var(--focus-bgcolor);
 	opacity: 0.3;
 	z-index: -1;
 }

@@ -35,7 +35,7 @@ Changes will take effect after restarting the outline view
 
 ---
 
-## Suggestion: move view to secondary sidebar (vscode ^1.64)
+## Suggestion: move view to secondary side panel (vscode ^1.64)
 ![Initialize settings](images/init.gif)
 
 ---

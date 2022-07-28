@@ -194,7 +194,12 @@ export class OutlineProvider implements WebviewViewProvider {
 
 	}
 
-	#rebuild(textDocument: TextDocument) {
+	#rebuild(textDocument: TextDocument, tried: number = 0) {
+		// console.log(tried);
+		
+		if(tried > 10){
+			return;
+		}
 		let outlineTree = new OutlineTree(textDocument);
 		outlineTree.init().then((outlineRoot) => {
 			this.outlineRoot = outlineRoot;
@@ -204,6 +209,10 @@ export class OutlineProvider implements WebviewViewProvider {
 				outline: outlineRoot,
 			});
 
+		}).catch(()=>{
+			setTimeout(()=>{
+				this.#rebuild(textDocument, tried + 1);
+			}, 200);
 		});
 	}
 
@@ -335,7 +344,6 @@ class OutlineTree {
 		return new Promise((resolve, reject) => {
 			this.getSymbols(this.textDocument).then(
 				symbolInformation => {
-					// console.log(symbolInformation);
 					if(!symbolInformation){
 						reject('Failed to get symbols');
 						return;
@@ -365,7 +373,7 @@ class OutlineTree {
 			textDocument.uri
 		);
 
-		// console.log(result);
+		// console.log('SYMBOLS:', result);
 		
 		return result;
 	};

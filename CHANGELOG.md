@@ -49,3 +49,9 @@ Update presentation
 
 #### Fix
 - background overlap issue
+
+### [0.5.3] - 2022-07-28
+
+#### Fix
+- scrolling issue #7
+- The issue that outline probability does not update when switching documents

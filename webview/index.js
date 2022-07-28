@@ -58,10 +58,8 @@ window.addEventListener('message', event => {
 		buildOutline(message.outline);
 		break;
 	case 'scroll':
-		// console.log(message.range);
 		updateVisibleRange(message.range);
 		hideOverflow();
-		scroll({top: 0, left: -1000, behavior: 'smooth'});
 		break;
 	case 'focus':
 		updateFocusPosition(message.position);
@@ -354,7 +352,7 @@ function buildOutline(outline, parent){
 			},
 			children: [],
 		};
-		console.log(outlineTree, indexes);
+		// console.log(outlineTree, indexes);
 
 		outline.children.sort((symbolA, symbolB) =>{
 			return symbolA.range.start.line - symbolB.range.end.line;

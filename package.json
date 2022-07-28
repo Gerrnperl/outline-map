@@ -2,7 +2,7 @@
 	"name": "outline-map",
 	"displayName": "Outline Map",
 	"description": "A visual, interactive outline map that combines the clarity of the outline with the intuitive overview of the minimap. Alternative Minimap.",
-	"version": "0.5.2",
+	"version": "0.5.3",
 	"repository": {
 		"url": "https://github.com/Gerrnperl/outline-map.git"
 	},
@@ -19,7 +19,7 @@
 	"icon": "icon/outline-map.png",
 	"publisher": "Gerrnperl",
 	"galleryBanner": {
-		"color": "#005487",
+		"color": "#3f51b5",
 		"theme": "dark"
 	},
 	"license": "MIT",

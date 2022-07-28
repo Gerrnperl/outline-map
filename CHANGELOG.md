@@ -55,3 +55,12 @@ Update presentation
 #### Fix
 - scrolling issue #7
 - The issue that outline probability does not update when switching documents
+
+## [Unreleased]
+
+### [0.6.1]
+
+#### Add
+- command: `outline-map.addDepth`
+- command: `outline-map.reduceDepth`
+- two command button `<` & `>` for max depth adjustment.<br/> When you scroll / focus on the area whose depth is greater than the set depth, the outline node will not be displayed.<br/>![change depth](./images/changeDepth.gif)

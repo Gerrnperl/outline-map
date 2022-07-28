@@ -25,21 +25,28 @@ let vscode = acquireVsCodeApi();
 
 let outlineHTML = document.querySelector('#outline-root');
 
-let enableAutomaticIndentReduction = false;
-let follow = 'cursor';
+let config = {
+	enableAutomaticIndentReduction: false,
+	follow: 'cursor',
+	depth: Infinity,
+};
 
 /** @type {{element: OutlineElement, children: OutlineNode[]}} */
 let outlineTree;
 
-/** @type {Map<Range, OutlineNode>} */
+/** 
+ * all the nodes in the outline, keyed by their range
+ * @type {Map<Range, OutlineNode>} 
+ */
 let indexes;
 
 window.addEventListener('resize', ()=>{
-	let labelHeight = outlineTree?.children[0].element.label.getBoundingClientRect().height;
-
-	if(labelHeight){
+	setTimeout(()=>{
+		// async to make sure the DOM is rendered first.
+		let labelHeight = outlineTree.children[0].element.label.getBoundingClientRect().height;
+		console.log(labelHeight);
 		outlineHTML.setAttribute('style', (outlineHTML.getAttribute('style') ?? '') + `--label-height: ${labelHeight}px;`);
-	}
+	}, 100);
 });
 
 window.addEventListener('message', event => {
@@ -51,7 +58,9 @@ window.addEventListener('message', event => {
 		configStyle(message.style);
 		break;
 	case 'config':
-		config(message.config);
+		config.enableAutomaticIndentReduction = message.config.enableAutomaticIndentReduction;
+		config.follow = message.config.follow;
+		config.depth = message.config.defaultMaxDepth;
 		break;
 	case 'build':
 		outlineHTML.innerHTML = '';
@@ -71,6 +80,13 @@ window.addEventListener('message', event => {
 	case 'diagnostics':
 		updateDiagnostics(message.diagnostics);
 		break;
+	case 'changeDepth':
+		config.depth += message.deltaDepth;
+		config.depth < 1 && (config.depth = 1);
+		indexes?.forEach(node=>{
+			node.open = node.depth <= config.depth;
+		});
+		break;
 	}
 });
 
@@ -86,13 +102,8 @@ function configStyle(userStyle){
 	outlineHTML.setAttribute('style', (outlineHTML.getAttribute('style') ?? '') + `--focus-bgcolor: ${style.focusingItem};`);
 }
 
-function config(userConfig){
-	enableAutomaticIndentReduction = userConfig.enableAutomaticIndentReduction;
-	follow = userConfig.follow;
-}
-
 function hideOverflow(){
-	if(!enableAutomaticIndentReduction){
+	if(!config.enableAutomaticIndentReduction){
 		return;
 	}
 	indexes?.forEach((node, itemRange)=>{
@@ -119,7 +130,9 @@ function updateVisibleRange(range){
 	let inRange = [];
 
 	indexes?.forEach((node, itemRange)=>{
-		node.open = itemRange.end.line > range.start.line && itemRange.start.line < range.end.line;
+		let visible = itemRange.end.line > range.start.line && itemRange.start.line < range.end.line;
+
+		node.open = visible;
 		node.highlight = itemRange.start.line > range.start.line && itemRange.start.line < range.end.line;
 		if(!node.open && node.focus){
 			bubblePropertyUpward(node, 'focus');
@@ -133,16 +146,17 @@ function updateVisibleRange(range){
 		if(node.open && node.diagnostics.length){
 			clearPropertyUpward(node, 'diagnostics');
 		}
-		if(follow === 'viewport' && node.open){
+		if(config.follow === 'viewport' && visible && node.parent.open){
 			inRange.push(node);
 		}
 	});
 
-	if(follow === 'viewport'){
+	if(config.follow === 'viewport'){
 		let half = Math.floor(inRange.length / 2);
-		let center = inRange[half];
 
-		center?.element.label.scrollIntoView({behavior: 'smooth', block: 'center'});
+		if(inRange[half]){
+			scrollOutline(inRange[half]);
+		}
 	}
 }
 
@@ -169,7 +183,24 @@ function updateFocusPosition(position){
 	});
 
 	closestNode.focus = true;
-	closestNode.element.label.scrollIntoView({behavior: 'smooth', block: 'center'});
+	scrollOutline(closestNode);
+}
+
+/**
+ * 
+ * @param {OutlineNode} reference 
+ */
+function scrollOutline(reference){
+	let visibleNode = reference;
+
+	while (visibleNode.parent && !visibleNode.parent.open){
+		visibleNode = visibleNode.parent;
+	}
+	scrollTo({
+		top: visibleNode?.element.label.offsetTop - window.innerHeight / 2,
+		left: 0,
+		behavior: 'smooth',
+	});
 }
 
 /**
@@ -333,9 +364,10 @@ function clearPropertyUpward(node, property, defaultValue){
  * 
  * @param {SymbolNode} outline 
  * @param {?OutlineNode} parent
+ * @param {?number} depth
  * @return {OutlineNode}
  */
-function buildOutline(outline, parent){
+function buildOutline(outline, parent, depth = 0){
 	if (!parent && outline.type === 'File' && outline.name === '__root__'){
 		// Create the root
 		indexes = new Map();
@@ -350,24 +382,27 @@ function buildOutline(outline, parent){
 				root: root,
 				childrenContainer: root,
 			},
+			open: true,
 			children: [],
 		};
-		// console.log(outlineTree, indexes);
 
 		outline.children.sort((symbolA, symbolB) =>{
 			return symbolA.range.start.line - symbolB.range.end.line;
 		});
 
 		for (const child of outline.children){
-			let node = buildOutline(child, outlineTree);
+			let node = buildOutline(child, outlineTree, depth + 1);
 
 			outlineTree.children.push(node);
 			node.element.root.classList.add('outline-root');
 			root.appendChild(node.element.root);
 		}
-		let labelHeight = outlineTree.children[0].element.label.getBoundingClientRect().height;
+		setTimeout(()=>{
+			// async to make sure the DOM is rendered first.
+			let labelHeight = outlineTree.children[0].element.label.getBoundingClientRect().height;
 
-		outlineHTML.setAttribute('style', (outlineHTML.getAttribute('style') ?? '') + `--label-height: ${labelHeight}px;`);
+			outlineHTML.setAttribute('style', (outlineHTML.getAttribute('style') ?? '') + `--label-height: ${labelHeight}px;`);
+		}, 100);
 		return outlineTree;
 	}
 	let outlineNode = new OutlineNode(outline);
@@ -376,6 +411,7 @@ function buildOutline(outline, parent){
 
 	// set the reverse pointer point to parent for retrospective
 	outlineNode.parent = parent;
+	outlineNode.depth = depth;
 	if (outline.children.length > 0){
 		// Is not a leaf node
 		outlineNode.children = outline.children;
@@ -396,6 +432,7 @@ class OutlineNode{
 	/** @type {OutlineNode[]} */	_children = [];
 	/** @type {OutlineNode} */	parent = [];
 	/** @type {Range} */		_range;
+	/** @type {number} */		_depth = 0;
 	/**
 	 * 
 	 * @param {SymbolNode} outline 
@@ -406,7 +443,7 @@ class OutlineNode{
 		this.highlight = false;
 		this.focus = false;
 		this.open = outline.open;
-		this.display = outline.display;
+		this.visibility = outline.display;
 		this.range = outline.range;
 		this.element.label.addEventListener('click', () => {
 			vscode.postMessage({
@@ -446,8 +483,9 @@ class OutlineNode{
 		return this._open;
 	}
 	set open(open){
-		this._open = open;
-		this.element.root.setAttribute('open', open.toString());
+		this._open = open && this.depth < config.depth;
+		// console.log(this._open, this.depth);
+		this.element.root.setAttribute('open', this._open.toString());
 	}
 	get range(){
 		return this._range;
@@ -504,6 +542,14 @@ class OutlineNode{
 		this._children = [];
 		this.appendChildren(...children);
 	}
+	get depth(){
+		return this._depth;
+	}
+	set depth(depth){
+		this._depth = depth;
+		// console.log(depth, config.depth);
+		this.open = depth < config.depth;
+	}
 	/**
 	 * 
 	 * @param  {...SymbolNode} children 
@@ -513,7 +559,7 @@ class OutlineNode{
 			return symbolA.range.start.line - symbolB.range.start.line;
 		});
 		for (const child of children){
-			let childNode = buildOutline(child, this);
+			let childNode = buildOutline(child, this, this.depth + 1);
 
 			this._children.push(childNode);
 			this.element.childrenContainer.appendChild(childNode.element.root);

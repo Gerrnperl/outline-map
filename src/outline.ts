@@ -35,7 +35,6 @@ interface Diagnostic {
 }
 
 let hiddenItem:string[] = [];
-let maxDepth = 0;
 
 export class SymbolNode {
 
@@ -84,7 +83,7 @@ export class OutlineProvider implements WebviewViewProvider {
 
 	outlineRoot: SymbolNode | undefined;
 
-	#view: WebviewView | undefined;
+	view: WebviewView | undefined;
 
 	#extensionUri: Uri;
 
@@ -116,7 +115,7 @@ export class OutlineProvider implements WebviewViewProvider {
 			}
 		})
 		
-		this.#view?.webview.postMessage({
+		this.view?.webview.postMessage({
 			type: 'diagnostics',
 			diagnostics: fmtDiagnostics,
 		})
@@ -137,7 +136,7 @@ export class OutlineProvider implements WebviewViewProvider {
 		// scroll
 		window.onDidChangeTextEditorVisibleRanges(event => {
 			let range = event.visibleRanges[0];
-			range && this.#view?.webview.postMessage({
+			range && this.view?.webview.postMessage({
 				type: 'scroll',
 				range: {
 					start: range.start,
@@ -150,7 +149,7 @@ export class OutlineProvider implements WebviewViewProvider {
 		window.onDidChangeTextEditorSelection(event=>{
 			if(event.selections[0].start.line !== this.lastSelectedLine){
 				this.lastSelectedLine = event.selections[0].start.line;
-				this.#view?.webview.postMessage({
+				this.view?.webview.postMessage({
 					type: 'focus',
 					position: event.selections[0].start,
 				})
@@ -160,7 +159,7 @@ export class OutlineProvider implements WebviewViewProvider {
 		workspace.onDidChangeTextDocument(event => {
 			if(event.contentChanges[0] && event.contentChanges[0].range.start.line !== this.lastSelectedLine){
 				this.lastSelectedLine = event.contentChanges[0].range.start.line;
-				this.#view?.webview.postMessage({
+				this.view?.webview.postMessage({
 					type: 'focus',
 					position: event.contentChanges[0].range.start,
 				})
@@ -176,7 +175,7 @@ export class OutlineProvider implements WebviewViewProvider {
 				let changes = diff(this.outlineRoot, newOutlineRoot);
 				if (changes) {
 					this.outlineRoot = newOutlineRoot;
-					this.#view?.webview.postMessage({
+					this.view?.webview.postMessage({
 						type: 'update',
 						changes: changes,
 					});
@@ -204,7 +203,7 @@ export class OutlineProvider implements WebviewViewProvider {
 		outlineTree.init().then((outlineRoot) => {
 			this.outlineRoot = outlineRoot;
 
-			this.#view?.webview.postMessage({
+			this.view?.webview.postMessage({
 				type: 'build',
 				outline: outlineRoot,
 			});
@@ -225,7 +224,7 @@ export class OutlineProvider implements WebviewViewProvider {
 			"@vscode",
 			"webview-ui-toolkit",
 			"dist",
-			"toolkit.js", // A toolkit.min.js file is also available
+			"toolkit.min.js", // A toolkit.min.js file is also available
 		));
 
 
@@ -256,7 +255,7 @@ export class OutlineProvider implements WebviewViewProvider {
 		token: CancellationToken
 	): void | Thenable<void> {
 
-		this.#view = webviewView;
+		this.view = webviewView;
 
 		webviewView.webview.options = {
 			// Allow scripts in the webview
@@ -276,8 +275,8 @@ export class OutlineProvider implements WebviewViewProvider {
 			}
 		});
 
-		this.#view.onDidChangeVisibility(()=>{
-			if(this.#view?.visible && window.activeTextEditor){
+		this.view.onDidChangeVisibility(()=>{
+			if(this.view?.visible && window.activeTextEditor){
 				this.loadStyle();
 				this.loadConfig();
 				this.#rebuild(window.activeTextEditor.document);
@@ -296,7 +295,7 @@ export class OutlineProvider implements WebviewViewProvider {
 	loadStyle(){
 		let colors = workspace.getConfiguration('outline-map')?.get('color');
 		if(colors){
-			this.#view?.webview.postMessage({
+			this.view?.webview.postMessage({
 				type: 'style',
 				style: colors,
 			});
@@ -310,13 +309,16 @@ export class OutlineProvider implements WebviewViewProvider {
 			= workspace.getConfiguration('outline-map')?.get('follow');
 		hiddenItem
 			= workspace.getConfiguration('outline-map')?.get('hiddenItem') ?? [];
-		maxDepth
-			= workspace.getConfiguration('outline-map')?.get('maxDepth') || Infinity;
-		this.#view?.webview.postMessage({
+		let defaultMaxDepth
+			= workspace.getConfiguration('outline-map')?.get('defaultMaxDepth') 
+			|| workspace.getConfiguration('outline-map')?.get('maxDepth')
+			|| Infinity;
+		this.view?.webview.postMessage({
 			type: 'config',
 			config: {
 				enableAutomaticIndentReduction,
 				follow,
+				defaultMaxDepth,
 			},
 		});
 		
@@ -373,25 +375,22 @@ class OutlineTree {
 			textDocument.uri
 		);
 
-		// console.log('SYMBOLS:', result);
+		console.log('SYMBOLS:', result);
 		
 		return result;
 	};
 
-	buildOutline(symbols: DocumentSymbol[], parent: SymbolNode, depth = 0) {
+	buildOutline(symbols: DocumentSymbol[], parent: SymbolNode) {
 		symbols.sort((symbolA, symbolB) =>{
 			return symbolA.range.start.line - symbolB.range.end.line;
 		});
-		if(depth >= maxDepth){
-			return;
-		}
 		symbols?.forEach(symbol => {
 			if(hiddenItem.includes(SymbolKind[symbol.kind].toLocaleLowerCase())){
 				return;
 			}
 			let symbolNode = new SymbolNode(symbol);
 			parent.appendChildren(symbolNode);
-			this.buildOutline(symbol.children, symbolNode, depth + 1);
+			this.buildOutline(symbol.children, symbolNode);
 		});
 	}
 

@@ -1,119 +1,117 @@
 body {
+	overflow-x: hidden;
 	padding-left: 5px;
 	width: max-content;
+	width: 100%;
 	background: var(--vscode-editor-background);
+	text-overflow: ellipsis;
+	white-space: nowrap;
 	font-family: var(--font-family);
-    width: 100%;
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
+
 div#outline-root {
-    padding-left: 10px;
+    padding-left: 15px;
+    width: 100%;
+    position: absolute;
 }
+
 .outline-label {
-	font-size: 0.8rem;
 	display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin: 4px;
+	margin: 4px;
+	font-size: .8rem;
 	cursor: pointer;
+	flex-direction: row;
+	align-items: center;
 }
 
-
-.outline-label span{
+.outline-label span {
 	color: var(--color);
 }
 
 .outline-label span.symbol-name {
-    margin-left: 4px;
+	margin-left: 4px;
 }
 
 .outline-children {
 	margin-left: 1.5rem;
-    padding-left: 1ch;
-    border-left: 1px dashed var(--color);
-    opacity: 0;
-    pointer-events: none;
-    transition: none;
-    height: 0;
+	padding-left: 1ch;
+	height: 0;
+	border-left: 1px dashed var(--color);
+	opacity: 0;
+	transition: none;
+	pointer-events: none;
 }
 
-:is(.outline-node:hover, .outline-node[open="true"]) > .outline-children {
+:is(.outline-node:hover,.outline-node[open=true])>.outline-children {
+	margin-left: .75rem;
 	height: auto;
-    opacity: 1;
-    pointer-events: all;
-    transform: none;
-    transition: margin 0.3s ease, opacity 0.2s ease;
-    margin-left: 0.75rem;
+	opacity: 1;
+	transition: margin .3s ease,opacity .2s ease;
+	transform: none;
+	pointer-events: all;
 }
 
-.outline-node[highlight="true"]>.outline-label::after {
-	content: "";
+.outline-node[highlight=true]>.outline-label:after {
 	position: absolute;
+	left: 5px;
+	z-index: -1;
 	width: 100%;
 	height: calc(var(--label-height) + 4px);
-	left: 5px;
 	background-color: var(--visible-range-bgcolor);
-	z-index: -1;
-}
-/* --vscode-list-activeSelectionBackground */
-
-.outline-node[focus="true"]>.outline-label::after,
-.outline-label:hover::after{
 	content: "";
+}
+
+.outline-node>.outline-label:hover:after,
+.outline-node[focus=true]>.outline-label:after {
 	position: absolute;
+	left: 5px;
+	z-index: -1;
 	width: 100%;
 	height: calc(var(--label-height) + 4px);
-	left: 5px;
 	background: var(--focus-bgcolor);
-	opacity: 0.3;
-	z-index: -1;
+	content: "";
+	opacity: .3;
 }
 
-.outline-label[diagnostic-error]::before,
-.outline-label[diagnostic-warning]::before,
-.outline-label[diagnostic-information]::before,
-.outline-label[diagnostic-hint]::before {
-    box-sizing: border-box;
-    width: 10px;
-    height: 10px;
-    position: absolute;
-    left: 7px;
-    font-size: 8px;
-    font-weight: 900;
-    text-align: center;
-    line-height: 8px;
-    border: 1px solid;
+.outline-label[diagnostic-error]:before,.outline-label[diagnostic-hint]:before,.outline-label[diagnostic-information]:before,.outline-label[diagnostic-warning]:before {
+	position: absolute;
+	left: 7px;
+	box-sizing: border-box;
+	width: 10px;
+	height: 10px;
+	border: 1px solid;
+	text-align: center;
+	font-weight: 900;
+	font-size: 8px;
+	line-height: 8px;
 }
 
-.outline-label[diagnostic-hint]::before {
-    content: attr(diagnostic-hint);
-    color: var(--vscode-editorHint-foreground);
-    border-right: 1px solid var(--vscode-editorHint-foreground);
+.outline-label[diagnostic-hint]:before {
+	border-right: 1px solid var(--vscode-editorHint-foreground);
+	color: var(--vscode-editorHint-foreground);
+	content: attr(diagnostic-hint);
 }
 
-.outline-label[diagnostic-information]::before {
-    content: attr(diagnostic-information);
-    color: var(--vscode-editorInfo-foreground);
-    border-bottom: 1px solid var(--vscode-editorInfo-foreground);
+.outline-label[diagnostic-information]:before {
+	border-bottom: 1px solid var(--vscode-editorInfo-foreground);
+	color: var(--vscode-editorInfo-foreground);
+	content: attr(diagnostic-information);
 }
 
-.outline-label[diagnostic-warning]::before {
-    content: attr(diagnostic-warning);
-    color: var(--vscode-editorWarning-foreground);
-    border-top: 1px solid var(--vscode-editorWarning-foreground);
+.outline-label[diagnostic-warning]:before {
+	border-top: 1px solid var(--vscode-editorWarning-foreground);
+	color: var(--vscode-editorWarning-foreground);
+	content: attr(diagnostic-warning);
 }
 
-.outline-label[diagnostic-error]::before {
-    content: attr(diagnostic-error);
-    color: var(--vscode-editorError-foreground);
-    border-left: 1px solid var(--vscode-editorError-foreground);
-
+.outline-label[diagnostic-error]:before {
+	border-left: 1px solid var(--vscode-editorError-foreground);
+	color: var(--vscode-editorError-foreground);
+	content: attr(diagnostic-error);
 }
 
-.outline-children[hide-self='true']:not(.outline-root>.outline-children) {
-    padding: 0;
-    margin-left: 0 !important;
-    border-left: 1px dashed var(--vscode-tree-indentGuidesStroke);
+.outline-children[hide-self=true]:not(.outline-root>.outline-children) {
+	margin-left: 0!important;
+	padding: 0;
+	border-left: 1px dashed var(--vscode-tree-indentGuidesStroke);
 }

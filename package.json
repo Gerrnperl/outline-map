@@ -243,9 +243,44 @@
 				"outline-map.maxDepth": {
 					"type": "number",
 					"default": 0,
+					"description": "Desecrated, use `defaultMaxDepth` instead"
+				},
+				"outline-map.defaultMaxDepth": {
+					"type": "number",
+					"default": 0,
 					"description": "Maximum depth of the outline, if set to 0, there is no limit"
 				}
 			}
+		},
+		"commands": [
+			{
+				"command": "outline-map.reduceDepth",
+				"title": "Depth-",
+				"icon": "$(chevron-left)",
+				"shortTitle": "Reduce depth",
+				"category": "outline-map"
+			},
+			{
+				"command": "outline-map.addDepth",
+				"title": "Depth+",
+				"icon": "$(chevron-right)",
+				"shortTitle": "Add depth",
+				"category": "outline-map"
+			}
+		],
+		"menus": {
+			"view/title": [
+				{
+					"command": "outline-map.addDepth",
+					"when": "view == outline-map-view",
+					"group": "navigation"
+				},
+				{
+					"command": "outline-map.reduceDepth",
+					"when": "view == outline-map-view",
+					"group": "navigation"
+				}
+			]
 		}
 	},
 	"scripts": {

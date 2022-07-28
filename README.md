@@ -31,7 +31,14 @@ Changes will take effect after restarting the outline view
 	- `viewport`: When scrolling, the center outline node in the visible area of the editor will be scrolled to the center of the outline view;
 	- `cursor` (default): When the cursor position changes, the outline node where the cursor is located will be scrolled to the center of the outline view;
 - `outline-map.hiddenItem`: Choose items you do not want to see in the outline.
-- `outline-map.maxDepth`: Sets the maximum depth of the outline tree
+- ~~`outline-map.maxDepth`: Sets the maximum depth of the outline tree~~
+- `outline-map.defaultMaxDepth`: Sets the default maximum depth of the outline tree.<br/>Set this to non-zero to enable the depth button `>` & `<`.
+
+---
+
+## Commands
+- `outline-map.addDepth`: Add a level to the outline tree. Only works when `outline-map.defaultMaxDepth` is set to non-zero.
+- `outline-map.reduceDepth`: Reduce a level to the outline tree. Only works when `outline-map.defaultMaxDepth` is set to non-zero.
 
 ---
 

@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 
 import {OutlineProvider} from './outline';
 
-import { addDepth, reduceDepth } from './commands';
+import { addDepth, reduceDepth, pin, unpin } from './commands';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -30,9 +30,10 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.registerWebviewViewProvider(outlineProvider.viewType, outlineProvider),
 		vscode.commands.registerCommand('outline-map.reduceDepth', reduceDepth.bind(null, outlineProvider)),
 		vscode.commands.registerCommand('outline-map.addDepth', addDepth.bind(null, outlineProvider)),
+		vscode.commands.registerCommand('outline-map.pin', pin.bind(null, outlineProvider)),
+		vscode.commands.registerCommand('outline-map.unpin', unpin.bind(null, outlineProvider)),
 	);
 }
-console.log('Congratulations, your extension "outline-map" is now active!');
 
 // this method is called when your extension is deactivated
 export function deactivate() {}

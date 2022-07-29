@@ -44,7 +44,7 @@
 
 ---
 
-## 建议: 将视图一直辅助侧栏 (vscode ^1.64)
+## 建议: 将视图移至辅助侧栏 (vscode ^1.64)
 ![Initialize settings](images/init.gif)
 
 ---

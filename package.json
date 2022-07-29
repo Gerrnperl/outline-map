@@ -266,18 +266,42 @@
 				"icon": "$(chevron-right)",
 				"shortTitle": "Add depth",
 				"category": "outline-map"
+			},
+			{
+				"command": "outline-map.pin",
+				"title": "Pin",
+				"icon": "$(pin)",
+				"shortTitle": "Pin",
+				"category": "outline-map"
+			},
+			{
+				"command": "outline-map.unpin",
+				"title": "Unpin",
+				"icon": "$(pinned)",
+				"shortTitle": "Unpin",
+				"category": "outline-map"
 			}
 		],
 		"menus": {
 			"view/title": [
 				{
+					"command": "outline-map.pin",
+					"when": "view == outline-map-view && !outline-map.pinned",
+					"group": "navigation"
+				},
+				{
+					"command": "outline-map.unpin",
+					"when": "view == outline-map-view && outline-map.pinned",
+					"group": "navigation"
+				},
+				{
 					"command": "outline-map.addDepth",
-					"when": "view == outline-map-view",
+					"when": "view == outline-map-view && outline-map.defaultMaxDepthSet",
 					"group": "navigation"
 				},
 				{
 					"command": "outline-map.reduceDepth",
-					"when": "view == outline-map-view",
+					"when": "view == outline-map-view && outline-map.defaultMaxDepthSet",
 					"group": "navigation"
 				}
 			]

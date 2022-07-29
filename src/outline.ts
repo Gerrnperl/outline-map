@@ -375,7 +375,7 @@ class OutlineTree {
 			textDocument.uri
 		);
 
-		console.log('SYMBOLS:', result);
+		// console.log('SYMBOLS:', result);
 		
 		return result;
 	};

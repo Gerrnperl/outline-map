@@ -29,6 +29,7 @@ let config = {
 	enableAutomaticIndentReduction: false,
 	follow: 'cursor',
 	depth: Infinity,
+	pinned: false,
 };
 
 /** @type {{element: OutlineElement, children: OutlineNode[]}} */
@@ -87,6 +88,9 @@ window.addEventListener('message', event => {
 			node.open = node.depth <= config.depth;
 		});
 		break;
+	case 'pin':
+		config.pinned = message.pinned;
+		break;
 	}
 });
 
@@ -129,6 +133,9 @@ function hideOverflow(){
 function updateVisibleRange(range){
 	let inRange = [];
 
+	if(config.pinned){
+		return;
+	}
 	indexes?.forEach((node, itemRange)=>{
 		let visible = itemRange.end.line > range.start.line && itemRange.start.line < range.end.line;
 
@@ -165,6 +172,9 @@ function updateVisibleRange(range){
  * @param {Position} position 
  */
 function updateFocusPosition(position){
+	if(config.pinned){
+		return;
+	}
 	if(!indexes){
 		setTimeout(updateFocusPosition, 100, position);
 		return;
@@ -191,6 +201,9 @@ function updateFocusPosition(position){
  * @param {OutlineNode} reference 
  */
 function scrollOutline(reference){
+	if(config.pin){
+		return;
+	}
 	let visibleNode = reference;
 
 	while (visibleNode.parent && !visibleNode.parent.open){
@@ -208,6 +221,9 @@ function scrollOutline(reference){
  * @param {Change[]} changes 
  */
 function updateOutline(changes){
+	if(config.pinned){
+		return;
+	}
 	changes.forEach(change=>{
 	// Move to the changed node
 		/** @type {OutlineNode} */
@@ -269,6 +285,9 @@ function updateOutline(changes){
  * @param {Diagnostic[]} diagnostics 
  */
 function updateDiagnostics(diagnostics){
+	if(config.pinned){
+		return;
+	}
 	if(!indexes){
 		setTimeout(updateDiagnostics, 300, diagnostics);
 		return;

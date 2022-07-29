@@ -61,6 +61,7 @@ Update presentation
 ### [0.6.1]
 
 #### Add
-- command: `outline-map.addDepth`
-- command: `outline-map.reduceDepth`
-- two command button `<` & `>` for max depth adjustment.<br/> When you scroll / focus on the area whose depth is greater than the set depth, the outline node will not be displayed.<br/>![change depth](./images/changeDepth.gif)
+- command: `outline-map.addDepth` & `outline-map.reduceDepth`
+- view action: `<` & `>` for max depth adjustment.<br/> When you scroll / focus on the area whose depth is greater than the set depth, the outline node will not be displayed.<br/>![change depth](./images/changeDepth.gif)
+- command: `outline-map.pin` & `outline-map.unpin`
+- view action: `📌`

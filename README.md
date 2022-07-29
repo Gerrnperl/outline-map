@@ -37,8 +37,8 @@ Changes will take effect after restarting the outline view
 ---
 
 ## Commands
-- `outline-map.addDepth`: Add a level to the outline tree. Only works when `outline-map.defaultMaxDepth` is set to non-zero.
-- `outline-map.reduceDepth`: Reduce a level to the outline tree. Only works when `outline-map.defaultMaxDepth` is set to non-zero.
+- `outline-map.addDepth` | `outline-map.reduceDepth`: Add / Reduce a level to the outline tree. Only works when `outline-map.defaultMaxDepth` is set to non-zero.
+- `outline-map.pin` | `outline-map.unpin`: Pin / Unpin the outline tree.
 
 ---
 

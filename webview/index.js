@@ -42,6 +42,8 @@ let outlineTree;
  */
 let indexes;
 
+let activeToast;
+
 window.addEventListener('resize', ()=>{
 	setTimeout(()=>{
 		// async to make sure the DOM is rendered first.
@@ -86,6 +88,8 @@ window.addEventListener('message', event => {
 	case 'changeDepth':
 		config.depth += message.deltaDepth;
 		config.depth < 1 && (config.depth = 1);
+		activeToast && activeToast.remove();
+		activeToast = new Toast(`Depth: ${config.depth}`, 2000);
 		indexes?.forEach(node=>{
 			node.open = node.depth <= config.depth;
 		});
@@ -679,6 +683,29 @@ class OutlineElement{
 		this.label = label;
 		this.icon = icon;
 		this.name = name;
+	}
+
+}
+
+class Toast{
+
+	constructor(message, duration = 3000){
+		this.message = message;
+		this.duration = duration;
+		this.element = document.createElement('div');
+		this.element.classList.add('toast');
+		this.element.innerText = message;
+		document.body.appendChild(this.element);
+		setTimeout(() => {
+			this.remove();
+		}, duration);
+	}
+
+	remove(){
+		this.element.style.opacity = '0';
+		setTimeout(() => {
+			this.element.remove();
+		}, 300);
 	}
 
 }

@@ -5,7 +5,9 @@ body {
 	background: var(--vscode-editor-background);
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	font-family: var(--font-family)
+	font-family: var(--font-family);
+	display: flex;
+    justify-content: center;
 }
 
 div#outline-root {
@@ -24,30 +26,34 @@ div#outline-root {
 
 .outline-label span {
 	color: var(--color);
-	cursor: default;
+	cursor: default
 }
 
-.outline-label>span.codicon{
-	transition: transform .3s ease;
+.outline-label>span.codicon {
+	transition: transform .3s ease
 }
-.outline-node[open=true]>.outline-label>span.codicon{
-	transform: rotateZ(90deg);
+
+.outline-node[open=true]>.outline-label>span.codicon {
+	transform: rotate(90deg)
 }
-.outline-label>span.codicon.hover{
-	animation: rotate 1.5s linear infinite;
+
+.outline-label>span.codicon.hover {
+	animation: rotate 1.5s linear infinite
 }
+
 @keyframes rotate {
-	from {
-		transform: rotateZ(0deg);
+	0% {
+		transform: rotate(0)
 	}
+
 	to {
-		transform: rotateZ(360deg);
+		transform: rotate(1turn)
 	}
 }
 
 .outline-label span.symbol-name {
 	margin-left: 4px;
-	cursor: pointer;
+	cursor: pointer
 }
 
 .outline-children {
@@ -70,24 +76,21 @@ div#outline-root {
 }
 
 .outline-node[highlight=true]>.outline-label:after {
+	background-color: var(--visible-range-bgcolor)
+}
+
+.outline-node[focus=true]>.outline-label:after,
+.outline-node[highlight=true]>.outline-label:after {
 	position: absolute;
 	left: 5px;
 	z-index: -1;
 	width: 100%;
 	height: calc(var(--label-height) + 4px);
-	background-color: var(--visible-range-bgcolor);
 	content: ""
 }
 
-/* .outline-node>.outline-label:hover:after, */
 .outline-node[focus=true]>.outline-label:after {
-	position: absolute;
-	left: 5px;
-	z-index: -1;
-	width: 100%;
-	height: calc(var(--label-height) + 4px);
 	background: var(--focus-bgcolor);
-	content: "";
 	opacity: .3
 }
 
@@ -131,9 +134,18 @@ div#outline-root {
 	content: attr(diagnostic-error)
 }
 
-
 .outline-children[hide-self=true]:not(.outline-root>.outline-children) {
 	margin-left: 0 !important;
 	padding: 0;
 	border-left: 1px dashed var(--vscode-tree-indentGuidesStroke)
+}
+
+.toast {
+    position: fixed;
+    margin: 5px;
+    padding: 5px;
+    background: var(--badge-background);
+    opacity: 0.9;
+    border-radius: 2px;
+    transition: all ease 0.3s;
 }

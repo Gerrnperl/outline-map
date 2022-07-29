@@ -313,12 +313,15 @@ export class OutlineProvider implements WebviewViewProvider {
 			= workspace.getConfiguration('outline-map')?.get('defaultMaxDepth') 
 			|| workspace.getConfiguration('outline-map')?.get('maxDepth')
 			|| Infinity;
+		let expandOutlineMethod
+			= workspace.getConfiguration('outline-map')?.get('expandOutlineMethod');
 		this.view?.webview.postMessage({
 			type: 'config',
 			config: {
 				enableAutomaticIndentReduction,
 				follow,
 				defaultMaxDepth,
+				expandOutlineMethod,
 			},
 		});
 		

@@ -1,5 +1,7 @@
 # Outline Map
 
+EN | [中文](README_ZH_CN.md)
+
 A visual, interactive outline map that combines the clarity of the outline with the intuitive overview of the minimap. Alternative Minimap.
 
 ![version](https://vsmarketplacebadge.apphb.com/version/Gerrnperl.outline-map.svg?color=8bf7c7&style=flat-square&logo=visualstudio)
@@ -26,14 +28,15 @@ A visual, interactive outline map that combines the clarity of the outline with 
 Changes will take effect after restarting the outline view
 - `outline-map.color`: color table for specific symbols
 - `outline-map.enableAutomaticIndentReduction`: Enable automatic reduction of child node indent when parent node label goes out of view
-  -  ![no-reduceIndent](images/no-reduceIndent.png) -> ![reduceIndent](images/reduceIndent.png)
+  <br/>  ![no-reduceIndent](images/no-reduceIndent.png) -> ![reduceIndent](images/reduceIndent.png)
 - `outline-map.follow`: Scroll the outline when the cursor moves or the viewport scrolls
 	- `viewport`: When scrolling, the center outline node in the visible area of the editor will be scrolled to the center of the outline view;
 	- `cursor` (default): When the cursor position changes, the outline node where the cursor is located will be scrolled to the center of the outline view;
 - `outline-map.hiddenItem`: Choose items you do not want to see in the outline.
-- ~~`outline-map.maxDepth`: Sets the maximum depth of the outline tree~~
-- `outline-map.defaultMaxDepth`: Sets the default maximum depth of the outline tree.<br/>Set this to non-zero to enable the depth button `>` & `<`.
-
+- `outline-map.defaultMaxDepth`: Set the default maximum depth of the outline tree. Set this to non-zero to enable the depth button `>` & `<`.
+- `outline-map.expandOutlineMethod`<br/> Set how to expand outline node.
+  - `click` (default): Click the icon of a outline node to expand;<br/>![click-expand](images/click-expand.gif)
+  - `hover`: Hover a outline node to expand;
 
 ## Commands
 - `outline-map.addDepth` | `outline-map.reduceDepth`: Add / Reduce a level to the outline tree. Only works when `outline-map.defaultMaxDepth` is set to non-zero.

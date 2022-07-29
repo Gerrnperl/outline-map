@@ -68,3 +68,9 @@ Update presentation
 - minimized the size of the extension package(.vsix)
   - removed unnecessary image in the extension package(.vsix)
   - minimized the size of webview file 
+
+### [0.7.1] - 2022-07-29
+
+#### Add
+- configuration: `outline-map.expandOutlineMethod`
+- click the icon to expand the outline node ~ issue #11

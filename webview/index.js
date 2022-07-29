@@ -30,6 +30,7 @@ let config = {
 	follow: 'cursor',
 	depth: Infinity,
 	pinned: false,
+	expandOutlineMethod: 'hover',
 };
 
 /** @type {{element: OutlineElement, children: OutlineNode[]}} */
@@ -45,7 +46,7 @@ window.addEventListener('resize', ()=>{
 	setTimeout(()=>{
 		// async to make sure the DOM is rendered first.
 		let labelHeight = outlineTree.children[0].element.label.getBoundingClientRect().height;
-		console.log(labelHeight);
+
 		outlineHTML.setAttribute('style', (outlineHTML.getAttribute('style') ?? '') + `--label-height: ${labelHeight}px;`);
 	}, 100);
 });
@@ -62,6 +63,7 @@ window.addEventListener('message', event => {
 		config.enableAutomaticIndentReduction = message.config.enableAutomaticIndentReduction;
 		config.follow = message.config.follow;
 		config.depth = message.config.defaultMaxDepth;
+		config.expandOutlineMethod = message.config.expandOutlineMethod;
 		break;
 	case 'build':
 		outlineHTML.innerHTML = '';
@@ -464,17 +466,67 @@ class OutlineNode{
 		this.open = outline.open;
 		this.visibility = outline.display;
 		this.range = outline.range;
-		this.element.label.addEventListener('click', () => {
+		this.element.name.addEventListener('click', () => {
 			vscode.postMessage({
 				type: 'goto',
 				range: this.range,
 			});
 		});
-		this.element.label.addEventListener('mouseover', (event)=>{
-			event.stopPropagation();
-			if(this.element.childrenContainer && !this.element.childrenContainer.hasAttribute('hide-self')){
-				this.parent.element.childrenContainer.removeAttribute('hide-self');
+		switch (config.expandOutlineMethod){
+		case 'click':
+			this.element.icon.addEventListener('click', (event)=>{
+				if(this.children.length < 1){
+					return;
+				}
+				this._open = !this._open;
+				this.element.root.setAttribute('open', this._open.toString());
+				if(this.element.childrenContainer && !this.element.childrenContainer.hasAttribute('hide-self')){
+					this.parent.element.childrenContainer.removeAttribute('hide-self');
+				}
+			});
+			break;
+		case 'hover':
+			// eslint-disable-next-line no-case-declarations
+			let tempOpen = false;
+
+			this.element.label.addEventListener('mouseover', (event)=>{
+				if(this.open || this.children.length < 1){
+					return;
+				}
+				event.stopPropagation();
+				this._open = true;
+				tempOpen = true;
+				this.element.root.setAttribute('open', 'true');
+				if(this.element.childrenContainer && !this.element.childrenContainer.hasAttribute('hide-self')){
+					this.parent.element.childrenContainer.removeAttribute('hide-self');
+				}
+			});
+			this.element.root.addEventListener('mouseleave', (event)=>{
+				if(!tempOpen || this.children.length < 1){
+					return;
+				}
+				event.stopPropagation();
+				setTimeout(()=>{
+					this._open = false;
+					tempOpen = false;
+					this.element.root.setAttribute('open', 'false');
+				}, 300);
+			});
+			break;
+		}
+		this.element.icon.addEventListener('mouseenter', () => {
+			if(this.children.length < 1){
+				return;
 			}
+			this.element.icon.classList.add('hover');
+			this.element.icon.style.cursor = 'pointer';
+		});
+		this.element.icon.addEventListener('mouseleave', () => {
+			if(this.children.length < 1){
+				return;
+			}
+			this.element.icon.classList.remove('hover');
+			this.element.icon.style.cursor = 'default';
 		});
 	}
 	get name(){
@@ -502,8 +554,8 @@ class OutlineNode{
 		return this._open;
 	}
 	set open(open){
-		this._open = open && this.depth < config.depth;
-		// console.log(this._open, this.depth);
+		this._open = open && this.children.length > 0 && this.depth < config.depth;
+
 		this.element.root.setAttribute('open', this._open.toString());
 	}
 	get range(){

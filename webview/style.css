@@ -1,35 +1,53 @@
 body {
-	/* overflow-x: hidden; */
 	padding-left: 5px;
 	width: max-content;
 	width: 100%;
 	background: var(--vscode-editor-background);
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	font-family: var(--font-family);
+	font-family: var(--font-family)
 }
 
 div#outline-root {
-    padding-left: 15px;
-    width: 100%;
-    position: absolute;
+	position: absolute;
+	padding-left: 15px;
+	width: 100%
 }
 
 .outline-label {
 	display: flex;
 	margin: 4px;
 	font-size: .8rem;
-	cursor: pointer;
 	flex-direction: row;
-	align-items: center;
+	align-items: center
 }
 
 .outline-label span {
 	color: var(--color);
+	cursor: default;
+}
+
+.outline-label>span.codicon{
+	transition: transform .3s ease;
+}
+.outline-node[open=true]>.outline-label>span.codicon{
+	transform: rotateZ(90deg);
+}
+.outline-label>span.codicon.hover{
+	animation: rotate 1.5s linear infinite;
+}
+@keyframes rotate {
+	from {
+		transform: rotateZ(0deg);
+	}
+	to {
+		transform: rotateZ(360deg);
+	}
 }
 
 .outline-label span.symbol-name {
 	margin-left: 4px;
+	cursor: pointer;
 }
 
 .outline-children {
@@ -39,16 +57,16 @@ div#outline-root {
 	border-left: 1px dashed var(--color);
 	opacity: 0;
 	transition: none;
-	pointer-events: none;
+	pointer-events: none
 }
 
-:is(.outline-node:hover,.outline-node[open=true])>.outline-children {
+.outline-node[open=true]>.outline-children {
 	margin-left: .75rem;
 	height: auto;
 	opacity: 1;
-	transition: margin .3s ease,opacity .2s ease;
+	transition: margin .3s ease, opacity .2s ease;
 	transform: none;
-	pointer-events: all;
+	pointer-events: all
 }
 
 .outline-node[highlight=true]>.outline-label:after {
@@ -58,10 +76,10 @@ div#outline-root {
 	width: 100%;
 	height: calc(var(--label-height) + 4px);
 	background-color: var(--visible-range-bgcolor);
-	content: "";
+	content: ""
 }
 
-.outline-node>.outline-label:hover:after,
+/* .outline-node>.outline-label:hover:after, */
 .outline-node[focus=true]>.outline-label:after {
 	position: absolute;
 	left: 5px;
@@ -70,10 +88,13 @@ div#outline-root {
 	height: calc(var(--label-height) + 4px);
 	background: var(--focus-bgcolor);
 	content: "";
-	opacity: .3;
+	opacity: .3
 }
 
-.outline-label[diagnostic-error]:before,.outline-label[diagnostic-hint]:before,.outline-label[diagnostic-information]:before,.outline-label[diagnostic-warning]:before {
+.outline-label[diagnostic-error]:before,
+.outline-label[diagnostic-hint]:before,
+.outline-label[diagnostic-information]:before,
+.outline-label[diagnostic-warning]:before {
 	position: absolute;
 	left: 7px;
 	box-sizing: border-box;
@@ -83,35 +104,36 @@ div#outline-root {
 	text-align: center;
 	font-weight: 900;
 	font-size: 8px;
-	line-height: 8px;
+	line-height: 8px
 }
 
 .outline-label[diagnostic-hint]:before {
 	border-right: 1px solid var(--vscode-editorHint-foreground);
 	color: var(--vscode-editorHint-foreground);
-	content: attr(diagnostic-hint);
+	content: attr(diagnostic-hint)
 }
 
 .outline-label[diagnostic-information]:before {
 	border-bottom: 1px solid var(--vscode-editorInfo-foreground);
 	color: var(--vscode-editorInfo-foreground);
-	content: attr(diagnostic-information);
+	content: attr(diagnostic-information)
 }
 
 .outline-label[diagnostic-warning]:before {
 	border-top: 1px solid var(--vscode-editorWarning-foreground);
 	color: var(--vscode-editorWarning-foreground);
-	content: attr(diagnostic-warning);
+	content: attr(diagnostic-warning)
 }
 
 .outline-label[diagnostic-error]:before {
 	border-left: 1px solid var(--vscode-editorError-foreground);
 	color: var(--vscode-editorError-foreground);
-	content: attr(diagnostic-error);
+	content: attr(diagnostic-error)
 }
 
+
 .outline-children[hide-self=true]:not(.outline-root>.outline-children) {
-	margin-left: 0!important;
+	margin-left: 0 !important;
 	padding: 0;
-	border-left: 1px dashed var(--vscode-tree-indentGuidesStroke);
+	border-left: 1px dashed var(--vscode-tree-indentGuidesStroke)
 }

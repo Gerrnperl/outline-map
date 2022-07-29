@@ -56,12 +56,15 @@ Update presentation
 - scrolling issue #7
 - The issue that outline probability does not update when switching documents
 
-## [Unreleased]
-
-### [0.6.1]
+### [0.6.1] - 2022-07-29
 
 #### Add
 - command: `outline-map.addDepth` & `outline-map.reduceDepth`
 - view action: `<` & `>` for max depth adjustment.<br/> When you scroll / focus on the area whose depth is greater than the set depth, the outline node will not be displayed.<br/>![change depth](./images/changeDepth.gif)
-- command: `outline-map.pin` & `outline-map.unpin`
+- command: `outline-map.pin` & `outline-map.unpin` ~ issue #8
 - view action: `📌`
+
+#### Other
+- minimized the size of the extension package(.vsix)
+  - removed unnecessary image in the extension package(.vsix)
+  - minimized the size of webview file 

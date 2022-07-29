@@ -216,8 +216,8 @@ export class OutlineProvider implements WebviewViewProvider {
 	}
 
 	async #render(webview: Webview): Promise<string> {
-		const scriptUri = webview.asWebviewUri(Uri.joinPath(this.#extensionUri, 'webview', 'index.js'));
-		const styleUri = webview.asWebviewUri(Uri.joinPath(this.#extensionUri, 'webview', 'style.css'));
+		const scriptUri = webview.asWebviewUri(Uri.joinPath(this.#extensionUri, 'out', 'webview', 'index.js'));
+		const styleUri = webview.asWebviewUri(Uri.joinPath(this.#extensionUri, 'out', 'webview', 'style.css'));
 		const codiconsUri = webview.asWebviewUri(Uri.joinPath(this.#extensionUri, 'node_modules', '@vscode/codicons', 'dist', 'codicon.css'));
 		const toolkitUri = webview.asWebviewUri(Uri.joinPath(this.#extensionUri,
 			"node_modules",

@@ -13,4 +13,7 @@ webpack.config.js
 **/*.map
 **/*.ts
 release/**
+**/test/**
 .vscode-test-web/**
+webview/**
+images/**

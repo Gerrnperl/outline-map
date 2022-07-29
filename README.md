@@ -34,7 +34,6 @@ Changes will take effect after restarting the outline view
 - ~~`outline-map.maxDepth`: Sets the maximum depth of the outline tree~~
 - `outline-map.defaultMaxDepth`: Sets the default maximum depth of the outline tree.<br/>Set this to non-zero to enable the depth button `>` & `<`.
 
----
 
 ## Commands
 - `outline-map.addDepth` | `outline-map.reduceDepth`: Add / Reduce a level to the outline tree. Only works when `outline-map.defaultMaxDepth` is set to non-zero.

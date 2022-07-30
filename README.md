@@ -54,6 +54,12 @@ Changes will take effect after restarting the outline view
 
 > Outline Map relies on (vscode || other extensions) to provide symbol information
 
+> If you meet issues that outline can not display / display wrongly for **a specific file type**, please check if the built-in outline supports the file type. 
+>  - **No**: Please install a extension that provides correct symbol information.
+>  - **Yes**: Report an [issue](https://github.com/Gerrnperl/outline-map/issues) with the problem file and installed related extensions.
+
+> Refer to the following links for more information: [vscode-code-outline/language-support](https://github.com/patrys/vscode-code-outline#language-support)
+
 ---
 
 **Enjoy!**

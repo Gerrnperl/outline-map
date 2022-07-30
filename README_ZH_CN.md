@@ -54,6 +54,11 @@
 
 > Outline Map 依赖于 vscode 或 其他扩展提供符号信息
 
+> 出现**个别类型文件**大纲无法显示/显示错误的情况请检查内置大纲是否支持该语言
+> - **否**：请寻找相关扩展提供正确符号信息
+> - **是**：提交[issue](https://github.com/Gerrnperl/outline-map/issues), 附带问题文件和安装的相关扩展。
+
+> 参考: [vscode-code-outline/language-support](https://github.com/patrys/vscode-code-outline#language-support)
 ---
 
 **Enjoy!**

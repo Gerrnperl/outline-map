@@ -29,9 +29,10 @@ let config = {
 	enableAutomaticIndentReduction: false,
 	follow: 'cursor',
 	depth: Infinity,
-	pinned: false,
+	pinStatus: 1, // 1: unpinned, 2: pinned, 3: frozen
 	expandOutlineMethod: 'hover',
 };
+
 
 /** @type {{element: OutlineElement, children: OutlineNode[]}} */
 let outlineTree;
@@ -95,7 +96,8 @@ window.addEventListener('message', event => {
 		});
 		break;
 	case 'pin':
-		config.pinned = message.pinned;
+		config.pinStatus = message.pinStatus;
+		console.log(config.pinStatus);
 		break;
 	}
 });
@@ -139,13 +141,15 @@ function hideOverflow(){
 function updateVisibleRange(range){
 	let inRange = [];
 
-	if(config.pinned){
+	if(config.pinStatus === 3){
 		return;
 	}
 	indexes?.forEach((node, itemRange)=>{
 		let visible = itemRange.end.line > range.start.line && itemRange.start.line < range.end.line;
 
-		node.open = visible;
+		if(config.pinStatus === 1){
+			node.open = visible;
+		}
 		node.highlight = itemRange.start.line > range.start.line && itemRange.start.line < range.end.line;
 		if(!node.open && node.focus){
 			bubblePropertyUpward(node, 'focus');
@@ -178,7 +182,7 @@ function updateVisibleRange(range){
  * @param {Position} position 
  */
 function updateFocusPosition(position){
-	if(config.pinned){
+	if(config.pinStatus === 3){
 		return;
 	}
 	if(!indexes){
@@ -207,7 +211,7 @@ function updateFocusPosition(position){
  * @param {OutlineNode} reference 
  */
 function scrollOutline(reference){
-	if(config.pin){
+	if(config.pinStatus === 3){
 		return;
 	}
 	let visibleNode = reference;

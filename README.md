@@ -40,7 +40,10 @@ Changes will take effect after restarting the outline view
 
 ## Commands
 - `outline-map.addDepth` | `outline-map.reduceDepth`: Add / Reduce a level to the outline tree. Only works when `outline-map.defaultMaxDepth` is set to non-zero.
-- `outline-map.pin` | `outline-map.unpin`: Pin / Unpin the outline tree.
+- `outline-map.pin` | `outline-map.unpin` | `outline-map.freeze` : Pin / Unpin / Freeze the outline tree.
+  - `unpin`: Free the outline tree;
+  - `pin`: The outline tree will not be automatically expanded;
+  - `freeze`: The outline tree will not be automatically expanded and will not scroll when the cursor moves or the viewport scrolls;
 
 ---
 

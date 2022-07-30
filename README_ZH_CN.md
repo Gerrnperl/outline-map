@@ -40,7 +40,10 @@
 
 ## 命令
 - `outline-map.addDepth` | `outline-map.reduceDepth`: 增加 / 减少大纲的一级. `outline-map.defaultMaxDepth` 为正值时可用.
-- `outline-map.pin` | `outline-map.unpin`: 固定 / 取消固定大纲.
+- `outline-map.pin` | `outline-map.unpin`: 固定 / 取消固定 / 冻结大纲视图.
+  - `unpin`: 取消固定大纲视图;
+  - `pin`: 大纲节点将不会自动展开;
+  - `freeze`: 大纲节点将不会自动展开, 同时大纲视图不会自动滚动;
 
 ---
 

@@ -31,23 +31,33 @@ export function reduceDepth(outlineProvider: OutlineProvider) {
 	changeDepth(outlineProvider, -1);
 }
 
-function switchPin (outlineProvider: OutlineProvider, pinned: boolean) {
+enum PinStatus {
+	unpinned = 1,
+	pinned = 2,
+	frozen = 3,
+}
+
+function switchPin (outlineProvider: OutlineProvider, pinStatus: PinStatus) {
 	let view = outlineProvider?.view;
 	
 	if(view){
 		view.webview.postMessage({
 			type: "pin",
-			pinned,
+			pinStatus,
 		});
 	}
-
-	commands.executeCommand("setContext", "outline-map.pinned", pinned);
+	commands.executeCommand("setContext", "outline-map.pin-status", pinStatus);
 }
+commands.executeCommand("setContext", "outline-map.pin-status", PinStatus.unpinned);
 
 export function pin (outlineProvider: OutlineProvider) {
-	switchPin(outlineProvider, true);
+	switchPin(outlineProvider, PinStatus.pinned);
 }
 
 export function unpin (outlineProvider: OutlineProvider) {
-	switchPin(outlineProvider, false);
+	switchPin(outlineProvider, PinStatus.unpinned);
+}
+
+export function freeze(outlineProvider: OutlineProvider) {
+	switchPin(outlineProvider, PinStatus.frozen);
 }

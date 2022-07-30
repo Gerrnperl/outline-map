@@ -74,3 +74,12 @@ Update presentation
 #### Add
 - configuration: `outline-map.expandOutlineMethod`
 - click the icon to expand the outline node ~ issue #11
+
+### [0.7.2] - 2022-07-30
+
+#### Add
+- Now the max depth will display when you change the max depth (using `<` & `>`) ~ issue #13
+- command: `outline-map.freeze`: same as the original `outline-map.pin`
+
+#### Modify
+- command `outline-map.pin`: now the outline will scroll automatically to follow the cursor/viewport

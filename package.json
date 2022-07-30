@@ -2,7 +2,7 @@
 	"name": "outline-map",
 	"displayName": "Outline Map",
 	"description": "A visual, interactive outline map that combines the clarity of the outline with the intuitive overview of the minimap. Alternative Minimap.",
-	"version": "0.7.1",
+	"version": "0.7.2",
 	"repository": {
 		"url": "https://github.com/Gerrnperl/outline-map.git"
 	},
@@ -277,17 +277,24 @@
 				"category": "outline-map"
 			},
 			{
+				"command": "outline-map.unpin",
+				"title": "Frozen -> Unpinned",
+				"icon": "$(pinned-dirty)",
+				"shortTitle": "Unpin",
+				"category": "outline-map"
+			},
+			{
 				"command": "outline-map.pin",
-				"title": "Pin",
+				"title": "Unpinned -> Pinned",
 				"icon": "$(pin)",
 				"shortTitle": "Pin",
 				"category": "outline-map"
 			},
 			{
-				"command": "outline-map.unpin",
-				"title": "Unpin",
+				"command": "outline-map.freeze",
+				"title": "Pinned -> Frozen",
 				"icon": "$(pinned)",
-				"shortTitle": "Unpin",
+				"shortTitle": "Freeze",
 				"category": "outline-map"
 			}
 		],
@@ -295,12 +302,17 @@
 			"view/title": [
 				{
 					"command": "outline-map.pin",
-					"when": "view == outline-map-view && !outline-map.pinned",
+					"when": "view == outline-map-view && outline-map.pin-status == 1",
 					"group": "navigation"
 				},
 				{
 					"command": "outline-map.unpin",
-					"when": "view == outline-map-view && outline-map.pinned",
+					"when": "view == outline-map-view && outline-map.pin-status == 3",
+					"group": "navigation"
+				},
+				{
+					"command": "outline-map.freeze",
+					"when": "view == outline-map-view && outline-map.pin-status == 2",
 					"group": "navigation"
 				},
 				{

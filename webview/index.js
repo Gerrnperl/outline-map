@@ -67,6 +67,9 @@ window.addEventListener('message', event => {
 		config.follow = message.config.follow;
 		config.depth = message.config.defaultMaxDepth;
 		config.expandOutlineMethod = message.config.expandOutlineMethod;
+		if(message.config.customFont !== ''){
+			outlineHTML.style.fontFamily = message.config.customFont;
+		}
 		break;
 	case 'build':
 		outlineHTML.innerHTML = '';

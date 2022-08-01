@@ -83,3 +83,8 @@ Update presentation
 
 #### Modify
 - command `outline-map.pin`: now the outline will scroll automatically to follow the cursor/viewport
+
+### [0.7.3] - 2022-08-02
+
+#### Add
+- custom font ~ issue #14

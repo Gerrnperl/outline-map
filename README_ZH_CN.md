@@ -37,6 +37,7 @@
   - `click` (默认): 点击图标展开<br/>
   ![click-expand](images/click-expand.gif)
   - `hover`: 鼠标悬停时展开;
+- `outline-map.customFont`: 设置自定义字体. 例: `Consolas, "Courier New", monospace`
 
 ## 命令
 - `outline-map.addDepth` | `outline-map.reduceDepth`: 增加 / 减少大纲的一级. `outline-map.defaultMaxDepth` 为正值时可用.

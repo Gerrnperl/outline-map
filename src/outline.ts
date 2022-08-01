@@ -315,6 +315,8 @@ export class OutlineProvider implements WebviewViewProvider {
 			|| Infinity;
 		let expandOutlineMethod
 			= workspace.getConfiguration('outline-map')?.get('expandOutlineMethod');
+		let customFont
+			= workspace.getConfiguration('outline-map')?.get('customFont');
 		this.view?.webview.postMessage({
 			type: 'config',
 			config: {
@@ -322,6 +324,7 @@ export class OutlineProvider implements WebviewViewProvider {
 				follow,
 				defaultMaxDepth,
 				expandOutlineMethod,
+				customFont,
 			},
 		});
 		

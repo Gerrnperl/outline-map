@@ -37,6 +37,7 @@ Changes will take effect after restarting the outline view
 - `outline-map.expandOutlineMethod`<br/> Set how to expand outline node.
   - `click` (default): Click the icon of a outline node to expand;<br/>![click-expand](images/click-expand.gif)
   - `hover`: Hover a outline node to expand;
+- `outline-map.customFont`: Set the font of the outline view. Example: `Consolas, "Courier New", monospace`.
 
 ## Commands
 - `outline-map.addDepth` | `outline-map.reduceDepth`: Add / Reduce a level to the outline tree. Only works when `outline-map.defaultMaxDepth` is set to non-zero.

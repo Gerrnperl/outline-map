@@ -150,7 +150,7 @@ function updateVisibleRange(range){
 	indexes?.forEach((node, itemRange)=>{
 		let visible = itemRange.end.line > range.start.line && itemRange.start.line < range.end.line;
 
-		if(config.pinStatus === 1){
+		if(config.follow !== 'cursor-always-open' && config.pinStatus === 1){
 			node.open = visible;
 		}
 		node.highlight = itemRange.start.line > range.start.line && itemRange.start.line < range.end.line;
@@ -565,7 +565,8 @@ class OutlineNode{
 		return this._open;
 	}
 	set open(open){
-		this._open = open && this.children.length > 0 && this.depth < config.depth;
+		this._open = (open && this.children.length > 0 && this.depth < config.depth)
+					|| (open && config.follow === 'cursor-always-open');
 
 		this.element.root.setAttribute('open', this._open.toString());
 	}

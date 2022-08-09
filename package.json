@@ -201,10 +201,11 @@
 					"type": "string",
 					"enum": [
 						"cursor",
-						"viewport"
+						"viewport",
+						"cursor-always-open"
 					],
 					"default": "cursor",
-					"description": "Scroll the outline when the cursor moves or the viewport scrolls"
+					"description": "Scroll the outline when the cursor moves or the viewport scrolls. When set to 'cursor-always-open', the outline will not expand automatically."
 				},
 				"outline-map.hiddenItem": {
 					"type": "array",

@@ -29,8 +29,9 @@
 - `outline-map.color`: 为特定符号设置颜色
 - `outline-map.enableAutomaticIndentReduction`: 当父节点超出视图范围时减少子节点的缩进<br/>![no-reduceIndent](images/no-reduceIndent.png) -> ![reduceIndent](images/reduceIndent.png)
 - `outline-map.follow`: 设置大纲视图自动跟随光标|视口
-	- `viewport`: 当滚动代码时, 编辑器可视区域的中间节点会被滚动至大纲视图中心
-	- `cursor` (默认): 当光标移动时, 光标所在的节点会被滚动至大纲视图中心
+	- `viewport`: 当滚动代码时, 编辑器可视区域的中间节点会被滚动至大纲视图中心, 自动展开/折叠大纲;
+	- `cursor` (默认): 当光标移动时, 光标所在的节点会被滚动至大纲视图中心, 自动展开/折叠大纲;
+  - `cursor-always-open`: 跟随光标, 手动展开/折叠大纲
 - `outline-map.hiddenItem`: 选择隐藏大纲视图中的节点
 - `outline-map.defaultMaxDepth`: 设置默认最大深度.  将其设置为正值以启用命令按钮 `>` & `<`.
 - `outline-map.expandOutlineMethod`: 设置大纲视图展开方式

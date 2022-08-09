@@ -88,3 +88,11 @@ Update presentation
 
 #### Add
 - custom font ~ issue #14
+
+### [0.7.4] - 2022-08-09
+
+#### Add
+- `cursor-always-open` ~ issue #16
+  
+#### Other
+- Show `Symbols Not Found` when the file type is not supported ~ issue #17

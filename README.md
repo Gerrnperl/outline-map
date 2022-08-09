@@ -32,6 +32,7 @@ Changes will take effect after restarting the outline view
 - `outline-map.follow`: Scroll the outline when the cursor moves or the viewport scrolls
 	- `viewport`: When scrolling, the center outline node in the visible area of the editor will be scrolled to the center of the outline view;
 	- `cursor` (default): When the cursor position changes, the outline node where the cursor is located will be scrolled to the center of the outline view;
+  - `cursor-always-open`:  Follow the cursor, manually expand/collapse the outline
 - `outline-map.hiddenItem`: Choose items you do not want to see in the outline.
 - `outline-map.defaultMaxDepth`: Set the default maximum depth of the outline tree. Set this to non-zero to enable the depth button `>` & `<`.
 - `outline-map.expandOutlineMethod`<br/> Set how to expand outline node.

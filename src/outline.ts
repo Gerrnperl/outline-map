@@ -196,7 +196,11 @@ export class OutlineProvider implements WebviewViewProvider {
 	#rebuild(textDocument: TextDocument, tried: number = 0) {
 		// console.log(tried);
 		
-		if(tried > 10){
+		if(tried > 5){
+			this.view?.webview.postMessage({
+				type: 'build',
+				outline: null,
+			});
 			return;
 		}
 		let outlineTree = new OutlineTree(textDocument);

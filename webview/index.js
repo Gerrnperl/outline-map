@@ -72,6 +72,10 @@ window.addEventListener('message', event => {
 		}
 		break;
 	case 'build':
+		if(message.outline === null){
+			outlineHTML.innerHTML = `<div id="missing">Symbols Not Found</div>`
+			break;
+		}
 		outlineHTML.innerHTML = '';
 		buildOutline(message.outline);
 		break;

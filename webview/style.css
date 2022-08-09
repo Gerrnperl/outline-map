@@ -149,3 +149,12 @@ div#outline-root {
     border-radius: 2px;
     transition: all ease 0.3s;
 }
+
+div#missing {
+    width: 100vw;
+    text-align: center;
+    position: fixed;
+    left: 0;
+    padding-top: 1rem;
+    color: var(--vscode-disabledForeground);
+}

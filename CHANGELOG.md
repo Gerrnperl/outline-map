@@ -103,3 +103,5 @@ Update presentation
 - Show symbol details provided by vscode ~ issue #25
   ![details of json](images/details-1.png)
   ![details of rust](images/details-2.png)
+
+- configuration: `outline-map.customCSS` ~ issue #23

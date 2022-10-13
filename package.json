@@ -264,6 +264,11 @@
 					"type": "string",
 					"default": "",
 					"markdownDescription": "Custom font for the outline.<br/> Syntax: `[ <family-name> | <generic-family> ]#`"
+				},
+				"outline-map.customCSS": {
+					"type": "string",
+					"default": "",
+					"description": "custom css for the outline. You could use `Help->Toggle Developer Tools` to see class of elements. If some style does not take effect, you can add `!important` to the rule"
 				}
 			}
 		},

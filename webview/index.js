@@ -70,10 +70,16 @@ window.addEventListener('message', event => {
 		if(message.config.customFont !== ''){
 			outlineHTML.style.fontFamily = message.config.customFont;
 		}
+		if(message.config.customCSS !== ''){
+			let style = document.createElement('style');
+
+			style.innerHTML = message.config.customCSS;
+			document.body.appendChild(style);
+		}
 		break;
 	case 'build':
 		if(message.outline === null){
-			outlineHTML.innerHTML = `<div id="missing">Symbols Not Found</div>`
+			outlineHTML.innerHTML = '<div id="missing">Symbols Not Found</div>';
 			break;
 		}
 		outlineHTML.innerHTML = '';

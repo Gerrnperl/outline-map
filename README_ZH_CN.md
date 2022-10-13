@@ -32,13 +32,14 @@
 	- `viewport`: 当滚动代码时, 编辑器可视区域的中间节点会被滚动至大纲视图中心, 自动展开/折叠大纲;
 	- `cursor` (默认): 当光标移动时, 光标所在的节点会被滚动至大纲视图中心, 自动展开/折叠大纲;
   - `cursor-always-open`: 跟随光标, 手动展开/折叠大纲
-- `outline-map.hiddenItem`: 选择隐藏大纲视图中的节点
+- `outline-map.hiddenItem`: 选择隐藏大纲视图中的节k
 - `outline-map.defaultMaxDepth`: 设置默认最大深度.  将其设置为正值以启用命令按钮 `>` & `<`.
 - `outline-map.expandOutlineMethod`: 设置大纲视图展开方式
   - `click` (默认): 点击图标展开<br/>
   ![click-expand](images/click-expand.gif)
   - `hover`: 鼠标悬停时展开;
 - `outline-map.customFont`: 设置自定义字体. 例: `Consolas, "Courier New", monospace`
+- `outline-map.customCSS`: 设置自定义CSS. 使用 `帮助->切换开发人员工具` 来查看元素的类名. 如果某些规则不起作用, 可以加上`!important`.
 
 ## 命令
 - `outline-map.addDepth` | `outline-map.reduceDepth`: 增加 / 减少大纲的一级. `outline-map.defaultMaxDepth` 为正值时可用.

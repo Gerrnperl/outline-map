@@ -158,3 +158,8 @@ div#missing {
     padding-top: 1rem;
     color: var(--vscode-disabledForeground);
 }
+
+span.symbol-details {
+    color: var(--vscode-descriptionForeground);
+    margin-left: 1ch;
+}

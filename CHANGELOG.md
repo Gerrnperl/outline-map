@@ -96,3 +96,10 @@ Update presentation
   
 #### Other
 - Show `Symbols Not Found` when the file type is not supported ~ issue #17
+
+### [Unreleased]
+
+#### Add
+- Show symbol details provided by vscode ~ issue #25
+  ![details of json](images/details-1.png)
+  ![details of rust](images/details-2.png)

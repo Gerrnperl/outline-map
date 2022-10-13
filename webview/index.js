@@ -469,6 +469,7 @@ class OutlineNode{
 	/** @type {OutlineNode} */	parent = [];
 	/** @type {Range} */		_range;
 	/** @type {number} */		_depth = 0;
+	/** @type {string} */		_details = undefined;
 	/**
 	 * 
 	 * @param {SymbolNode} outline 
@@ -481,6 +482,7 @@ class OutlineNode{
 		this.open = outline.open;
 		this.visibility = outline.display;
 		this.range = outline.range;
+		this.details = outline.details;
 		this.element.name.addEventListener('click', () => {
 			vscode.postMessage({
 				type: 'goto',
@@ -551,6 +553,14 @@ class OutlineNode{
 		this._name = name;
 		this.element.name.innerText = name;
 		this.element.root.title = `${name} [${this.type}]`;
+	}
+	get details(){
+		return this._name;
+	}
+	set details(details){
+		this._details = details;
+		this.element.details.innerText = details;
+		this.element.details.title = details;
 	}
 	get type(){
 		return this._type;
@@ -675,6 +685,7 @@ class OutlineElement{
 	label;
 	icon;
 	name;
+	details;
 	/** @type {HTMLDivElement | undefined} */
 	childrenContainer;
 	constructor(){
@@ -686,15 +697,19 @@ class OutlineElement{
 		label.classList.add('outline-label');
 		let icon = document.createElement('span');
 		let name = document.createElement('span');
+		let details = document.createElement('span');
 
 		name.className = 'symbol-name';
+		details.className = 'symbol-details';
 		label.appendChild(icon);
 		label.appendChild(name);
+		label.appendChild(details);
 		root.appendChild(label);
 		this.root = root;
 		this.label = label;
 		this.icon = icon;
 		this.name = name;
+		this.details = details;
 	}
 
 }

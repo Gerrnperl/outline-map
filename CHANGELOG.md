@@ -97,7 +97,7 @@ Update presentation
 #### Other
 - Show `Symbols Not Found` when the file type is not supported ~ issue #17
 
-### [Unreleased]
+### [0.8.1] - 2022-10-13
 
 #### Add
 - Show symbol details provided by vscode ~ issue #25

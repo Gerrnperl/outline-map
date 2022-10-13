@@ -45,6 +45,8 @@ let indexes;
 
 let activeToast;
 
+let lastVisibleRange;
+
 window.addEventListener('resize', ()=>{
 	setTimeout(()=>{
 		// async to make sure the DOM is rendered first.
@@ -86,6 +88,7 @@ window.addEventListener('message', event => {
 		buildOutline(message.outline);
 		break;
 	case 'scroll':
+		lastVisibleRange = message.range;
 		updateVisibleRange(message.range);
 		hideOverflow();
 		break;
@@ -95,6 +98,8 @@ window.addEventListener('message', event => {
 		break;
 	case 'update':
 		updateOutline(message.changes);
+		updateVisibleRange(lastVisibleRange);
+		hideOverflow();
 		break;
 	case 'diagnostics':
 		updateDiagnostics(message.diagnostics);

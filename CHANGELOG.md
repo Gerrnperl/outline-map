@@ -105,3 +105,10 @@ Update presentation
   ![details of rust](images/details-2.png)
 
 - configuration: `outline-map.customCSS` ~ issue #23
+
+#### Fix
+- Outline will automatically open when a new child is added now. ~issue #27
+  - before
+    ![before](images/before.gif)
+  - after
+    ![after](images/after.gif)

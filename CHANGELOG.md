@@ -112,3 +112,26 @@ Update presentation
     ![before](images/before.gif)
   - after
     ![after](images/after.gif)
+
+### [1.0.0] - 2023-03
+
+#### Add
+- Now the outline is closer in appearance to vscode's built-in outline
+
+- Overlap Scrollbar
+
+- Search ~issue #28
+
+#### Remove
+- configuration: `outline-map.maxDepth`
+    use `outline-map.defaultMaxDepth` instead
+
+- configuration: `outline-map.enableAutomaticIndentReduction`
+    the new outline comes with less indent, so this configuration is deprecated. 
+
+- the 'stupid' rotation of the icon of the outline node
+
+- configuration: `outline-map.expandOutlineMethod`
+
+#### Other
+- Replaced configuration option `outline-map.follow: "cursor-always-open"` with `outline-map.follow: "manual"

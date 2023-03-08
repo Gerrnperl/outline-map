@@ -2,8 +2,8 @@
 .vscode-test-web/**
 src/**
 node_modules/**
-!node_modules/@vscode/codicons
-!node_modules/@vscode/webview-ui-toolkit
+node_modules/@vscode/codicons
+node_modules/@vscode/webview-ui-toolkit
 .gitignore
 vsc-extension-quickstart.md
 webpack.config.js

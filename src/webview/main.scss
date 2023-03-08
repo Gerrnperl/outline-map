@@ -1,0 +1,277 @@
+/**
+ * Reset styles
+ */
+* {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+	box-sizing: border-box;
+}
+
+$child-indent: 0.5rem;
+
+body {
+	width: 100%;
+	overflow-x: hidden;
+	overflow-y: auto;
+	padding: 5px;
+	&::-webkit-scrollbar {
+		display: none;
+	}
+}
+
+.outline-node {
+	display: block;
+	width: calc(100vw - var(--depth) * 0.5rem);
+
+	>.outline-label {
+		position: relative;
+		white-space: nowrap;
+		display: flex;
+		padding: 2px 0;
+		align-items: center;
+		cursor: pointer;
+
+		>.symbol-text {
+			margin-left: 4px;
+			overflow: hidden;
+    		text-overflow: ellipsis;
+			user-select: contain;
+			>.symbol-detail {
+				color: var(--vscode-foreground);
+				opacity: .7;
+			}
+		}
+
+		>.diagnostic {
+			display: none;
+			margin-left: auto;
+			margin-right: 5px;
+			margin: 0 5px 0 auto;
+			font-family: 'codicon', system-ui;
+		}
+
+		>.expand-btn {
+			width: 16px;
+			height: 16px;
+			margin-right: 4px;
+			cursor: pointer;
+			visibility: visible;
+			color: var(--vscode-icon-foreground);
+			transition: transform 0.3s ease;
+		}
+		&::before {
+			content: '';
+			position: absolute;
+			left: calc(-1 * var(--depth) * calc(#{$child-indent} + 1px));
+			width: 100vw;
+			height: 100%;
+			z-index: -1;
+			background: none;
+			opacity: 0;
+		}
+
+		&:hover::before {
+			background: var(--vscode-list-hoverBackground);
+			opacity: 1;
+		}
+	}
+
+	>.outline-children {
+		margin-left: $child-indent;
+		border-left: 1px solid;
+		border-color: transparent;
+		max-height: 0;
+		opacity: 0;
+		pointer-events: none;
+		transform: translateX(1.5rem);
+		transition: opacity 0.3s ease, transform 0.3s ease, max-height 0.3s ease, border-color 0.3s ease;
+		&::before {
+			content: '';
+			border-left: 1px dashed white;
+			position: absolute;
+		}
+	}
+
+	&.invisible {
+		>.outline-children {
+			margin-left: 0;
+			border: none;
+		}
+	}
+
+	&.in-view {
+		>.outline-label {
+			&::before {
+				background: var(--visibleRange-color);
+				opacity: .5;
+			}
+		}
+	}
+	&.focus {
+		>.outline-label {
+			&::before {
+				background: var(--focusingItem-color);
+				opacity: .5;
+			}
+		}
+	}
+
+	&.leaf {
+		>.outline-label {
+			>.expand-btn {
+				visibility: hidden;
+			}
+		}
+	}
+
+	&.expand,&.matched-children {
+		>.outline-label {
+			>.expand-btn {
+				transform: rotate(90deg);
+			}
+		}
+		>.outline-children {
+			height: auto;
+			max-height: 200vh;
+			opacity: 1;
+			transform: translateX(0);
+			pointer-events: auto;
+		}
+	}
+	&.has-diagnostic {
+		>.outline-label {
+			>.diagnostic {
+				display: inline-block;
+				flex: 0 0 1rem;
+				text-align: center;
+			}
+		}
+	}
+	&.diagnostic-error {
+		>.outline-label {
+			>.diagnostic, >.symbol-text {
+				color: var(--vscode-list-errorForeground);
+			}
+		}
+	}
+	&.diagnostic-warning {
+		>.outline-label {
+			>.diagnostic, >.symbol-text {
+				color: var(--vscode-list-warningForeground);
+			}
+		}
+	}
+}
+
+body:hover {
+	.outline-children {
+		border-color: var(--vscode-tree-inactiveIndentGuidesStroke);
+	}
+}
+
+// Searching style
+#outline-root.searching {
+	.outline-node {
+		opacity: 0;
+		pointer-events: none;
+		max-height: 0;
+	}
+	.outline-node.matched-children > .outline-label{
+		filter: brightness(0.66)
+	}
+	.outline-node.matched > .outline-label {
+		filter: none;
+	}
+	.outline-node.matched, .outline-node.matched-children {
+		opacity: 1;
+		pointer-events: auto;
+		max-height: 200vh;
+	}
+	.outline-node.matched > .outline-label > .symbol-text b{
+		font-weight: bold;
+		text-decoration: underline;
+		text-decoration-style: solid;
+		text-decoration-skip-ink: none;
+	}
+}
+
+#outline-input {
+    position: fixed;
+    bottom: 0;
+	left: 0;
+	padding-left: 5px;
+    width: 100vw;
+    background: var(--vscode-sideBar-background);
+    color: var(--vscode-statusBar-foreground);
+	border-top: 1px solid var(--vscode-editorWidget-border);
+
+	&:focus {
+		outline: none;
+		border-top: 1px solid var(--vscode-focusBorder);
+	}
+}
+
+span.quick-nav {
+    position: relative;
+    margin-right: 2px;
+    margin-left: auto;
+    display: none;
+    text-align: center;
+    font-weight: bolder;
+    color: var(--vscode-button-secondaryForeground);
+    border-radius: 3px;
+    padding: 0 2px;
+    background: var(--vscode-button-secondaryBackground);
+}
+
+.toast {
+    position: fixed;
+    margin: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 1rem;
+    padding: 5px;
+    background: var(--vscode-badge-background);
+    opacity: 0.9;
+    border-radius: 2px;
+    transition: all ease 0.3s;
+    color: white;
+	width: max-content;
+}
+
+
+// Overlay scrollbar styles
+// Make the scrollbar style match vscode
+.os-scrollbar-auto-hidden {
+	transition: opacity 0.8s, background-color 0.15s, border-color 0.15s, width 0.15s;
+	visibility: visible;
+}
+.os-scrollbar {
+	--os-size: 10px;
+	--os-padding-perpendicular: 0;
+	--os-padding-axis: 0;
+	--os-track-border-radius: 0;
+	--os-track-bg: none;
+	--os-track-bg-hover: none;
+	--os-track-bg-active: none;
+	--os-track-border: none;
+	--os-track-border-hover: none;
+	--os-track-border-active: none;
+	--os-handle-border-radius: 0;
+	--os-handle-bg: var(--vscode-scrollbarSlider-background);
+	--os-handle-bg-hover: var(--vscode-scrollbarSlider-hoverBackground);
+	--os-handle-bg-active: var(--vscode-scrollbarSlider-activeBackground);
+	--os-handle-border: none;
+	--os-handle-border-hover: none;
+	--os-handle-border-active: none;
+	--os-handle-min-size: 33px;
+	--os-handle-max-size: none;
+	--os-handle-perpendicular-size: 100%;
+	--os-handle-perpendicular-size-hover: 100%;
+	--os-handle-perpendicular-size-active: 100%;
+	--os-handle-interactive-area-offset: 0;
+}

@@ -17,9 +17,9 @@ const webExtensionConfig = {
 	mode: 'none', // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
 	target: 'webworker', // extensions run in a webworker context
 	entry: {
-		'extension': './src/extension.ts',
+		'extension/index': './src/extension/extension.ts',
 		'test/suite/index': './src/test/suite/index.ts',
-		'webview/index': './webview/index.js',
+		'webview/index': './src/webview/index.ts',
 	},
 	output: {
 		filename: '[name].js',
@@ -41,13 +41,23 @@ const webExtensionConfig = {
 		}
 	},
 	module: {
-		rules: [{
-			test: /\.ts$/,
-			exclude: /node_modules/,
-			use: [{
-				loader: 'ts-loader'
-			}]
-		}]
+		rules: [
+			{
+				test: /\.ts$/,
+				exclude: /node_modules/,
+				use: [{
+					loader: 'ts-loader'
+				}]
+			},
+			{
+				test: /\.scss$/,
+				use: ['style-loader', 'css-loader', 'sass-loader'],
+			},
+			{
+				test: /\.css$/,
+				use: ['style-loader', 'css-loader'],
+			}
+		]
 	},
 	plugins: [
 		new webpack.ProvidePlugin({
@@ -66,4 +76,4 @@ const webExtensionConfig = {
 	},
 };
 
-module.exports = [ webExtensionConfig ];
+module.exports = [webExtensionConfig];

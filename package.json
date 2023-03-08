@@ -1,8 +1,8 @@
 {
 	"name": "outline-map",
 	"displayName": "Outline Map",
-	"description": "A visual, interactive outline map that combines the clarity of the outline with the intuitive overview of the minimap. Alternative Minimap.",
-	"version": "0.8.1",
+	"description": "A visual, interactive outline map that combinesAlternative Minimap. the clarity of the outline with the intuitive overview of the minimap. Enhanced version of vscode built-in outline.",
+	"version": "1.0.0",
 	"repository": {
 		"url": "https://github.com/Gerrnperl/outline-map.git"
 	},
@@ -15,7 +15,7 @@
 	"author": {
 		"name": "Gerrnperl"
 	},
-	"browser": "./out/extension.js",
+	"browser": "./out/extension/index.js",
 	"icon": "icon/outline-map.png",
 	"publisher": "Gerrnperl",
 	"galleryBanner": {
@@ -32,7 +32,7 @@
 	"activationEvents": [
 		"onView:outline-map-view"
 	],
-	"main": "./out/extension.js",
+	"main": "./out/extension/index.js",
 	"contributes": {
 		"viewsContainers": {
 			"activitybar": [
@@ -57,155 +57,131 @@
 			"properties": {
 				"outline-map.color": {
 					"type": "object",
-					"default": {},
+					"default": {
+						"visibleRange": "var(--vscode-scrollbarSlider-background)",
+						"focusingItem": "var(--vscode-editorCursor-foreground)",
+						"module": "var(--vscode-symbolIcon-moduleForeground)",
+						"namespace": "var(--vscode-symbolIcon-namespaceForeground)",
+						"package": "var(--vscode-symbolIcon-packageForeground)",
+						"class": "var(--vscode-symbolIcon-classForeground)",
+						"method": "var(--vscode-symbolIcon-methodForeground)",
+						"property": "var(--vscode-symbolIcon-propertyForeground)",
+						"field": "var(--vscode-symbolIcon-fieldForeground)",
+						"constructor": "var(--vscode-symbolIcon-constructorForeground)",
+						"enum": "var(--vscode-symbolIcon-enumeratorForeground)",
+						"interface": "var(--vscode-symbolIcon-interfaceForeground)",
+						"function": "var(--vscode-symbolIcon-functionForeground)",
+						"variable": "var(--vscode-symbolIcon-variableForeground)",
+						"constant": "var(--vscode-symbolIcon-constantForeground)",
+						"string": "var(--vscode-symbolIcon-stringForeground)",
+						"number": "var(--vscode-symbolIcon-numberForeground)",
+						"boolean": "var(--vscode-symbolIcon-booleanForeground)",
+						"array": "var(--vscode-symbolIcon-arrayForeground)",
+						"object": "var(--vscode-symbolIcon-objectForeground)",
+						"key": "var(--vscode-symbolIcon-keyForeground)",
+						"null": "var(--vscode-symbolIcon-nullForeground)",
+						"enummember": "var(--vscode-symbolIcon-enumMemberForeground)",
+						"struct": "var(--vscode-symbolIcon-structForeground)",
+						"event": "var(--vscode-symbolIcon-eventForeground)",
+						"operator": "var(--vscode-symbolIcon-operatorForeground)",
+						"typeparameter": "var(--vscode-symbolIcon-typeParameterForeground)"
+					},
 					"description": "override colors of specific symbols and some ui components.",
 					"properties": {
 						"visibleRange": {
 							"type": "string",
-							"default": "",
-							"description": "the background color of the visible range."
+							"description": "The color of the visible range in the outline."
 						},
 						"focusingItem": {
 							"type": "string",
-							"default": "",
-							"description": "the background color of the focusing item."
+							"description": "The color of the focusing item in the outline."
 						},
 						"module": {
-							"type": "string",
-							"default": "",
-							"description": "Module symbol color"
+							"type": "string"
 						},
 						"namespace": {
-							"type": "string",
-							"default": "",
-							"description": "Namespace symbol color"
+							"type": "string"
 						},
 						"package": {
-							"type": "string",
-							"default": "",
-							"description": "Package symbol color"
+							"type": "string"
 						},
 						"class": {
-							"type": "string",
-							"default": "",
-							"description": "Class symbol color"
+							"type": "string"
 						},
 						"method": {
-							"type": "string",
-							"default": "",
-							"description": "Method symbol color"
+							"type": "string"
 						},
 						"property": {
-							"type": "string",
-							"default": "",
-							"description": "Property symbol color"
+							"type": "string"
 						},
 						"field": {
-							"type": "string",
-							"default": "",
-							"description": "Field symbol color"
+							"type": "string"
 						},
 						"constructor": {
-							"type": "string",
-							"default": "",
-							"description": "Constructor symbol color"
+							"type": "string"
 						},
 						"enum": {
-							"type": "string",
-							"default": "",
-							"description": "Enum symbol color"
+							"type": "string"
 						},
 						"interface": {
-							"type": "string",
-							"default": "",
-							"description": "Interface symbol color"
+							"type": "string"
 						},
 						"function": {
-							"type": "string",
-							"default": "",
-							"description": "Function symbol color"
+							"type": "string"
 						},
 						"variable": {
-							"type": "string",
-							"default": "",
-							"description": "Variable symbol color"
+							"type": "string"
 						},
 						"constant": {
-							"type": "string",
-							"default": "",
-							"description": "Constant symbol color"
+							"type": "string"
 						},
 						"string": {
-							"type": "string",
-							"default": "",
-							"description": "String symbol color"
+							"type": "string"
 						},
 						"number": {
-							"type": "string",
-							"default": "",
-							"description": "Number symbol color"
+							"type": "string"
 						},
 						"boolean": {
-							"type": "string",
-							"default": "",
-							"description": "Boolean symbol color"
+							"type": "string"
 						},
 						"array": {
-							"type": "string",
-							"default": "",
-							"description": "Array symbol color"
+							"type": "string"
 						},
 						"object": {
-							"type": "string",
-							"default": "",
-							"description": "Object symbol color"
+							"type": "string"
+						},
+						"key": {
+							"type": "string"
 						},
 						"null": {
-							"type": "string",
-							"default": "",
-							"description": "Null symbol color"
+							"type": "string"
 						},
 						"enummember": {
-							"type": "string",
-							"default": "",
-							"description": "EnumMember symbol color"
+							"type": "string"
 						},
 						"struct": {
-							"type": "string",
-							"default": "",
-							"description": "Struct symbol color"
+							"type": "string"
 						},
 						"event": {
-							"type": "string",
-							"default": "",
-							"description": "Event symbol color"
+							"type": "string"
 						},
 						"operator": {
-							"type": "string",
-							"default": "",
-							"description": "Operator symbol color"
+							"type": "string"
 						},
 						"typeparameter": {
-							"type": "string",
-							"default": "",
-							"description": "TypeParameter symbol color"
+							"type": "string"
 						}
 					}
-				},
-				"outline-map.enableAutomaticIndentReduction": {
-					"type": "boolean",
-					"default": false,
-					"description": "Enable automatic reduction of child node indent when parent node label goes out of view"
 				},
 				"outline-map.follow": {
 					"type": "string",
 					"enum": [
 						"cursor",
 						"viewport",
-						"cursor-always-open"
+						"manual"
 					],
 					"default": "cursor",
-					"description": "Scroll the outline when the cursor moves or the viewport scrolls. When set to 'cursor-always-open', the outline will not expand automatically."
+					"description": "Scroll the outline when the cursor moves or the viewport scrolls. if set to manual, the outline will not expand automatically."
 				},
 				"outline-map.hiddenItem": {
 					"type": "array",
@@ -241,24 +217,10 @@
 						]
 					}
 				},
-				"outline-map.maxDepth": {
-					"type": "number",
-					"default": 0,
-					"description": "Desecrated, use `defaultMaxDepth` instead"
-				},
 				"outline-map.defaultMaxDepth": {
 					"type": "number",
 					"default": 0,
-					"description": "Maximum depth of the outline, if set to 0, there is no limit"
-				},
-				"outline-map.expandOutlineMethod": {
-					"type": "string",
-					"enum": [
-						"hover",
-						"click"
-					],
-					"default": "click",
-					"description": "Set how to expand a outline node. if `hover`, the node will expand when the mouse hovers over the whole item. if `click`, the node will expand when the mouse clicks on the icon"
+					"description": "The default max depth of the outline. 0 means no limit."
 				},
 				"outline-map.customFont": {
 					"type": "string",
@@ -268,7 +230,12 @@
 				"outline-map.customCSS": {
 					"type": "string",
 					"default": "",
-					"description": "custom css for the outline. You could use `Help->Toggle Developer Tools` to see class of elements. If some style does not take effect, you can add `!important` to the rule"
+					"description": "Custom css for the outline. The css will be injected into the outline's webview."
+				},
+				"outline-map.debug": {
+					"type": "boolean",
+					"default": false,
+					"description": "Enable debug mode. Debug messages will be printed to the console."
 				}
 			}
 		},
@@ -307,23 +274,34 @@
 				"icon": "$(pinned)",
 				"shortTitle": "Freeze",
 				"category": "outline-map"
+			},
+			{
+				"command": "outline-map.focusOutline",
+				"title": "Focus outline and start searching or navigating",
+				"category": "outline-map"
+			}
+		],
+		"keybindings":[
+			{
+				"command": "outline-map.focusOutline",
+				"key": "Alt+l"
 			}
 		],
 		"menus": {
 			"view/title": [
 				{
 					"command": "outline-map.pin",
-					"when": "view == outline-map-view && outline-map.pin-status == 1",
+					"when": "view == outline-map-view && outline-map.pin-status == 0",
 					"group": "navigation"
 				},
 				{
 					"command": "outline-map.unpin",
-					"when": "view == outline-map-view && outline-map.pin-status == 3",
+					"when": "view == outline-map-view && outline-map.pin-status == 2",
 					"group": "navigation"
 				},
 				{
 					"command": "outline-map.freeze",
-					"when": "view == outline-map-view && outline-map.pin-status == 2",
+					"when": "view == outline-map-view && outline-map.pin-status == 1",
 					"group": "navigation"
 				},
 				{
@@ -350,23 +328,29 @@
 		"run-in-browser": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. ."
 	},
 	"devDependencies": {
-		"@types/vscode": "^1.60.0",
 		"@types/mocha": "^9.1.1",
-		"eslint": "^8.18.0",
-		"@typescript-eslint/eslint-plugin": "^5.30.0",
-		"@typescript-eslint/parser": "^5.30.0",
-		"mocha": "^10.0.0",
-		"typescript": "^4.7.4",
-		"@vscode/test-web": "^0.0.26",
-		"ts-loader": "^9.3.1",
-		"webpack": "^5.73.0",
-		"webpack-cli": "^4.10.0",
+		"@types/node": "^18.14.0",
+		"@types/vscode": "^1.60.0",
 		"@types/webpack-env": "^1.17.0",
+		"@typescript-eslint/eslint-plugin": "^5.53.0",
+		"@typescript-eslint/parser": "^5.53.0",
+		"@vscode/test-web": "^0.0.26",
 		"assert": "^2.0.0",
-		"process": "^0.11.10"
+		"css-loader": "^6.7.3",
+		"eslint": "^8.18.0",
+		"mocha": "^10.0.0",
+		"node-sass": "^8.0.0",
+		"process": "^0.11.10",
+		"sass-loader": "^13.2.0",
+		"style-loader": "^3.3.1",
+		"ts-loader": "^9.3.1",
+		"typescript": "^4.7.4",
+		"webpack": "^5.73.0",
+		"webpack-cli": "^4.10.0"
 	},
 	"dependencies": {
+		"@types/vscode-webview": "^1.57.1",
 		"@vscode/codicons": "^0.0.31",
-		"@vscode/webview-ui-toolkit": "^1.0.0"
+		"overlayscrollbars": "^2.1.0"
 	}
 }

@@ -113,7 +113,7 @@ Update presentation
   - after
     ![after](images/after.gif)
 
-### [1.0.0] - 2023-03
+### [1.0.0] - 2023-03-08
 
 #### Add
 - Now the outline is closer in appearance to vscode's built-in outline
@@ -135,3 +135,8 @@ Update presentation
 
 #### Other
 - Replaced configuration option `outline-map.follow: "cursor-always-open"` with `outline-map.follow: "manual"
+
+### [1.0.1] - 2023-03-08
+
+#### Fix
+typo

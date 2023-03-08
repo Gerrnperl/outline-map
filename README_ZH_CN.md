@@ -4,7 +4,7 @@
 
 ![overview](screenshots/overview.png)
 
-可视, 可互动的大纲地图, 提供大纲的清晰条理与缩略地图的直观概览. 改进 VSCode 内置大纲.
+可视, 可互动的大纲地图, 提供大纲的清晰条理与缩略地图的直观概览. 更好的 VSCode 内置大纲.
 
 ![version](https://img.shields.io/visual-studio-marketplace/v/gerrnperl.outline-map?color=8bf7c7&logo=visualstudio&style=flat-square)
 ![installs](https://img.shields.io/visual-studio-marketplace/i/gerrnperl.outline-map?color=56b6c2&logo=visualstudiocode&style=flat-square)

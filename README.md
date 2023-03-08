@@ -43,7 +43,7 @@ Changes will take effect after restarting the outline view
 - `outline-map.customCSS`: Custom css for the outline. The css will be injected into the outline's webview.
 
 ## Commands
-- `outline-map.focusOutline`: Focus outline and start searching or navigating
+- `outline-map.focusOutline`: Focus outline and start searching or navigating. Default keybinding: `<Alt-l>`
 
 - `outline-map.addDepth` | `outline-map.reduceDepth`: Add / Reduce a level to the outline tree. Only works when `outline-map.defaultMaxDepth` is set to non-zero.
   

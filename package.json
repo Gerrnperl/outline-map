@@ -33,6 +33,23 @@
 		"onView:outline-map-view"
 	],
 	"main": "./out/extension/index.js",
+	"badges": [
+		{
+			"href": "https://img.shields.io/",
+			"url": "https://img.shields.io/visual-studio-marketplace/v/gerrnperl.outline-map?color=8bf7c7&logo=visualstudio&style=flat-square",
+			"description": "version"
+		},
+		{
+			"href": "https://img.shields.io/",
+			"url": "https://img.shields.io/visual-studio-marketplace/i/gerrnperl.outline-map?color=56b6c2&logo=visualstudiocode&style=flat-square",
+			"description": "installs"
+		},
+		{
+			"href": "https://img.shields.io/",
+			"url": "https://img.shields.io/visual-studio-marketplace/stars/gerrnperl.outline-map?color=97dbf3&style=flat-square",
+			"description": "rating"
+		}
+	],
 	"contributes": {
 		"viewsContainers": {
 			"activitybar": [

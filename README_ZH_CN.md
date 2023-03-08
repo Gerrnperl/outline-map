@@ -20,7 +20,7 @@
 ![Flag diagnostics](screenshots/diagnostics.gif)
 - ### 搜索 (`<Alt-l>`)
     - `/<exp>`: 正常搜索
-    - `?<exp>`: 正则表达式
+    - `=<exp>`: 正则表达式
     - `?<exp>`: 模糊搜索
   
 ![Search](screenshots/search.gif)

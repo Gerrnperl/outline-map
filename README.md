@@ -21,8 +21,8 @@ A visual, interactive outline map that combines the clarity of the outline with 
 ![Flag diagnostics](screenshots/diagnostics.gif)
 - ### Search the outline (`<Alt-l>`)
     - `/<exp>`: Normal
-    - `?<exp>`: RegExp
-  -  `?<exp>`: Fuzzy
+    - `=<exp>`: RegExp
+    - `?<exp>`: Fuzzy
 
 ![Search](screenshots/search.gif)
 

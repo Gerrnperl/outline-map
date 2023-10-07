@@ -295,6 +295,8 @@
 			{
 				"command": "outline-map.focusOutline",
 				"title": "Focus outline and start searching or navigating",
+				"icon": "$(search)",
+				"shortTitle": "Search/Nav",
 				"category": "outline-map"
 			}
 		],
@@ -329,6 +331,11 @@
 				{
 					"command": "outline-map.reduceDepth",
 					"when": "view == outline-map-view && outline-map.defaultMaxDepthSet",
+					"group": "navigation"
+				},
+				{
+					"command": "outline-map.focusOutline",
+					"when": "view == outline-map-view",
 					"group": "navigation"
 				}
 			]

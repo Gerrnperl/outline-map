@@ -196,10 +196,12 @@ function renderSymbolNode(symbolNode: SymbolNode, depth = 0): HTMLDivElement {
 	container.dataset.range = JSON.stringify(symbolNode.range);
 	container.classList.toggle('leaf', symbolNode.children.length === 0);
 	container.style.setProperty('--depth', depth.toString());
+	let iconName = symbolNode.kind.toLowerCase();
+	iconName = iconName === 'enummember' ? 'enum-member' : iconName;
 	container.innerHTML = /*html*/`
 	  <div class="outline-label">
 		<span class="expand-btn codicon codicon-chevron-right"></span>
-	    <span class="symbol-icon codicon codicon-symbol-${symbolNode.kind.toLowerCase()}"></span>
+	    <span class="symbol-icon codicon codicon-symbol-${iconName}"></span>
 		<span class="symbol-text" title="[${symbolNode.kind.toLowerCase()}] ${symbolNode.name} ${symbolNode.detail}">
 			<span class="symbol-name">${symbolNode.name}</span>
 			<span class="symbol-detail">${symbolNode.detail}</span>

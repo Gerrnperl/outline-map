@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { SwitchButton } from './components/switchButton';
+
+customElements.define('switch-button', SwitchButton);
+
 enum Mode {
 	Nav = '',
 	Normal = '/',
@@ -7,57 +12,66 @@ enum Mode {
 
 const QuickNavKey = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
+const InputContainerHTML = /*html*/`
+<div id="input-container">
+	<div id="input-area">
+		<textarea
+			name="input-text"
+			id="input-text"
+			style="height: calc(var(--vscode-font-size) + 10px);overflow-y:hidden;"
+		></textarea>
+		<div class="input-controllers" id="inner-controllers">
+			<switch-button id="regex-switch" name="regex" icon="regex" highlight
+				desc="Regex mode(=)"
+			></switch-button>
+			<switch-button id="fuzzy-switch" name="fuzzy" icon="zap" highlight
+				desc="Fuzzy mode(?)"
+			></switch-button>
+		</div>
+	</div>
+	<div class="input-controllers" id="outer-controllers">
+		<switch-button id="nav-switch" name="nav"
+			icon-off="clear-all" icon-on="search"
+			desc="Nav mode, use arrow keys to navigate"
+		></switch-button>
+	</div>
+</div>
+`;
+
 export class Input {
 	private inputArea: HTMLTextAreaElement;
-	private regexSwitch: HTMLButtonElement;
-	private fuzzySwitch: HTMLButtonElement;
-	private navSwitch: HTMLButtonElement;
+	private regexSwitch: SwitchButton;
+	private fuzzySwitch: SwitchButton;
+	private navSwitch: SwitchButton;
 	private static mode: Mode = Mode.Normal;
 	private searcher: Searcher | null = null;
 	private lastSearch = '';
 	private quickNavs : Map<string, TreeNode> | null = null;
 	constructor() {
 		// todo: better tips
-		const inputContainerHTML = /*html*/`
-			<div id="input-container">
-				<div id="input-area">
-					<textarea
-						name="input-text"
-						id="input-text"
-						style="height: calc(var(--vscode-font-size) + 10px);overflow-y:hidden;"
-					></textarea>
-					<div class="input-controllers" id="inner-controllers"></div>
-				</div>
-				<div class="input-controllers" id="outer-controllers">
-			</div>
-		`;
-
 		const container = (new DOMParser())
-			.parseFromString(inputContainerHTML, 'text/html')
+			.parseFromString(InputContainerHTML, 'text/html')
 			.body
 			.firstElementChild as HTMLDivElement;
 
-		this.inputArea = container.querySelector('#input-text') as HTMLTextAreaElement;
+		this.inputArea = container.querySelector<HTMLTextAreaElement>('#input-text')!;
 
-		const inner = container.querySelector('#inner-controllers') as HTMLDivElement;
-		const outer = container.querySelector('#outer-controllers') as HTMLDivElement;
-
-		this.regexSwitch = this.initSwitch({
-			name: 'regex', mode: Mode.Regex, icon: 'regex', inner: true,
-			desc: 'Regex mode(=)'
+		this.regexSwitch = container.querySelector<SwitchButton>('#regex-switch')!;
+		this.fuzzySwitch = container.querySelector<SwitchButton>('#fuzzy-switch')!;
+		this.navSwitch = container.querySelector<SwitchButton>('#nav-switch')!;
+		container.addEventListener('s-change', (event) => {
+			const name: string = (event as CustomEvent).detail.name;
+			const map: Record<string, Mode>	= {
+				regex: Mode.Regex,
+				fuzzy: Mode.Fuzzy,
+				nav: Mode.Nav,
+			};
+			this.autoSwitchMode(map[name] as Mode);
+			if (name !== 'nav') {
+				this.search();
+			}
+			this.inputArea.focus();
 		});
-		this.fuzzySwitch = this.initSwitch({
-			name: 'fuzzy', mode: Mode.Fuzzy, icon: 'zap', inner: true, 
-			desc: 'Fuzzy mode(?)'
-		});
-		this.navSwitch = this.initSwitch({
-			name: 'nav', mode: Mode.Nav, icon: 'clear-all', inner: false, 
-			desc: 'Nav mode, use arrow keys to navigate'
-		});
-
-		inner.appendChild(this.regexSwitch);
-		inner.appendChild(this.fuzzySwitch);
-		outer.appendChild(this.navSwitch);
 
 		document.body.insertBefore(container, document.body.firstElementChild);
 
@@ -125,6 +139,9 @@ export class Input {
 				this.enterNav();
 				return;
 			}
+			if (input.value.length === 2 && input.value[1] === '@') {
+				// todo: open symbol kind picker
+			}
 			this.exitNav();
 			Input.mode = mode as Mode;
 			input.style.height = '0px';
@@ -139,7 +156,7 @@ export class Input {
 	private search() {
 		const value = this.inputArea.value;
 		const pattern = value.slice(1);
-		const outlineRoot = document.querySelector('#outline-root') as HTMLDivElement;
+		const outlineRoot = document.querySelector<HTMLDivElement>('#outline-root')!;
 		outlineRoot.classList.toggle('searching', true);
 		// When adding at the end, we can reuse the last search result to improve performance
 		// As the most common case is adding at the end, this may improve performance a lot
@@ -155,44 +172,6 @@ export class Input {
 	}
 
 	/**
-	 * Init a mode switch button.
-	 * Return the button element.
-	 * 
-	 * @param config a config object
-	 * @param config.name name of the mode, used as class name
-	 * @param config.mode mode of the button
-	 * @param config.icon icon, the codicon name, without codicon- prefix
-	 * @param config.inner whether the button is in the input area
-	 * @param config.desc description of the mode, will be shown when hover
-	 * @returns 
-	 */
-	private initSwitch(config: {
-		name: string,
-		mode: Mode, 
-		icon: string, 
-		inner: boolean, 
-		desc: string
-	}) {
-		// mode switch button/*style*/`
-		const switchEle = document.createElement('button');
-		switchEle.classList.add(
-			'input-switch',
-			config.inner ? 'inner-switch' : 'outer-switch',
-			`${config.name}-switch`,
-		);
-		switchEle.innerHTML = /*html*/`<span class="codicon codicon-${config.icon}"></span>`;
-		switchEle.title = config.desc;
-		switchEle.addEventListener('click', () => {
-			this.autoSwitchMode(config.mode);
-			if (config.mode !== Mode.Nav) {
-				this.search();
-			}
-			this.inputArea.focus();
-		});
-		return switchEle;
-	}
-
-	/**
 	 * Automatically change mode according to current mode and input.
 	 * Return true if mode is set to given mode.
 	 * / = --?--> ?, ? --?--> /
@@ -202,8 +181,8 @@ export class Input {
 	 * @param mode 
 	 */
 	private autoSwitchMode(mode: Mode): boolean {
-		this.fuzzySwitch.classList.toggle('active', mode === Mode.Fuzzy && mode !== Input.mode);
-		this.regexSwitch.classList.toggle('active', mode === Mode.Regex && mode !== Input.mode);
+		this.fuzzySwitch.active = mode === Mode.Fuzzy && mode !== Input.mode;
+		this.regexSwitch.active = mode === Mode.Regex && mode !== Input.mode;
 		if (mode === Mode.Nav && Input.mode !== Mode.Nav) {
 			this.stopSearch();
 			return false;
@@ -223,11 +202,9 @@ export class Input {
 
 	// Do some preparation when enter nav mode
 	private enterNav() {
-		const navIcon = this.navSwitch.querySelector('.codicon') as HTMLSpanElement;
-		navIcon.classList.toggle('codicon-clear-all', false);
-		navIcon.classList.toggle('codicon-search', true);
-		this.fuzzySwitch.classList.toggle('active', false);
-		this.regexSwitch.classList.toggle('active', false);
+		this.navSwitch.active = true;
+		this.fuzzySwitch.active = false;
+		this.regexSwitch.active = false;
 		Input.mode = Mode.Nav;
 		this.inputArea.value = '';
 		this.inputArea.style.height = '0px';
@@ -236,9 +213,7 @@ export class Input {
 
 	// Do some preparation when exit nav mode
 	private exitNav() {
-		const navIcon = this.navSwitch.querySelector('.codicon') as HTMLSpanElement;
-		navIcon.classList.toggle('codicon-clear-all', true);
-		navIcon.classList.toggle('codicon-search', false);
+		this.navSwitch.active = false;
 	}
 
 	private nav = throttle((key: string) => {
@@ -287,7 +262,7 @@ export class Input {
 		const node = this.quickNavs.get(key);
 		if (!node) return;
 		const element = node.element;
-		(element.querySelector('.outline-label') as HTMLElement)?.click();
+		element.querySelector<HTMLElement>('.outline-label')?.click();
 		this.quickNavs = null;
 		return;
 	}
@@ -336,7 +311,7 @@ class TreeNode {
 		if (name) {
 			name.innerHTML = name.textContent || '';
 		}
-		const keyLabel = this.element.querySelector('.quick-nav') as HTMLSpanElement | null;
+		const keyLabel = this.element.querySelector<HTMLSpanElement>('.quick-nav');
 		if (keyLabel) {
 			keyLabel.style.display = 'none';
 			keyLabel.innerHTML = '';
@@ -350,7 +325,7 @@ class TreeNode {
 			const key = QuickNavKey[quickNavs.size];
 			quickNavs.set(key, this);
 			this.element.dataset.quickNav = key;
-			const keyLabel = this.element.querySelector('.quick-nav') as HTMLSpanElement | null;
+			const keyLabel = this.element.querySelector<HTMLSpanElement>('.quick-nav');
 			if (keyLabel) {
 				keyLabel.style.display = 'inline-block';
 				keyLabel.innerHTML = key;
@@ -363,7 +338,6 @@ class TreeNode {
 
 	match(search: RegExp | string) {
 		if (!this.matched) return false;
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		const name = this.element.querySelector('.symbol-name')!;
 		if (search instanceof RegExp) {
 			const matched = name.textContent?.match(search);

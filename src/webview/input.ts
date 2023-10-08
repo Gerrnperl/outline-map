@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { SwitchButton } from './components/switchButton';
+import { InputArea } from './components/inputArea';
 
 customElements.define('switch-button', SwitchButton);
+customElements.define('input-area', InputArea);
 
-enum Mode {
+export enum Mode {
 	Nav = '',
 	Normal = '/',
 	Regex = '=',
@@ -14,12 +16,12 @@ const QuickNavKey = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVW
 
 const InputContainerHTML = /*html*/`
 <div id="input-container">
-	<div id="input-area">
-		<textarea
+	<div id="input-area-container">
+		<input-area
 			name="input-text"
-			id="input-text"
-			style="height: calc(var(--vscode-font-size) + 10px);overflow-y:hidden;"
-		></textarea>
+			id="input-area"
+			style="height: auto;overflow-y:hidden; display: flex"
+		></input-area>
 		<div class="input-controllers" id="inner-controllers">
 			<switch-button id="regex-switch" name="regex" icon="regex" highlight
 				desc="Regex mode(=)"
@@ -39,11 +41,11 @@ const InputContainerHTML = /*html*/`
 `;
 
 export class Input {
-	private inputArea: HTMLTextAreaElement;
+	private inputArea: InputArea;
 	private regexSwitch: SwitchButton;
 	private fuzzySwitch: SwitchButton;
 	private navSwitch: SwitchButton;
-	private static mode: Mode = Mode.Normal;
+	private static mode: Mode = Mode.Nav;
 	private searcher: Searcher | null = null;
 	private lastSearch = '';
 	private quickNavs : Map<string, TreeNode> | null = null;
@@ -54,7 +56,7 @@ export class Input {
 			.body
 			.firstElementChild as HTMLDivElement;
 
-		this.inputArea = container.querySelector<HTMLTextAreaElement>('#input-text')!;
+		this.inputArea = container.querySelector<InputArea>('#input-area')!;
 
 		this.regexSwitch = container.querySelector<SwitchButton>('#regex-switch')!;
 		this.fuzzySwitch = container.querySelector<SwitchButton>('#fuzzy-switch')!;
@@ -81,7 +83,7 @@ export class Input {
 
 	start() {
 		this.inputArea.focus();
-		this.inputArea.value = Mode.Normal;
+		this.inputArea.clear(Mode.Normal);
 	}
 
 	intoQuickNav() {
@@ -103,7 +105,7 @@ export class Input {
 			if (this.quickNavs) {
 				this.jump(e.key);
 			}
-			else if (Input.mode === Mode.Nav) {
+			else if (this.inputArea.mode === Mode.Nav) {
 				this.nav(e.key);
 			}
 			else if (e.key === 'Enter') {
@@ -123,30 +125,28 @@ export class Input {
 	 * - stop search when input is empty
 	 */
 	private initInputEvent() {
-		this.inputArea.addEventListener('input', (e) => {
-			const input = e.target as HTMLTextAreaElement;
-			const value = input.value;
+		this.inputArea.addEventListener('input', () => {
+			const value = this.inputArea.value;
 			if (this.quickNavs) {
-				input.value = '';
+				this.inputArea.clear();
 				return;
 			}
-			if (value.length === 0 && Input.mode !== Mode.Nav) {
+			if (value.length === 0) {
 				this.stopSearch();
 				return;
 			}
-			const mode = input.value[0];
-			if (!['/', '=', '?'].includes(mode)) {
+			if (this.inputArea.mode === Mode.Nav) {
 				this.enterNav();
 				return;
 			}
-			if (input.value.length === 2 && input.value[1] === '@') {
+			if (this.inputArea.value.length === 2 && this.inputArea.value[1] === '@') {
 				// todo: open symbol kind picker
 			}
 			this.exitNav();
-			Input.mode = mode as Mode;
-			input.style.height = '0px';
-			input.style.height = (input.scrollHeight) + 'px';
 			this.search();
+		});
+		this.inputArea.addEventListener('mode-change', () => {
+			Input.mode = this.inputArea.mode as Mode;
 		});
 	}
 
@@ -155,13 +155,13 @@ export class Input {
 	 */
 	private search() {
 		const value = this.inputArea.value;
-		const pattern = value.slice(1);
+		const pattern = this.inputArea.searchText;
 		const outlineRoot = document.querySelector<HTMLDivElement>('#outline-root')!;
 		outlineRoot.classList.toggle('searching', true);
 		// When adding at the end, we can reuse the last search result to improve performance
 		// As the most common case is adding at the end, this may improve performance a lot
 		// In regex mode, we can't reuse the last search result.
-		const reuse = value.startsWith(this.lastSearch) && Input.mode !== Mode.Regex;
+		const reuse = value.startsWith(this.lastSearch) && this.inputArea.mode !== Mode.Regex;
 		if (this.searcher && reuse) {
 			this.searcher.search(pattern);
 		}
@@ -181,22 +181,20 @@ export class Input {
 	 * @param mode 
 	 */
 	private autoSwitchMode(mode: Mode): boolean {
-		this.fuzzySwitch.active = mode === Mode.Fuzzy && mode !== Input.mode;
-		this.regexSwitch.active = mode === Mode.Regex && mode !== Input.mode;
-		if (mode === Mode.Nav && Input.mode !== Mode.Nav) {
+		this.fuzzySwitch.active = mode === Mode.Fuzzy && mode !== this.inputArea.mode;
+		this.regexSwitch.active = mode === Mode.Regex && mode !== this.inputArea.mode;
+		if (mode === Mode.Nav && this.inputArea.mode !== Mode.Nav) {
 			this.stopSearch();
 			return false;
 		}
 		this.exitNav();
-		if (mode === Mode.Normal || Input.mode === mode) {
+		if (mode === Mode.Normal || this.inputArea.mode === mode) {
 			// to Normal mode
-			Input.mode = Mode.Normal;
-			this.inputArea.value = '/' + this.inputArea.value.slice(1);
+			this.inputArea.mode = Mode.Normal;
 			return mode === Mode.Normal;
 		}
 		// to Regex or Fuzzy mode
-		Input.mode = mode;
-		this.inputArea.value = Input.mode as string + this.inputArea.value.slice(1);
+		this.inputArea.mode = mode;
 		return true;
 	}
 
@@ -205,10 +203,7 @@ export class Input {
 		this.navSwitch.active = true;
 		this.fuzzySwitch.active = false;
 		this.regexSwitch.active = false;
-		Input.mode = Mode.Nav;
-		this.inputArea.value = '';
-		this.inputArea.style.height = '0px';
-		this.inputArea.style.height = (this.inputArea.scrollHeight) + 'px';
+		this.inputArea.clear();
 	}
 
 	// Do some preparation when exit nav mode

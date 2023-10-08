@@ -273,7 +273,7 @@ body:hover {
 }
 
 
-#input-area {
+#input-area-container {
 	color: var(--vscode-input-foreground);
 	border: 1px solid var(--vscode-input-border);
 	border-radius: 2px;
@@ -284,24 +284,7 @@ body:hover {
 	align-items: flex-start;
 }
 
-#input-text {
-	// color: var(--vscode-statusBar-foreground);
-	// border: 1px solid var(--vscode-searchEditor-textInputBorder);
-	// padding: 3px 0 3px 6px;
-	// border-radius: 2px;
-	// background-color: var(--vscode-sideBar-background);
-	background: transparent;
-	color: var(--vscode-input-foreground);
-	padding: 3px 0 3px 6px;
-	font-size: 14px;
-	width: 100%;
-	resize: none;
 
-	&:focus {
-		outline: none;
-		// border-top: 1px solid var(--vscode-focusBorder);
-	}
-}
 
 span.quick-nav {
 	position: relative;

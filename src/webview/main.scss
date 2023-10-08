@@ -232,13 +232,15 @@ body:hover {
 	background: var(--vscode-sideBar-background);
 	color: var(--vscode-statusBar-foreground);
 	border-bottom: 1px solid var(--vscode-editorWidget-resizeBorder);
+	display: flex;
+	flex-direction: row;
 }
 
 #input-container .codicon[class*='codicon-'] {
 	font-size: 13px;
 }
 
-#inner-controllers {
+.input-controllers {
 	margin: 1px 1px 0 0px;
 	display: flex;
 	flex-direction: row;

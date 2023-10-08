@@ -26,8 +26,9 @@ export class Input {
 						id="input-text"
 						style="height: calc(var(--vscode-font-size) + 10px);overflow-y:hidden;"
 					></textarea>
-					<div id="inner-controllers"></div>
+					<div class="input-controllers" id="inner-controllers"></div>
 				</div>
+				<div class="input-controllers" id="outer-controllers">
 			</div>
 		`;
 
@@ -38,7 +39,8 @@ export class Input {
 
 		this.inputArea = container.querySelector('#input-text') as HTMLTextAreaElement;
 
-		const controllers = container.querySelector('#inner-controllers') as HTMLDivElement;
+		const inner = container.querySelector('#inner-controllers') as HTMLDivElement;
+		const outer = container.querySelector('#outer-controllers') as HTMLDivElement;
 
 		this.regexSwitch = this.initSwitch({
 			name: 'regex', mode: Mode.Regex, icon: 'regex', inner: true,
@@ -49,12 +51,13 @@ export class Input {
 			desc: 'Fuzzy mode(?)'
 		});
 		this.navSwitch = this.initSwitch({
-			name: 'nav', mode: Mode.Nav, icon: 'list-tree', inner: false, 
+			name: 'nav', mode: Mode.Nav, icon: 'clear-all', inner: false, 
 			desc: 'Nav mode, use arrow keys to navigate'
 		});
 
-		controllers.appendChild(this.regexSwitch);
-		controllers.appendChild(this.fuzzySwitch);
+		inner.appendChild(this.regexSwitch);
+		inner.appendChild(this.fuzzySwitch);
+		outer.appendChild(this.navSwitch);
 
 		document.body.insertBefore(container, document.body.firstElementChild);
 
@@ -68,8 +71,7 @@ export class Input {
 	}
 
 	intoQuickNav() {
-		this.inputArea.value = '';
-		Input.mode = Mode.Nav;
+		this.enterNav();
 		if (!this.searcher) return;
 		this.quickNavs = this.searcher.setQuickNavKey();
 	}
@@ -84,7 +86,10 @@ export class Input {
 	 */
 	private initKeyEvent() {
 		this.inputArea.addEventListener('keydown', (e) => {
-			if (Input.mode === Mode.Nav) {
+			if (this.quickNavs) {
+				this.jump(e.key);
+			}
+			else if (Input.mode === Mode.Nav) {
 				this.nav(e.key);
 			}
 			else if (e.key === 'Enter') {
@@ -92,9 +97,6 @@ export class Input {
 			}
 			else if (e.key === 'Escape') {
 				this.stopSearch();
-			}
-			else if (this.quickNavs) {
-				this.jump(e.key);
 			}
 		});
 	}
@@ -110,21 +112,24 @@ export class Input {
 		this.inputArea.addEventListener('input', (e) => {
 			const input = e.target as HTMLTextAreaElement;
 			const value = input.value;
-			input.style.height = '0px';
-			input.style.height = (input.scrollHeight) + 'px';
-			const mode = input.value[0];
-			if (!['/', '=', '?'].includes(mode)) {
-				Input.mode = Mode.Normal;
+			if (this.quickNavs) {
 				input.value = '';
 				return;
 			}
-			Input.mode = mode as Mode;
-			if (value.length > 1) {
-				this.search();
-			}
-			else {
+			if (value.length === 0 && Input.mode !== Mode.Nav) {
 				this.stopSearch();
+				return;
 			}
+			const mode = input.value[0];
+			if (!['/', '=', '?'].includes(mode)) {
+				this.enterNav();
+				return;
+			}
+			this.exitNav();
+			Input.mode = mode as Mode;
+			input.style.height = '0px';
+			input.style.height = (input.scrollHeight) + 'px';
+			this.search();
 		});
 	}
 
@@ -161,7 +166,13 @@ export class Input {
 	 * @param config.desc description of the mode, will be shown when hover
 	 * @returns 
 	 */
-	private initSwitch(config: {name: string, mode: Mode, icon: string, inner: boolean, desc: string}) {
+	private initSwitch(config: {
+		name: string,
+		mode: Mode, 
+		icon: string, 
+		inner: boolean, 
+		desc: string
+	}) {
 		// mode switch button/*style*/`
 		const switchEle = document.createElement('button');
 		switchEle.classList.add(
@@ -173,7 +184,10 @@ export class Input {
 		switchEle.title = config.desc;
 		switchEle.addEventListener('click', () => {
 			this.autoSwitchMode(config.mode);
-			this.search();
+			if (config.mode !== Mode.Nav) {
+				this.search();
+			}
+			this.inputArea.focus();
 		});
 		return switchEle;
 	}
@@ -183,27 +197,48 @@ export class Input {
 	 * Return true if mode is set to given mode.
 	 * / = --?--> ?, ? --?--> /
 	 * / ? --=--> =, = --=--> /
+	 * / = ? --x--> x, x --x--> /
 	 * 
 	 * @param mode 
 	 */
 	private autoSwitchMode(mode: Mode): boolean {
-		if (mode === Mode.Nav) {
-			// TODO: nav mode
+		this.fuzzySwitch.classList.toggle('active', mode === Mode.Fuzzy && mode !== Input.mode);
+		this.regexSwitch.classList.toggle('active', mode === Mode.Regex && mode !== Input.mode);
+		if (mode === Mode.Nav && Input.mode !== Mode.Nav) {
+			this.stopSearch();
 			return false;
 		}
+		this.exitNav();
 		if (mode === Mode.Normal || Input.mode === mode) {
 			// to Normal mode
 			Input.mode = Mode.Normal;
 			this.inputArea.value = '/' + this.inputArea.value.slice(1);
-			this.fuzzySwitch.classList.toggle('active', false);
-			this.regexSwitch.classList.toggle('active', false);
 			return mode === Mode.Normal;
 		}
+		// to Regex or Fuzzy mode
 		Input.mode = mode;
-		this.fuzzySwitch.classList.toggle('active', mode === Mode.Fuzzy);
-		this.regexSwitch.classList.toggle('active', mode === Mode.Regex);
 		this.inputArea.value = Input.mode as string + this.inputArea.value.slice(1);
 		return true;
+	}
+
+	// Do some preparation when enter nav mode
+	private enterNav() {
+		const navIcon = this.navSwitch.querySelector('.codicon') as HTMLSpanElement;
+		navIcon.classList.toggle('codicon-clear-all', false);
+		navIcon.classList.toggle('codicon-search', true);
+		this.fuzzySwitch.classList.toggle('active', false);
+		this.regexSwitch.classList.toggle('active', false);
+		Input.mode = Mode.Nav;
+		this.inputArea.value = '';
+		this.inputArea.style.height = '0px';
+		this.inputArea.style.height = (this.inputArea.scrollHeight) + 'px';
+	}
+
+	// Do some preparation when exit nav mode
+	private exitNav() {
+		const navIcon = this.navSwitch.querySelector('.codicon') as HTMLSpanElement;
+		navIcon.classList.toggle('codicon-clear-all', true);
+		navIcon.classList.toggle('codicon-search', false);
 	}
 
 	private nav = throttle((key: string) => {
@@ -247,13 +282,13 @@ export class Input {
 	},100);
 
 	private jump(key: string) {
-		this.inputArea.value = Input.mode;
+		this.stopSearch();
 		if(!this.quickNavs) return;
 		const node = this.quickNavs.get(key);
 		if (!node) return;
 		const element = node.element;
 		(element.querySelector('.outline-label') as HTMLElement)?.click();
-		this.stopSearch();
+		this.quickNavs = null;
 		return;
 	}
 
@@ -261,8 +296,7 @@ export class Input {
 		this.searcher?.deconstruct();
 		this.searcher = null;
 		this.lastSearch = '';
-		this.inputArea.value = Input.mode;
-		this.quickNavs = null;
+		this.enterNav();
 		document.querySelector('#outline-root')?.classList.toggle('searching', false);
 	}
 

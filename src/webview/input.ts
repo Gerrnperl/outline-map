@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { SwitchButton } from './components/switchButton';
 import { InputArea } from './components/inputArea';
+import { throttle } from '../utils';
 
 customElements.define('switch-button', SwitchButton);
 customElements.define('input-area', InputArea);
@@ -419,16 +420,3 @@ class Searcher {
 	}
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-function throttle(func: Function, limit: number){
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	let inThrottle: any = false;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	return function(this: any, ...args: any[]){
-		if (!inThrottle){
-			func.apply(this, args);
-			inThrottle = true;
-			setTimeout(() => inThrottle = false, limit);
-		}
-	};
-}

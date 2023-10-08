@@ -253,32 +253,3 @@ export interface InsertOp extends Op {
 	nodes: SymbolNode[];
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export function debounce(func: Function, delay: number){
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	let timer: any = null;
-	
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	return function(this: any, ...args: any[]){
-		if (timer){
-			clearTimeout(timer);
-		}
-		timer = setTimeout(() => {
-			func.apply(this, args);
-		}, delay);
-	};
-}
-
-// eslint-disable-next-line @typescript-eslint/ban-types
-export function throttle(func: Function, limit: number){
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	let inThrottle: any = false;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	return function(this: any, ...args: any[]){
-		if (!inThrottle){
-			func.apply(this, args);
-			inThrottle = true;
-			setTimeout(() => inThrottle = false, limit);
-		}
-	};
-}

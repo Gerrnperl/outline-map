@@ -13,8 +13,9 @@ import {
 import { OutlineView } from './outline';
 
 import { commandList } from './commands';
-import { debounce, ScrollMsg, throttle } from '../common';
+import { ScrollMsg } from '../common';
 import { config } from './config';
+import { debounce, throttle } from '../utils';
 
 // called when extension is activated
 // extension is activated the very first time the command is executed

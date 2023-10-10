@@ -2,13 +2,8 @@
 
 import { DocumentSymbol, Position, Range, SymbolKind } from 'vscode';
 import { config } from './extension/config';
+import { SymbolKindStr } from './utils';
 
-type SymbolKindStr = 
-	'File' | 'Module' | 'Namespace' | 'Package' | 'Class' | 'Method' | 
-	'Property' | 'Field' | 'Constructor' | 'Enum' | 'Interface' | 
-	'Function' | 'Variable' | 'Constant' | 'String' | 'Number' | 
-	'Boolean' | 'Array' | 'Object' | 'Key' | 'Null' | 'EnumMember' | 
-	'Struct' | 'Event' | 'Operator' | 'TypeParameter';
 /**
  * Node of a tree of symbols.
  */

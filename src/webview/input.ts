@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { SwitchButton } from './components/switchButton';
 import { InputArea } from './components/inputArea';
-import { throttle } from '../utils';
+import { SymbolKindStr, throttle } from '../utils';
 
 customElements.define('switch-button', SwitchButton);
 customElements.define('input-area', InputArea);
@@ -21,7 +21,7 @@ const InputContainerHTML = /*html*/`
 		<input-area
 			name="input-text"
 			id="input-area"
-			style="height: auto;overflow-y:hidden; display: flex"
+			style="height: auto;overflow-y:hidden; display: flex;font-size: var(--vscode-font-size);"
 		></input-area>
 		<div class="input-controllers" id="inner-controllers">
 			<switch-button id="regex-switch" name="regex" icon="regex" highlight
@@ -146,9 +146,6 @@ export class Input {
 			this.exitNav();
 			this.search();
 		});
-		this.inputArea.addEventListener('mode-change', () => {
-			Input.mode = this.inputArea.mode as Mode;
-		});
 	}
 
 	/**
@@ -163,11 +160,16 @@ export class Input {
 		// As the most common case is adding at the end, this may improve performance a lot
 		// In regex mode, we can't reuse the last search result.
 		const reuse = value.startsWith(this.lastSearch) && this.inputArea.mode !== Mode.Regex;
+		const config = {
+			pattern,
+			mode: this.inputArea.mode || Mode.Normal,
+			filter: this.inputArea.filteredSymbol,
+		};
 		if (this.searcher && reuse) {
-			this.searcher.search(pattern);
+			this.searcher.search(config);
 		}
 		else {
-			this.searcher = new Searcher(outlineRoot, pattern);
+			this.searcher = new Searcher(outlineRoot, config);
 		}
 		this.lastSearch = value;
 	}
@@ -271,10 +273,6 @@ export class Input {
 		document.querySelector('#outline-root')?.classList.toggle('searching', false);
 	}
 
-	static getMode() {
-		return Input.mode;
-	}
-
 }
 
 class TreeNode {
@@ -332,8 +330,13 @@ class TreeNode {
 		}
 	}
 
-	match(search: RegExp | string) {
+	match(search: RegExp | string, symbol: SymbolKindStr | null = null) {
 		if (!this.matched) return false;
+		if (symbol && symbol !== this.element.dataset.kind) {
+			this.matched = false;
+			this.element.classList.toggle('matched', false);
+			return false;
+		}
 		const name = this.element.querySelector('.symbol-name')!;
 		if (search instanceof RegExp) {
 			const matched = name.textContent?.match(search);
@@ -365,44 +368,50 @@ class TreeNode {
 
 }
 
+interface SearchConfig {
+	pattern: string,
+	mode: Mode,
+	filter: SymbolKindStr | null,
+}
+
 class Searcher {
 	private tree: TreeNode;
 	private searchReg: RegExp | string | null = null;
 
-	constructor(root: HTMLDivElement, searchInit: string) {
+	constructor(root: HTMLDivElement, init: SearchConfig) {
 		this.tree = new TreeNode(root);
-		this.search(searchInit);
+		this.search(init);
 	}
 
-	search(search: string) {
-		switch (Input.getMode()) {
+	search(config: SearchConfig) {
+		switch (config.mode) {
 		case Mode.Normal:
-			this.searchReg = search;
+			this.searchReg = config.pattern;
 			break;
 		case Mode.Regex:
 			try {
-				this.searchReg = new RegExp(search);
+				this.searchReg = new RegExp(config.pattern);
 			} catch (e) {
 				this.searchReg = null;
 			}
 			break;
 		case Mode.Fuzzy:
-			this.searchReg = new RegExp(search.split('').join('.*?'));
+			this.searchReg = new RegExp(config.pattern.split('').join('.*?'));
 			break;
 		default:
 			this.searchReg = null;
 			break;
 		}
 		if (this.searchReg) {
-			this.searchTree(this.tree, this.searchReg);
+			this.searchTree(this.tree, this.searchReg, config.filter);
 		}
 	}
 
-	private searchTree(node: TreeNode, search: RegExp | string): boolean {
-		const matched = node.match(search);
+	private searchTree(node: TreeNode, search: RegExp | string, symbol: SymbolKindStr | null = null): boolean {
+		const matched = node.match(search, symbol);
 		let matchedChildren = false;
 		for (const child of node.children) {
-			const matched = this.searchTree(child, search);
+			const matched = this.searchTree(child, search, symbol);
 			matchedChildren = matchedChildren || matched;
 		}
 		node.setMatchedChildren(matchedChildren);

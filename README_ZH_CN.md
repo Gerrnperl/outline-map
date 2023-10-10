@@ -19,6 +19,7 @@
 - ### 标记Error与Warning
 ![Flag diagnostics](screenshots/diagnostics.gif)
 - ### 搜索 (`<Alt-l>`)
+    在搜索框中输入 `@` 以按符号类型过滤
     - `/<exp>`: 正常搜索
     - `=<exp>`: 正则表达式
     - `?<exp>`: 模糊搜索

@@ -20,6 +20,7 @@ A visual, interactive outline map that combines the clarity of the outline with 
 - ### Flag diagnostics
 ![Flag diagnostics](screenshots/diagnostics.gif)
 - ### Search the outline (`<Alt-l>`)
+    append `@` to filter by symbol kind
     - `/<exp>`: Normal
     - `=<exp>`: RegExp
     - `?<exp>`: Fuzzy

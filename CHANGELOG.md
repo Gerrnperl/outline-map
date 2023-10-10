@@ -140,3 +140,13 @@ Update presentation
 
 #### Fix
 typo
+
+### [1.1.0] - 2023-10-10
+
+#### Add
+
+- Filter symbol #47
+
+#### Other
+
+- A better search field

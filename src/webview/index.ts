@@ -83,6 +83,16 @@ const SMsgHandler = {
 	changeDepth: (msg: ChangeDepthMsg) => {
 		maxDepth = Math.max(1, maxDepth + msg.data.delta);
 		new Toast(`Depth: ${maxDepth}`, 3000);
+	},
+	switchSearchField: () => {
+		const inputContainer = document.querySelector('#input-container') as HTMLDivElement;
+		if (inputContainer.classList.contains('active')) {
+			inputContainer.classList.toggle('active', false);
+		}
+		else {
+			inputContainer.classList.toggle('active', true);
+			input.start();
+		}
 	}
 };
 
@@ -172,7 +182,7 @@ function init() {
 			SMsgHandler.changeDepth(message as ChangeDepthMsg);
 			break;
 		case 'focus':
-			input.start();
+			SMsgHandler.switchSearchField();
 		}
 	});
 

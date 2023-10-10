@@ -44,7 +44,7 @@
 
 ## 命令
 
-- `outline-map.focusOutline`: 聚焦大纲以开始导航与搜索. 默认键位 `<Alt-l>`
+- `outline-map.toggleSearch`: 切换搜索及导航区域可见性. 默认键位 `<Alt-l>`
 
 - `outline-map.addDepth` | `outline-map.reduceDepth`: 增加 / 减少大纲的一级. `outline-map.defaultMaxDepth` 为正值时可用.
 - `outline-map.pin` | `outline-map.unpin`: 固定 / 取消固定 / 冻结大纲视图.

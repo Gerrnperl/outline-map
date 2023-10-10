@@ -293,8 +293,8 @@
 				"category": "outline-map"
 			},
 			{
-				"command": "outline-map.focusOutline",
-				"title": "Focus outline and start searching or navigating",
+				"command": "outline-map.toggleSearch",
+				"title": "Toggle Search Field",
 				"icon": "$(search)",
 				"shortTitle": "Search/Nav",
 				"category": "outline-map"
@@ -302,7 +302,7 @@
 		],
 		"keybindings":[
 			{
-				"command": "outline-map.focusOutline",
+				"command": "outline-map.toggleSearch",
 				"key": "Alt+l"
 			}
 		],
@@ -334,7 +334,7 @@
 					"group": "navigation"
 				},
 				{
-					"command": "outline-map.focusOutline",
+					"command": "outline-map.toggleSearch",
 					"when": "view == outline-map-view",
 					"group": "navigation"
 				}

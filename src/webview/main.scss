@@ -232,8 +232,13 @@ body:hover {
 	background: var(--vscode-sideBar-background);
 	color: var(--vscode-statusBar-foreground);
 	border-bottom: 1px solid var(--vscode-editorWidget-resizeBorder);
-	display: flex;
+	// display: flex;
+	display: none;
 	flex-direction: row;
+}
+
+#input-container.active {
+	display: flex;
 }
 
 #input-container .codicon[class*='codicon-'] {

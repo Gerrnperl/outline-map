@@ -44,7 +44,7 @@ function freeze(outlineProvider: OutlineView) {
 }
 
 // export
-function focusOutline(outlineProvider: OutlineView) {
+function switchSearchField(outlineProvider: OutlineView) {
 	outlineProvider.postMessage({
 		type: 'focus',
 	} as FocusMsg);
@@ -87,7 +87,7 @@ export const commandList: Command[] = [
 		fn: freeze,
 	},
 	{
-		name: 'outline-map.focusOutline',
-		fn: focusOutline,
+		name: 'outline-map.toggleSearch',
+		fn: switchSearchField,
 	},
 ];

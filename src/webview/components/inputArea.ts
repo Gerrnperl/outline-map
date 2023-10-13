@@ -160,7 +160,6 @@ export class InputArea extends HTMLElement {
 		else {
 			this.clear(Mode.Nav);
 		}
-		console.log(this._mode);
 	}
 
 	

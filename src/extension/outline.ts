@@ -395,7 +395,7 @@ class OutlineTree {
 			this.attempts++;
 			// Try again in 300ms
 			setTimeout(() => this.updateSymbols(), 300);
-			console.log(`Outline-map: Failed to get symbols of ${this.textDocument.uri.toString()}. Attempt ${this.attempts} of ${this.MAX_ATTEMPTS}.`);
+			config.debug() && console.log(`Outline-map: Failed to get symbols of ${this.textDocument.uri.toString()}. Attempt ${this.attempts} of ${this.MAX_ATTEMPTS}.`);
 		}
 		else {
 			throw new Error(`Outline-map: Failed to get symbols of ${this.textDocument.uri.toString()}.`);

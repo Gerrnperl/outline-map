@@ -13,25 +13,77 @@ A visual, interactive outline map that combines the clarity of the outline with 
 
 ## Features
 
-- ### Automatically scroll, expand and collapse the outline tree
+### Follow
+
+Automatically scroll, expand and collapse the outline tree when the cursor moves or the viewport scrolls.
+
 ![follow](screenshots/follow.gif)
-- ### Navigate through the outline
+
+### Navigation
+
+You can navigate to the symbol by clicking on the outline node like the built-in outline.
+
+Keyboard navigation is also supported.
+
 ![navigation](screenshots/nav.gif)
-- ### Flag diagnostics
+
+### Diagnostics
+
+Show diagnostics of the current file.
+
 ![Flag diagnostics](screenshots/diagnostics.gif)
-- ### Search the outline (`<Alt-l>`)
-    append `@` to filter by symbol kind
-    - `/<exp>`: Normal
-    - `=<exp>`: RegExp
-    - `?<exp>`: Fuzzy
+
+### Search
+
+default keybinding: `<Alt-l>`
+
+Search for symbols in the current file. You can use the following syntax to achieve different search effects:
+
+- `/<exp>`: Normal search
+- `=<exp>`: Regex
+- `?<exp>`: Fuzzy search
+
+You can append `@` to filter by symbol kind before the search expression.
 
 ![Search](screenshots/search.gif)
+
+### Region and tag
+
+Supports region and tag syntax
+
+You can define regions to group code symbols anywhere in the code (usually comments), or tags to mark locations.
+
+#### Grammar 
+
+```md
+#region <name> <comment>
+#tag <name> <comment>
+#endregion <name>
+```
+
+#### Features
+- Allows customizing identifiers for regions and labels.
+- Tag syntax highlighting (semantic highlighting needs to be enabled)
+- Region folding
+
+![region and tag](screenshots/region.png)
 
 ---
 
 ## Configuration
 Changes will take effect after restarting the outline view
-- `outline-map.color`: color table for specific symbols
+
+### Customization
+
+- `outline-map.color`: Color table for specific symbols
+
+- `outline-map.customFont`: Custom font for the outline. 
+    
+    Syntax: `[ <family-name> | <generic-family> ]#`
+  
+- `outline-map.customCSS`: Custom css for the outline. The css will be injected into the outline's webview.
+
+### Behavior
 
 - `outline-map.follow`: Scroll the outline when the cursor moves or the viewport scrolls
 
@@ -39,9 +91,17 @@ Changes will take effect after restarting the outline view
 
 - `outline-map.defaultMaxDepth`: Set the default maximum depth of the outline tree. Set this to non-zero to enable the depth button `>` & `<`.
 
-- `outline-map.customFont`: Custom font for the outline. Syntax: `[ <family-name> | <generic-family> ]#`
+### Region and tag
+
+- `outline-map.region.enabled`: Enable region and tag support
   
-- `outline-map.customCSS`: Custom css for the outline. The css will be injected into the outline's webview.
+- `outline-map.region.startRegion`: The start of a region.
+
+- `outline-map.region.endRegion`: The end of a region.
+
+- `outline-map.region.tag`: The start of a tag.
+
+- `outline-map.region.highlight`: Enable region and tag syntax highlighting
 
 ## Commands
 - `outline-map.toggleSearch`: Switch the visibility of search and navigation field. Default keybinding: `<Alt-l>`
@@ -53,9 +113,8 @@ Changes will take effect after restarting the outline view
 ---
 
 ## Suggestion: move view to secondary side panel (vscode ^1.64)
-![Initialize settings](images/init.gif)
 
-> Outline Map relies on (vscode || other extensions) to provide symbol information
+> Outline Map relies on vscode or other extensions to provide symbol information
 > 
 >  Refer to the following links for more information: [vscode-code-outline/  language-support](https://github.com/patrys/vscode-code-outline#language-support)
 

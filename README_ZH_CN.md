@@ -12,36 +12,94 @@
 
 ## 特性
 
-- ### 自动滚动, 展开与折叠大纲
+### 跟随
+
+根据代码视图或光标位置自动滚动, 展开与折叠大纲。
+
 ![follow](screenshots/follow.gif)
-- ### 快速导航
+
+### 导航
+
+点击大纲节点可跳转至对应位置, 也支持键盘导航。
+
 ![navigation](screenshots/nav.gif)
-- ### 标记Error与Warning
+
+### 诊断
+
+显示当前文件的错误与警告。
+
 ![Flag diagnostics](screenshots/diagnostics.gif)
-- ### 搜索 (`<Alt-l>`)
-    在搜索框中输入 `@` 以按符号类型过滤
-    - `/<exp>`: 正常搜索
-    - `=<exp>`: 正则表达式
-    - `?<exp>`: 模糊搜索
+
+### 搜索
+
+默认键位: `<Alt-l>`
+
+在当前文件中搜索符号. 可以使用以下语法实现不同的搜索效果:
+
+- `/<exp>`: 正常搜索
+- `=<exp>`: 正则表达式
+- `?<exp>`: 模糊搜索
+
+在搜索前输入 `@` 以按符号类型过滤
   
 ![Search](screenshots/search.gif)
 
----
+### 区域与标签
+
+支持区域与标签语法
+
+可以在代码中的任何位置定义区域以分组代码符号(通常是注释), 或者定义标签以标记位置.
+
+#### 语法
+
+```md
+#region <name> <comment>
+#tag <name> <comment>
+#endregion <name>
+```
+
+#### 功能
+
+- 可折叠或展开区域
+- 标签和区域语法高亮
+- 自定义区域与标签的标识符
+
+![region and tag](screenshots/region.png)
 
 ## 设置
+
 更改将在重启大纲视图后生效
+
+### 样式
 
 - `outline-map.color`: 为特定符号设置颜色
   
+- `outline-map.customFont`: 设置自定义字体. 
+  
+  语法: `[ <family-name> | <generic-family> ]#`
+
+- `outline-map.customCSS`: 设置自定义CSS. 这些CSS会被插入大纲的Webview视图
+
+### 行为
+
 - `outline-map.follow`: 设置大纲视图自动跟随光标|视口
 
 - `outline-map.hiddenItem`: 选择隐藏大纲视图中的项目
   
 - `outline-map.defaultMaxDepth`: 设置默认最大深度.  将其设置为正值以启用命令按钮 `>` & `<`.
-  
-- `outline-map.customFont`: 设置自定义字体. 语法: `[ <family-name> | <generic-family> ]#`
 
-- `outline-map.customCSS`: 设置自定义CSS. 这些CSS会被插入大纲的Webview视图
+### 区域与标签
+
+- `outline-map.region.enabled`: 启用区域与标签功能
+
+- `outline-map.region.startRegion`: 区域的开始标识符
+
+- `outline-map.region.endRegion`: 区域的结束标识符
+
+- `outline-map.region.tag`: 标签的标识符
+
+- `outline-map.region.highlight`: 启用区域与标签的语法高亮
+
 
 ## 命令
 
@@ -56,9 +114,6 @@
 ---
 
 ## 建议: 将视图移至辅助侧栏 (vscode ^1.64)
-![Initialize settings](images/init.gif)
-
----
 
 > Outline Map 依赖于 vscode 或 其他扩展提供符号信息
 >

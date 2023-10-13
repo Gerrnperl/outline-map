@@ -2,7 +2,7 @@
 	"name": "outline-map",
 	"displayName": "Outline Map",
 	"description": "A visual, interactive outline map that combinesAlternative Minimap. the clarity of the outline with the intuitive overview of the minimap. Enhanced version of vscode built-in outline.",
-	"version": "1.1.0",
+	"version": "1.2.0",
 	"repository": {
 		"url": "https://github.com/Gerrnperl/outline-map.git"
 	},

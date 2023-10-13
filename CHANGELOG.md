@@ -150,3 +150,12 @@ typo
 #### Other
 
 - A better search field
+
+### [1.2.0] - 2023-10-13
+
+#### Add
+
+- Region and tag support #43
+  - Region and tag symbols
+  - Syntax highlight
+  - Region folding

@@ -1,5 +1,5 @@
 import { config } from './config';
-import { commands, DocumentSymbol, ExtensionContext, SymbolKind, TextDocument, Uri, WebviewView, WebviewViewProvider, window, Range, Selection, Position, Diagnostic, DiagnosticSeverity } from 'vscode';
+import { commands, DocumentSymbol, ExtensionContext, TextDocument, Uri, WebviewView, WebviewViewProvider, window, Range, Selection, Position, Diagnostic, DiagnosticSeverity } from 'vscode';
 import { Msg, UpdateMsg, Op, UpdateOp, DeleteOp, InsertOp, SymbolNode, MoveOp, PinStatus } from '../common';
 
 

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { SymbolKindList, SymbolKindStr, camelToDash } from '../../utils';
+import { SymbolKindList, SymbolKindStr, camelToDash, mapIcon } from '../../utils';
 import { Mode } from '../input';
-// import { camelToDash } from '../../common';
 
 export class InputArea extends HTMLElement {
 	private _textarea: HTMLTextAreaElement;
@@ -22,11 +21,10 @@ export class InputArea extends HTMLElement {
 	private init() {
 		function symbolList() {
 			return SymbolKindList.map(k => {
-				const dashCase = camelToDash(k);
 				return /*html*/`
 					<li class="symbol-item" data-symbol="${k}">
-						<span class="icon codicon codicon-symbol-${dashCase}" data-kind="${k}"></span>
-						<span class="symbol-name">${dashCase}</span>
+						<span class="icon codicon codicon-${mapIcon(k)}" data-kind="${k}"></span>
+						<span class="symbol-name">${camelToDash(k)}</span>
 					</li>
 				`;
 			});
@@ -114,7 +112,7 @@ export class InputArea extends HTMLElement {
 	setFilteredSymbol(symbol: SymbolKindStr) {
 		this.filteredSymbol = symbol;
 		this._filterEle.querySelector('.icon')!.className = 
-			`icon codicon codicon-symbol-${camelToDash(this.filteredSymbol)}`;
+			`icon codicon codicon-${mapIcon(this.filteredSymbol)}`;
 		this._filterEle.title = `Search for ${this.filteredSymbol}`;
 		this.filtering = false;
 		this.filter('');

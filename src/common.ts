@@ -46,7 +46,33 @@ export class SymbolNode {
 		};
 		this.children = [];
 		this.selector = ['#outline-root'];
+		this.mapCustomSymbol();
 	}
+
+
+	/**
+	 * Create custom symbol kinds.
+	 * 
+	 * The custom symbol kinds are used to represent the regions and tags in the document.
+	 * The kind information is stored in the detail of the DocumentSymbol by the RegionSymbolProvider.
+	 * 
+	 * This function should be called after the DocumentSymbol is mapped to a SymbolNode.
+	 */
+	mapCustomSymbol() {
+		// RegionSymbolProvider use 'Number' as a placeholder for regions and tags.
+		if (this.kind !== 'Number') {
+			return;
+		}
+		if (this.detail.startsWith('__om_Region__')) {
+			this.kind = '__om_Region__';
+			this.detail = this.detail.slice(13);
+		}
+		else if (this.detail.startsWith('__om_Tag__')) {
+			this.kind = '__om_Tag__';
+			this.detail = this.detail.slice(10);
+		}
+	}
+
 
 	/**
 	 * Creates a tree of SymbolNodes from a list of DocumentSymbols.
@@ -59,9 +85,38 @@ export class SymbolNode {
 		const root: SymbolNode[] = [];
 		const hiddenItem = config.hiddenItem();
 
+		// A known issue of vscode is that the DocumentSymbols returned by 
+		// command 'vscode.executeDocumentSymbolProvider' does not include the 
+		// information of the provider of the symbols.
+		//
+		// When a document has multiple symbol providers, 
+		// the symbols from different providers are not hierarchical.
+		// 
+		// This function tries to reconstruct the tree.
+		// It will move some siblings to be children of a node
+		// if the range of the node contains the range of the siblings
+		/**
+		 * Reconstruct the tree of DocumentSymbols.
+		 * @param docSymbols The list of DocumentSymbols to reconstruct, should be sorted by start line.
+		 */
+		function reconstructTree(docSymbols: DocumentSymbol[]) {
+			for (let i = 0; i < docSymbols.length; i++) {
+				const docSymbol = docSymbols[i];
+				for (let j = i + 1; j < docSymbols.length; j++) {
+					const sibling = docSymbols[j];
+					if (docSymbol.range.contains(sibling.range)) {
+						docSymbol.children.push(sibling);
+						docSymbols.splice(j, 1);
+						j--;
+					}
+				}
+			}
+		}
+
 		// Inner function to recursively transform the DocumentSymbols into SymbolNodes
 		function recursiveTransform(docSymbols: DocumentSymbol[], parent: SymbolNode | SymbolNode[]) {
 			docSymbols.sort((a, b) => a.range.start.line - b.range.start.line);
+			reconstructTree(docSymbols);
 			docSymbols.forEach((docSymbol) => {
 				const node = new SymbolNode(docSymbol);
 				if (hiddenItem.includes(node.kind.toLowerCase())) {

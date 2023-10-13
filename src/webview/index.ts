@@ -8,7 +8,7 @@ import { OverlayScrollbars } from 'overlayscrollbars';
 import './main.scss';
 import { Input } from './input';
 import '@vscode/codicons/dist/codicon.css';
-import { camelToDash } from '../utils';
+import { mapIcon } from '../utils';
 
 /**
  * The root element of the outline
@@ -207,11 +207,11 @@ function renderSymbolNode(symbolNode: SymbolNode, depth = 0): HTMLDivElement {
 	container.dataset.range = JSON.stringify(symbolNode.range);
 	container.classList.toggle('leaf', symbolNode.children.length === 0);
 	container.style.setProperty('--depth', depth.toString());
-	const iconName = camelToDash(symbolNode.kind);
+
 	container.innerHTML = /*html*/`
 	  <div class="outline-label">
 		<span class="expand-btn codicon codicon-chevron-right"></span>
-	    <span class="symbol-icon codicon codicon-symbol-${iconName}"></span>
+	    <span class="symbol-icon codicon codicon-${mapIcon(symbolNode.kind)}"></span>
 		<span class="symbol-text" title="[${symbolNode.kind.toLowerCase()}] ${symbolNode.name} ${symbolNode.detail}">
 			<span class="symbol-name">${symbolNode.name}</span>
 			<span class="symbol-detail">${symbolNode.detail}</span>

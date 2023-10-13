@@ -16,4 +16,9 @@ export const config = {
 	customFont: () => getConfig('customFont') as string,
 	customCSS: () => getConfig('customCSS') as string,
 	debug: () => getConfig('debug') as boolean,
+	regionEnabled: () => getConfig('enabled', 'outline-map.region') as boolean,
+	regionHighlight: () => getConfig('highlight', 'outline-map.region') as boolean,
+	regionStart: () => getConfig('startRegion', 'outline-map.region') as string,
+	regionEnd: () => getConfig('endRegion', 'outline-map.region') as string,
+	tag: () => getConfig('tag', 'outline-map.region') as string,
 };

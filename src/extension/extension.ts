@@ -16,6 +16,7 @@ import { commandList } from './commands';
 import { ScrollMsg } from '../common';
 import { config } from './config';
 import { debounce, throttle } from '../utils';
+import { RegionProvider, tokensLegend } from './region';
 
 // called when extension is activated
 // extension is activated the very first time the command is executed
@@ -77,6 +78,16 @@ export function activate(context: ExtensionContext) {
 
 		...commandList.map(command => commands.registerCommand(command.name, command.fn.bind(null, outlineView))),
 	);
+
+	if (config.regionEnabled()) {
+		const regionSymbolProvider = new RegionProvider();
+		languages.registerDocumentSymbolProvider({ scheme: 'file' }, regionSymbolProvider);
+		languages.registerFoldingRangeProvider({ scheme: 'file' }, regionSymbolProvider);
+		if (config.regionHighlight()) {
+			languages.registerDocumentSemanticTokensProvider({ scheme: 'file' }, regionSymbolProvider, tokensLegend);
+		}
+	}
+
 }
 
 // called when extension is deactivated

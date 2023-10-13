@@ -4,14 +4,18 @@ export type SymbolKindStr =
 	'Property' | 'Field' | 'Constructor' | 'Enum' | 'Interface' | 
 	'Function' | 'Variable' | 'Constant' | 'String' | 'Number' | 
 	'Boolean' | 'Array' | 'Object' | 'Key' | 'Null' | 'EnumMember' | 
-	'Struct' | 'Event' | 'Operator' | 'TypeParameter';
+	'Struct' | 'Event' | 'Operator' | 'TypeParameter' |
+	// custom symbol kinds, not in vscode.SymbolKind
+	'__om_Tag__' | '__om_Region__';
 
 export const SymbolKindList: SymbolKindStr[] = [
 	'File', 'Module', 'Namespace', 'Package', 'Class', 'Method', 
 	'Property', 'Field', 'Constructor', 'Enum', 'Interface', 
 	'Function', 'Variable', 'Constant', 'String', 'Number', 
 	'Boolean', 'Array', 'Object', 'Key', 'Null', 'EnumMember', 
-	'Struct', 'Event', 'Operator', 'TypeParameter'
+	'Struct', 'Event', 'Operator', 'TypeParameter',
+	// custom symbol kinds, not in vscode.SymbolKind
+	'__om_Tag__', '__om_Region__',
 ];
 
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -47,4 +51,21 @@ export function throttle(func: Function, limit: number){
 // Camel case to dash case
 export function camelToDash(str: string): string {
 	return str.replace(/([a-zA-Z])(?=[A-Z])/g, '$1-').toLowerCase();
+}
+
+/**
+ * get the icon name of a SymbolKind
+ * @param kind 
+ * @returns 
+ */
+export function mapIcon(kind: SymbolKindStr): string {
+	let iconName = `symbol-${camelToDash(kind)}`;
+	// custom symbol
+	if (kind === '__om_Region__') {
+		iconName = 'folder';
+	}
+	if (kind === '__om_Tag__') {
+		iconName = 'tag';
+	}
+	return iconName;
 }

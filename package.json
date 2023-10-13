@@ -101,12 +101,25 @@
 						"struct": "var(--vscode-symbolIcon-structForeground)",
 						"event": "var(--vscode-symbolIcon-eventForeground)",
 						"operator": "var(--vscode-symbolIcon-operatorForeground)",
-						"typeparameter": "var(--vscode-symbolIcon-typeParameterForeground)"
+						"typeparameter": "var(--vscode-symbolIcon-typeParameterForeground)",
+						"__om_Tag__": "var(--vscode-symbolIcon-packageForeground)",
+						"__om_Region__": "var(--vscode-symbolIcon-packageForeground)"
 					},
 					"description": "override colors of specific symbols and some ui components.",
 					"properties": {
+						"__om_Tag__": {
+							"type": "string",
+							"title": "Tag",
+							"description": "The color of the custom tag symbols in the outline."
+						},
+						"__om_Region__": {
+							"type": "string",
+							"title": "Region",
+							"description": "The color of the custom region symbols in the outline."
+						},
 						"visibleRange": {
 							"type": "string",
+							"title": "Visible Range",
 							"description": "The color of the visible range in the outline."
 						},
 						"focusingItem": {
@@ -189,6 +202,31 @@
 							"type": "string"
 						}
 					}
+				},
+				"outline-map.region.enabled": {
+					"type": "boolean",
+					"default": true,
+					"markdownDescription": "Enable custom region and tag support. By default, regions start with the tag `#region <name>`and end with the tag `#endregion <name>`.  This extension does not do semantic analysis for specific languages, and content that is not part of the comments section may also be recognized as a tag"
+				},
+				"outline-map.region.highlight": {
+					"type": "boolean",
+					"default": true,
+					"markdownDescription": "Enable semantic highlighting for custom regions and tags in the editor."
+				},
+				"outline-map.region.startRegion": {
+					"type": "string",
+					"default": "#region",
+					"description": "The start region tag. The word after the tag will be seen as the region name."
+				},
+				"outline-map.region.endRegion": {
+					"type": "string",
+					"default": "#endregion",
+					"description": "The end region tag. The word after the tag will be seen as the region name to close the region. If no name is specified, the last opened region will be closed."
+				},
+				"outline-map.region.tag": {
+					"type": "string",
+					"default": "#tag",
+					"description": "The start tag. The word after the tag will be seen as the tag name."
 				},
 				"outline-map.follow": {
 					"type": "string",
@@ -300,7 +338,7 @@
 				"category": "outline-map"
 			}
 		],
-		"keybindings":[
+		"keybindings": [
 			{
 				"command": "outline-map.toggleSearch",
 				"key": "Alt+l"

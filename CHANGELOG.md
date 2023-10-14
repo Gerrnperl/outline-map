@@ -159,3 +159,9 @@ typo
   - Region and tag symbols
   - Syntax highlight
   - Region folding
+
+### [1.2.1] - 2023-10-14
+
+#### Fix 
+
+- search field size

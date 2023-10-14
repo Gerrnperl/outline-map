@@ -247,6 +247,8 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 		this.semanticTokens = tokensBuilder.build();
 	}
 
+	//#region providers
+
 	provideFoldingRanges(document: TextDocument, context: FoldingContext, token: CancellationToken): ProviderResult<FoldingRange[]> {
 		this.update(document);
 		return this.folding;
@@ -262,6 +264,10 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 		this.update(document);
 		return this.semanticTokens;
 	}
+
+	//#endregion providers
+
+	//#region syntax syntax parsing
 
 	/**
 	 * Match a line against the region and tag patterns
@@ -357,5 +363,7 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 
 		return result;
 	}
+
+	//#endregion syntax
 
 }

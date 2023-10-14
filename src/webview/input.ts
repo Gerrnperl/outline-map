@@ -21,7 +21,7 @@ const InputContainerHTML = /*html*/`
 		<input-area
 			name="input-text"
 			id="input-area"
-			style="height: auto;overflow-y:hidden; display: flex;font-size: var(--vscode-font-size);"
+			style="height: auto;overflow-y:hidden; display: flex;font-size: var(--vscode-font-size);flex: 1;"
 		></input-area>
 		<div class="input-controllers" id="inner-controllers">
 			<switch-button id="regex-switch" name="regex" icon="regex" highlight

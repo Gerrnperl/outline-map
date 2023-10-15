@@ -5,8 +5,14 @@ function getConfig(key: string, section = 'outline-map') {
 }
 
 export const config = {
-	/** User specified color. */
+	//#region DEPRECATED
+	/** 
+	 * @deprecated
+	 * TODO: REMOVE THIS
+	 * User specified color. 
+	 */
 	color: () => getConfig('color') as { [key: string]: string },
+	//#endregion DEPRECATED
 	/** When to expand the outline. */
 	follow: () => getConfig('follow') as 'cursor' | 'viewport' | 'manual',
 	/** Hide specified items. */

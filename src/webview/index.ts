@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { DeleteOp, InsertOp, MoveOp, ScrollMsg, Msg, ChangeDepthMsg , SymbolNode, UpdateOp, UpdateMsg, ConfigMsg, GotoMsg } from '../common';
 
 const vscode = acquireVsCodeApi();
@@ -8,7 +9,7 @@ import { OverlayScrollbars } from 'overlayscrollbars';
 import './main.scss';
 import { Input } from './input';
 import '@vscode/codicons/dist/codicon.css';
-import { mapIcon } from '../utils';
+import { ColorTable, SymbolKindList, mapIcon } from '../utils';
 
 /**
  * The root element of the outline
@@ -63,6 +64,9 @@ const SMsgHandler = {
 	},
 
 	config: (msg: ConfigMsg) => {
+		// TODO: Color configuration is deprecated
+		// The following injection code should be removed
+		// #region DEPRECATED
 		const color = msg.data.color as { [key: string]: string };
 		const colorStyle = document.querySelector('#color-style') as HTMLStyleElement;
 
@@ -77,6 +81,7 @@ const SMsgHandler = {
 
 			colorStyle.innerHTML += `[data-kind="${key}" i] {color: ${color[key]}}`;
 		}
+		//#endregion DEPRECATED
 		maxDepth = msg.data.depth as number || Infinity;
 		debug = msg.data.debug as boolean || false;
 	},
@@ -152,8 +157,16 @@ function init() {
 	root.innerHTML = /*html*/`
 		<div class="outline-children"></div>
 	`;
-	document.body.appendChild(root);
 	
+	document.body.appendChild(root);
+
+	const style = document.createElement('style');
+	style.innerHTML = SymbolKindList.map(sym => 
+		`[data-kind="${sym}" i] {color: var(--vscode-${ColorTable[sym].replace('.', '-')})}`
+	).join('\n');
+
+	document.body.appendChild(style);
+
 	OverlayScrollbars(document.body, {
 		overflow: {
 			x: 'hidden',

@@ -74,37 +74,7 @@
 			"properties": {
 				"outline-map.color": {
 					"type": "object",
-					"default": {
-						"visibleRange": "var(--vscode-scrollbarSlider-background)",
-						"focusingItem": "var(--vscode-editorCursor-foreground)",
-						"module": "var(--vscode-symbolIcon-moduleForeground)",
-						"namespace": "var(--vscode-symbolIcon-namespaceForeground)",
-						"package": "var(--vscode-symbolIcon-packageForeground)",
-						"class": "var(--vscode-symbolIcon-classForeground)",
-						"method": "var(--vscode-symbolIcon-methodForeground)",
-						"property": "var(--vscode-symbolIcon-propertyForeground)",
-						"field": "var(--vscode-symbolIcon-fieldForeground)",
-						"constructor": "var(--vscode-symbolIcon-constructorForeground)",
-						"enum": "var(--vscode-symbolIcon-enumeratorForeground)",
-						"interface": "var(--vscode-symbolIcon-interfaceForeground)",
-						"function": "var(--vscode-symbolIcon-functionForeground)",
-						"variable": "var(--vscode-symbolIcon-variableForeground)",
-						"constant": "var(--vscode-symbolIcon-constantForeground)",
-						"string": "var(--vscode-symbolIcon-stringForeground)",
-						"number": "var(--vscode-symbolIcon-numberForeground)",
-						"boolean": "var(--vscode-symbolIcon-booleanForeground)",
-						"array": "var(--vscode-symbolIcon-arrayForeground)",
-						"object": "var(--vscode-symbolIcon-objectForeground)",
-						"key": "var(--vscode-symbolIcon-keyForeground)",
-						"null": "var(--vscode-symbolIcon-nullForeground)",
-						"enummember": "var(--vscode-symbolIcon-enumMemberForeground)",
-						"struct": "var(--vscode-symbolIcon-structForeground)",
-						"event": "var(--vscode-symbolIcon-eventForeground)",
-						"operator": "var(--vscode-symbolIcon-operatorForeground)",
-						"typeparameter": "var(--vscode-symbolIcon-typeParameterForeground)",
-						"__om_Tag__": "var(--vscode-symbolIcon-packageForeground)",
-						"__om_Region__": "var(--vscode-symbolIcon-packageForeground)"
-					},
+					"deprecationMessage": "Custom colors are deprecated. Please customize the colors in `workbench.colorCustomizations` instead. Symbols Color Customizations: `symbolIcon.*`. Outline Color Customizations: `outlineMap.*`.",
 					"description": "override colors of specific symbols and some ui components.",
 					"properties": {
 						"__om_Tag__": {
@@ -126,81 +96,31 @@
 							"type": "string",
 							"description": "The color of the focusing item in the outline."
 						},
-						"module": {
-							"type": "string"
-						},
-						"namespace": {
-							"type": "string"
-						},
-						"package": {
-							"type": "string"
-						},
-						"class": {
-							"type": "string"
-						},
-						"method": {
-							"type": "string"
-						},
-						"property": {
-							"type": "string"
-						},
-						"field": {
-							"type": "string"
-						},
-						"constructor": {
-							"type": "string"
-						},
-						"enum": {
-							"type": "string"
-						},
-						"interface": {
-							"type": "string"
-						},
-						"function": {
-							"type": "string"
-						},
-						"variable": {
-							"type": "string"
-						},
-						"constant": {
-							"type": "string"
-						},
-						"string": {
-							"type": "string"
-						},
-						"number": {
-							"type": "string"
-						},
-						"boolean": {
-							"type": "string"
-						},
-						"array": {
-							"type": "string"
-						},
-						"object": {
-							"type": "string"
-						},
-						"key": {
-							"type": "string"
-						},
-						"null": {
-							"type": "string"
-						},
-						"enummember": {
-							"type": "string"
-						},
-						"struct": {
-							"type": "string"
-						},
-						"event": {
-							"type": "string"
-						},
-						"operator": {
-							"type": "string"
-						},
-						"typeparameter": {
-							"type": "string"
-						}
+						"module": { "type": "string" },
+						"namespace": { "type": "string" },
+						"package": { "type": "string" },
+						"class": { "type": "string" },
+						"method": { "type": "string" },
+						"property": { "type": "string" },
+						"field": { "type": "string" },
+						"constructor": { "type": "string" },
+						"enum": { "type": "string" },
+						"interface": { "type": "string" },
+						"function": { "type": "string" },
+						"variable": { "type": "string" },
+						"constant": { "type": "string" },
+						"string": { "type": "string" },
+						"number": { "type": "string" },
+						"boolean": { "type": "string" },
+						"array": { "type": "string" },
+						"object": { "type": "string" },
+						"key": { "type": "string" },
+						"null": { "type": "string" },
+						"enummember": { "type": "string" },
+						"struct": { "type": "string" },
+						"event": { "type": "string" },
+						"operator": { "type": "string" },
+						"typeparameter": { "type": "string" }
 					}
 				},
 				"outline-map.region.enabled": {
@@ -244,30 +164,14 @@
 					"items": {
 						"type": "string",
 						"enum": [
-							"module",
-							"namespace",
-							"package",
-							"class",
-							"method",
-							"property",
-							"field",
-							"constructor",
-							"enum",
-							"interface",
-							"function",
-							"variable",
-							"constant",
-							"string",
-							"number",
-							"boolean",
-							"array",
-							"object",
-							"key",
-							"null",
-							"enummember",
-							"struct",
-							"event",
-							"operator",
+							"module", "namespace", "package",
+							"class", "method", "property",
+							"field", "constructor", "enum",
+							"interface", "function", "variable",
+							"constant", "string", "number",
+							"boolean", "array", "object",
+							"key", "null", "enummember",
+							"struct", "event", "operator",
 							"typeparameter"
 						]
 					}
@@ -336,6 +240,41 @@
 				"icon": "$(search)",
 				"shortTitle": "Search/Nav",
 				"category": "outline-map"
+			}
+		
+		],
+		"colors": [
+			{
+				"id": "outlineMap.visibleRangeBackground",
+				"description": "The color of the visible range in the outline.",
+				"defaults": {
+					"dark": "scrollbarSlider.background",
+					"light": "scrollbarSlider.background"
+				}
+			},
+			{
+				"id": "outlineMap.focusingItemBackground",
+				"description": "The color of the focusing item in the outline.",
+				"defaults": {
+					"dark": "list.hoverBackground",
+					"light": "list.hoverBackground"
+				}
+			},
+			{
+				"id": "symbolIcon.om_RegionForeground",
+				"description": "The color of the custom region symbols in the outline.",
+				"defaults": {
+					"dark": "symbolIcon.packageForeground",
+					"light": "symbolIcon.packageForeground"
+				}
+			},
+			{
+				"id": "symbolIcon.om_TagForeground",
+				"description": "The color of the custom tag symbols in the outline.",
+				"defaults": {
+					"dark": "symbolIcon.packageForeground",
+					"light": "symbolIcon.packageForeground"
+				}
 			}
 		],
 		"keybindings": [

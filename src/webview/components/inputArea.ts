@@ -214,6 +214,9 @@ export class InputArea extends HTMLElement {
 		}
 		// moved to expected position
 		this.symbolElements[this._filterFocusing].classList.add('focused');
+		this.symbolElements[this._filterFocusing].scrollIntoView({
+			block: 'nearest',
+		});
 	}
 
 
@@ -288,6 +291,8 @@ div#symbol-list {
     color: var(--vscode-dropdown-foreground);
     border-radius: 3px;
     box-shadow: 0 3px 7px 0 rgba(0, 0, 0, .13), 0 1px 2px 0 rgba(0, 0, 0, .11);
+	max-height: calc(100vh - 32px);
+    overflow: auto;
 }
 
 div#symbol-list.active {

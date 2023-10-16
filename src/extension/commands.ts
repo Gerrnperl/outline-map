@@ -96,7 +96,7 @@ export const OutlineViewCommandList: Command[] = [
 
 
 // export
-function workspaceDeleteFile(workspaceSymbols: WorkspaceSymbols, item: SymbolTreeItem) {
+function workspaceCloseFile(workspaceSymbols: WorkspaceSymbols, item: SymbolTreeItem) {
 	workspaceSymbols.removeDocuments([item.uri]);
 }
 
@@ -106,8 +106,8 @@ function workspaceExcludeName(target: 'global' | 'workspace' | 'folder', withUri
 
 export const WorkspaceCommandList: Command[] = [
 	{
-		name: 'outline-map.workspace.deleteFile',
-		fn: workspaceDeleteFile,
+		name: 'outline-map.workspace.closeFile',
+		fn: workspaceCloseFile,
 	},
 	{
 		name: 'outline-map.workspace.deleteSymbol',

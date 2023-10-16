@@ -379,10 +379,11 @@
 				"category": "outline-map"
 			},
 			{
-				"command": "outline-map.workspace.deleteFile",
-				"title": "Delete",
+				"command": "outline-map.workspace.closeFile",
+				"title": "Close",
 				"category": "outline-map",
-				"shortTitle": "Delete"
+				"icon": "$(close)",
+				"shortTitle": "Close"
 			},
 			{
 				"command": "outline-map.workspace.deleteSymbol",
@@ -484,8 +485,9 @@
 			],
 			"view/item/context": [
 				{
-					"command": "outline-map.workspace.deleteFile",
-					"when": "view == outline-map-workspace && viewItem == file"
+					"command": "outline-map.workspace.closeFile",
+					"when": "view == outline-map-workspace && viewItem == file",
+					"group": "inline"
 				},
 				{
 					"command": "outline-map.workspace.deleteSymbol",

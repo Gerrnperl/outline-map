@@ -228,6 +228,7 @@ export interface ConfigMsg extends Msg{
 
 export interface FocusMsg extends Msg{
 	type: 'focus';
+	toggle: boolean;
 }
 
 export interface ScrollMsg extends Msg{

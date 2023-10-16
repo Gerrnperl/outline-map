@@ -14,7 +14,7 @@ import {
 import { OutlineView } from './outline';
 
 import { OutlineViewCommandList, WorkspaceCommandList } from './commands';
-import { ScrollMsg } from '../common';
+import { FocusMsg, ScrollMsg } from '../common';
 import { config } from './config';
 import { debounce, throttle } from '../utils';
 import { RegionProvider, tokensLegend } from './region';
@@ -53,7 +53,7 @@ export function activate(context: ExtensionContext) {
 		);
 	}
 
-	const outlineView = new OutlineView(context, workspaceSymbols);
+	const outlineView = new OutlineView(context, workspaceSymbols, context.globalState.get('searchField', false));
 
 
 	context.subscriptions.push(
@@ -107,7 +107,7 @@ export function activate(context: ExtensionContext) {
 
 		//#endregion event
 		//#region command
-		...OutlineViewCommandList.map(command => commands.registerCommand(command.name, command.fn.bind(null, outlineView))),
+		...OutlineViewCommandList.map(command => commands.registerCommand(command.name, command.fn.bind(null, outlineView, context.globalState))),
 		...WorkspaceCommandList.map(command => commands.registerCommand(command.name, command.fn.bind(null, workspaceSymbols))),
 		//#endregion command
 	);

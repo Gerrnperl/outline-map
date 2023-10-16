@@ -1,4 +1,4 @@
-import { commands } from 'vscode';
+import { Memento, commands } from 'vscode';
 import { OutlineView } from './outline';
 import { config } from './config';
 import { ChangeDepthMsg, FocusMsg, PinSMsg, PinStatus } from '../common';
@@ -45,9 +45,20 @@ function freeze(outlineProvider: OutlineView) {
 }
 
 // export
-function switchSearchField(outlineProvider: OutlineView) {
+function switchSearchField(outlineProvider: OutlineView, state: Memento) {
+	state.update('searchField', !state.get('searchField', false));
 	outlineProvider.postMessage({
 		type: 'focus',
+		toggle: true,
+	} as FocusMsg);
+}
+
+// export
+function focusSearchField(outlineProvider: OutlineView, state: Memento) {
+	state.update('searchField', true);
+	outlineProvider.postMessage({
+		type: 'focus',
+		toggle: false,
 	} as FocusMsg);
 }
 
@@ -91,7 +102,11 @@ export const OutlineViewCommandList: Command[] = [
 	{
 		name: 'outline-map.toggleSearch',
 		fn: switchSearchField,
-	}
+	},
+	{
+		name: 'outline-map.focusSearch',
+		fn: focusSearchField,
+	},
 ];
 
 

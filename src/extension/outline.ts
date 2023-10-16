@@ -1,6 +1,6 @@
 import { config } from './config';
 import { commands, DocumentSymbol, ExtensionContext, TextDocument, Uri, WebviewView, WebviewViewProvider, window, Range, Selection, Position, Diagnostic, DiagnosticSeverity } from 'vscode';
-import { Msg, UpdateMsg, Op, UpdateOp, DeleteOp, InsertOp, SymbolNode, MoveOp, PinStatus } from '../common';
+import { Msg, UpdateMsg, Op, UpdateOp, DeleteOp, InsertOp, SymbolNode, MoveOp, PinStatus, FocusMsg } from '../common';
 import { WorkspaceSymbols } from './workspace';
 
 
@@ -30,9 +30,12 @@ export class OutlineView implements WebviewViewProvider {
 
 	private workspaceSymbols: WorkspaceSymbols | undefined;
 
-	constructor(context: ExtensionContext, workspaceSymbols?: WorkspaceSymbols) {
+	private initialSearch: boolean;
+
+	constructor(context: ExtensionContext, workspaceSymbols?: WorkspaceSymbols, initialSearch = false) {
 		this.extensionUri = context.extensionUri;
 		this.workspaceSymbols = workspaceSymbols;
+		this.initialSearch = initialSearch;
 	}
 
 	pin(pinStatus: PinStatus) {
@@ -91,6 +94,12 @@ export class OutlineView implements WebviewViewProvider {
 				debug: config.debug(),
 			},	
 		});
+		if (this.initialSearch) {
+			this.postMessage({
+				type: 'focus',
+				toggle: false,
+			} as FocusMsg);
+		}
 	}
 
 	/**

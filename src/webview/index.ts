@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { DeleteOp, InsertOp, MoveOp, ScrollMsg, Msg, ChangeDepthMsg , SymbolNode, UpdateOp, UpdateMsg, ConfigMsg, GotoMsg } from '../common';
+import { DeleteOp, InsertOp, MoveOp, ScrollMsg, Msg, ChangeDepthMsg , SymbolNode, UpdateOp, UpdateMsg, ConfigMsg, GotoMsg, FocusMsg } from '../common';
 
 const vscode = acquireVsCodeApi();
 
@@ -89,9 +89,9 @@ const SMsgHandler = {
 		maxDepth = Math.max(1, maxDepth + msg.data.delta);
 		new Toast(`Depth: ${maxDepth}`, 3000);
 	},
-	switchSearchField: () => {
+	switchSearchField: (toggle: boolean) => {
 		const inputContainer = document.querySelector('#input-container') as HTMLDivElement;
-		if (inputContainer.classList.contains('active')) {
+		if (inputContainer.classList.contains('active') && toggle) {
 			inputContainer.classList.toggle('active', false);
 		}
 		else {
@@ -195,7 +195,7 @@ function init() {
 			SMsgHandler.changeDepth(message as ChangeDepthMsg);
 			break;
 		case 'focus':
-			SMsgHandler.switchSearchField();
+			SMsgHandler.switchSearchField((message as FocusMsg).toggle);
 		}
 	});
 

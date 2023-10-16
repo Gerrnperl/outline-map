@@ -379,6 +379,13 @@
 				"category": "outline-map"
 			},
 			{
+				"command": "outline-map.focusSearch",
+				"title": "Focus Search Field",
+				"icon": "$(search)",
+				"shortTitle": "Search/Nav",
+				"category": "outline-map"
+			},
+			{
 				"command": "outline-map.workspace.closeFile",
 				"title": "Close",
 				"category": "outline-map",
@@ -446,7 +453,7 @@
 		],
 		"keybindings": [
 			{
-				"command": "outline-map.toggleSearch",
+				"command": "outline-map.focusSearch",
 				"key": "Alt+l"
 			}
 		],

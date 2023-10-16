@@ -14,7 +14,7 @@ import {
 import { OutlineView } from './outline';
 
 import { OutlineViewCommandList, WorkspaceCommandList } from './commands';
-import { ScrollMsg } from '../common';
+import { FocusMsg, ScrollMsg } from '../common';
 import { config } from './config';
 import { debounce, throttle } from '../utils';
 import { WorkspaceSymbols } from './workspace';

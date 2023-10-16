@@ -1,6 +1,7 @@
 import { config } from './config';
 import { commands, DocumentSymbol, ExtensionContext, TextDocument, Uri, WebviewView, WebviewViewProvider, window, Range, Selection, Position, Diagnostic, DiagnosticSeverity } from 'vscode';
 import { Msg, UpdateMsg, Op, UpdateOp, DeleteOp, InsertOp, SymbolNode, MoveOp, PinStatus } from '../common';
+import { WorkspaceSymbols } from './workspace';
 
 
 
@@ -27,8 +28,11 @@ export class OutlineView implements WebviewViewProvider {
 
 	private pinStatus: PinStatus = PinStatus.unpinned;
 
-	constructor(context: ExtensionContext) {
+	private workspaceSymbols: WorkspaceSymbols | undefined;
+
+	constructor(context: ExtensionContext, workspaceSymbols?: WorkspaceSymbols) {
 		this.extensionUri = context.extensionUri;
+		this.workspaceSymbols = workspaceSymbols;
 	}
 
 	pin(pinStatus: PinStatus) {
@@ -335,6 +339,7 @@ export class OutlineView implements WebviewViewProvider {
 	update(textDocument: TextDocument) {
 		const newOutlineTree = new OutlineTree(textDocument);
 		newOutlineTree.updateSymbols().then(() => {
+			this.workspaceSymbols?.updateSymbol(newOutlineTree.getNodes(), textDocument.uri);
 			const patcher = new Patcher(this.outlineTree?.getNodes() || [], newOutlineTree.getNodes());
 			const ops = patcher.getOps();
 			this.postMessage({
@@ -353,7 +358,7 @@ export class OutlineView implements WebviewViewProvider {
  * Provides the outline tree.
  * 
  */
-class OutlineTree {
+export class OutlineTree {
 
 	private textDocument: TextDocument;
 

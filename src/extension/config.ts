@@ -27,4 +27,5 @@ export const config = {
 	regionStart: () => getConfig('startRegion', 'outline-map.region') as string,
 	regionEnd: () => getConfig('endRegion', 'outline-map.region') as string,
 	tag: () => getConfig('tag', 'outline-map.region') as string,
+	workspaceEnabled: () => getConfig('enabled', 'outline-map.workspace') as boolean,
 };

@@ -66,6 +66,12 @@
 					"type": "webview",
 					"id": "outline-map-view",
 					"name": "Outline Map"
+				},
+				{
+					"type": "tree",
+					"id": "outline-map-workspace",
+					"name": "Workspace Symbols",
+					"when": "outline-map.workspace.enabled"
 				}
 			]
 		},
@@ -96,31 +102,81 @@
 							"type": "string",
 							"description": "The color of the focusing item in the outline."
 						},
-						"module": { "type": "string" },
-						"namespace": { "type": "string" },
-						"package": { "type": "string" },
-						"class": { "type": "string" },
-						"method": { "type": "string" },
-						"property": { "type": "string" },
-						"field": { "type": "string" },
-						"constructor": { "type": "string" },
-						"enum": { "type": "string" },
-						"interface": { "type": "string" },
-						"function": { "type": "string" },
-						"variable": { "type": "string" },
-						"constant": { "type": "string" },
-						"string": { "type": "string" },
-						"number": { "type": "string" },
-						"boolean": { "type": "string" },
-						"array": { "type": "string" },
-						"object": { "type": "string" },
-						"key": { "type": "string" },
-						"null": { "type": "string" },
-						"enummember": { "type": "string" },
-						"struct": { "type": "string" },
-						"event": { "type": "string" },
-						"operator": { "type": "string" },
-						"typeparameter": { "type": "string" }
+						"module": {
+							"type": "string"
+						},
+						"namespace": {
+							"type": "string"
+						},
+						"package": {
+							"type": "string"
+						},
+						"class": {
+							"type": "string"
+						},
+						"method": {
+							"type": "string"
+						},
+						"property": {
+							"type": "string"
+						},
+						"field": {
+							"type": "string"
+						},
+						"constructor": {
+							"type": "string"
+						},
+						"enum": {
+							"type": "string"
+						},
+						"interface": {
+							"type": "string"
+						},
+						"function": {
+							"type": "string"
+						},
+						"variable": {
+							"type": "string"
+						},
+						"constant": {
+							"type": "string"
+						},
+						"string": {
+							"type": "string"
+						},
+						"number": {
+							"type": "string"
+						},
+						"boolean": {
+							"type": "string"
+						},
+						"array": {
+							"type": "string"
+						},
+						"object": {
+							"type": "string"
+						},
+						"key": {
+							"type": "string"
+						},
+						"null": {
+							"type": "string"
+						},
+						"enummember": {
+							"type": "string"
+						},
+						"struct": {
+							"type": "string"
+						},
+						"event": {
+							"type": "string"
+						},
+						"operator": {
+							"type": "string"
+						},
+						"typeparameter": {
+							"type": "string"
+						}
 					}
 				},
 				"outline-map.region.enabled": {
@@ -164,14 +220,30 @@
 					"items": {
 						"type": "string",
 						"enum": [
-							"module", "namespace", "package",
-							"class", "method", "property",
-							"field", "constructor", "enum",
-							"interface", "function", "variable",
-							"constant", "string", "number",
-							"boolean", "array", "object",
-							"key", "null", "enummember",
-							"struct", "event", "operator",
+							"module",
+							"namespace",
+							"package",
+							"class",
+							"method",
+							"property",
+							"field",
+							"constructor",
+							"enum",
+							"interface",
+							"function",
+							"variable",
+							"constant",
+							"string",
+							"number",
+							"boolean",
+							"array",
+							"object",
+							"key",
+							"null",
+							"enummember",
+							"struct",
+							"event",
+							"operator",
 							"typeparameter"
 						]
 					}
@@ -195,6 +267,71 @@
 					"type": "boolean",
 					"default": false,
 					"description": "Enable debug mode. Debug messages will be printed to the console."
+				},
+				"outline-map.workspace.enabled": {
+					"type": "boolean",
+					"default": true,
+					"markdownDescription": "Enable workspace symbol support. By default, regions and tags will be included in the workspace symbol list. Symbols that meet the conditions will only be loaded after the file is opened."
+					
+				},
+				"outline-map.workspace.IncludeSymbols": {
+					"type": "array",
+					"description": "Select types to include in the workspace symbol list",
+					"items": {
+						"type": "string",
+						"enum": [
+							"File", "Module", "Namespace",
+							"Package", "Class", "Method",
+							"Property", "Field", "Constructor",
+							"Enum", "Interface", "Function",
+							"Variable", "Constant", "String",
+							"Number", "Boolean", "Array",
+							"Object", "Key", "Null",
+							"EnumMember", "Struct", "Event",
+							"Operator", "TypeParameter", "__om_Tag__",
+							"__om_Region__"
+						]
+					},
+					"default": [
+						"__om_Tag__",
+						"__om_Region__"
+					]
+				},
+				"outline-map.workspace.excludes": {
+					"type": "array",
+					"description": "Items to exclude from the workspace symbol list, which can specify files, symbol names, or both files and symbol names. It has higher priority than `outline-map.workspace.IncludeNames/Symbols`.",
+					"items": {
+						"type": "object",
+						"required": [],
+						"properties": {
+							"file": {
+								"type": "string",
+								"description": "exclude files with the name, support glob patterns"
+							},
+							"symbol": {
+								"type": "string",
+								"description": "exclude symbols with the name"
+							}
+						}
+					}
+				},
+				"outline-map.workspace.IncludeNames": {
+					"type": "array",
+					"description": "Select names to include in the workspace symbol list. It's recommended to write tags in code instead of using this setting.",
+					"items": {
+						"type": "object",
+						"required": ["symbol"],
+						"properties": {
+							"file": {
+								"type": "string",
+								"description": "include files with the name"
+							},
+							"symbol": {
+								"type": "string",
+								"description": "include symbols with the name"
+							}
+						}
+					}
 				}
 			}
 		},
@@ -240,8 +377,37 @@
 				"icon": "$(search)",
 				"shortTitle": "Search/Nav",
 				"category": "outline-map"
+			},
+			{
+				"command": "outline-map.workspace.deleteFile",
+				"title": "Delete",
+				"category": "outline-map",
+				"shortTitle": "Delete"
+			},
+			{
+				"command": "outline-map.workspace.deleteSymbol",
+				"title": "Delete",
+				"category": "outline-map",
+				"shortTitle": "Delete"
+			},
+			{
+				"command": "outline-map.workspace.excludeInWorkspace",
+				"title": "Exclude in workspace",
+				"category": "outline-map",
+				"shortTitle": "Exclude in workspace"
+			},
+			{
+				"command": "outline-map.workspace.excludeInFolder",
+				"title": "Exclude in folder",
+				"category": "outline-map",
+				"shortTitle": "Exclude in folder"
+			},
+			{
+				"command": "outline-map.workspace.excludeGlobally",
+				"title": "Exclude globally",
+				"category": "outline-map",
+				"shortTitle": "Exclude globally"
 			}
-		
 		],
 		"colors": [
 			{
@@ -315,6 +481,32 @@
 					"when": "view == outline-map-view",
 					"group": "navigation"
 				}
+			],
+			"view/item/context": [
+				{
+					"command": "outline-map.workspace.deleteFile",
+					"when": "view == outline-map-workspace && viewItem == file"
+				},
+				{
+					"command": "outline-map.workspace.deleteSymbol",
+					"when": "view == outline-map-workspace && viewItem == symbol",
+					"group": "exclude"
+				},
+				{
+					"command": "outline-map.workspace.excludeInFolder",
+					"when": "view == outline-map-workspace && workbenchState == folder",
+					"group": "exclude"
+				},
+				{
+					"command": "outline-map.workspace.excludeInWorkspace",
+					"when": "view == outline-map-workspace && workbenchState == workspace",
+					"group": "exclude"
+				},
+				{
+					"command": "outline-map.workspace.excludeGlobally",
+					"when": "view == outline-map-workspace",
+					"group": "exclude"
+				}
 			]
 		}
 	},
@@ -352,6 +544,7 @@
 	"dependencies": {
 		"@types/vscode-webview": "^1.57.1",
 		"@vscode/codicons": "^0.0.31",
+		"minimatch": "^9.0.3",
 		"overlayscrollbars": "^2.1.0"
 	}
 }

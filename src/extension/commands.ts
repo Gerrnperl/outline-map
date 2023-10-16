@@ -2,6 +2,7 @@ import { commands } from 'vscode';
 import { OutlineView } from './outline';
 import { config } from './config';
 import { ChangeDepthMsg, FocusMsg, PinSMsg, PinStatus } from '../common';
+import { SymbolTreeItem, WorkspaceSymbols } from './workspace';
 
 function changeDepth(outlineProvider: OutlineView, deltaDepth = 1) {
 	outlineProvider.postMessage({
@@ -59,13 +60,14 @@ if (config.defaultMaxDepth() > 0) {
 // Set initial pin status as unpinned
 commands.executeCommand('setContext', 'outline-map.pin-status', PinStatus.unpinned);
 
+
 export interface Command {
 	name: string;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	fn: (...args: any[]) => any;
 }
 
-export const commandList: Command[] = [
+export const OutlineViewCommandList: Command[] = [
 	{
 		name: 'outline-map.reduceDepth',
 		fn: reduceDepth,
@@ -89,5 +91,38 @@ export const commandList: Command[] = [
 	{
 		name: 'outline-map.toggleSearch',
 		fn: switchSearchField,
+	}
+];
+
+
+// export
+function workspaceDeleteFile(workspaceSymbols: WorkspaceSymbols, item: SymbolTreeItem) {
+	workspaceSymbols.removeDocuments([item.uri]);
+}
+
+function workspaceExcludeName(target: 'global' | 'workspace' | 'folder', withUri: boolean, workspaceSymbols: WorkspaceSymbols, item: SymbolTreeItem) {
+	workspaceSymbols.excludeName(item, target, withUri);
+}
+
+export const WorkspaceCommandList: Command[] = [
+	{
+		name: 'outline-map.workspace.deleteFile',
+		fn: workspaceDeleteFile,
 	},
+	{
+		name: 'outline-map.workspace.deleteSymbol',
+		fn: workspaceExcludeName.bind(null, 'workspace', true),
+	},
+	{
+		name: 'outline-map.workspace.excludeGlobally',
+		fn: workspaceExcludeName.bind(null, 'global', false),
+	},
+	{
+		name: 'outline-map.workspace.excludeInWorkspace',
+		fn: workspaceExcludeName.bind(null, 'workspace', false),
+	},
+	{
+		name: 'outline-map.workspace.excludeInFolder',
+		fn: workspaceExcludeName.bind(null, 'folder', false),
+	}
 ];

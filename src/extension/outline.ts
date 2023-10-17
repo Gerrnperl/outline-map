@@ -503,6 +503,11 @@ class Patcher {
 		for (const property of properties) {
 			const oldValue = Object.getOwnPropertyDescriptor(oldNode, property)?.value;
 			const newValue = Object.getOwnPropertyDescriptor(newNode, property)?.value;
+			if (property === 'expand') {
+				// Keep the expand status of the old node
+				newNode.expand = oldValue;
+				continue;
+			}
 			if (JSON.stringify(oldValue) !== JSON.stringify(newValue)) {
 				this.ops.push({
 					selector: selectorStr,

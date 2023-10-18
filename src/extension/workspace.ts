@@ -70,8 +70,18 @@ export class SymbolTreeItem extends TreeItem {
 		this.uri = uri;
 		this.contextValue = inner.type;
 		if (inner.type === 'file') {
+			const paths = inner.name?.split('/');
+			this.label = paths.pop();
+			if (paths[0] === '') {
+				this.description = paths.join('/');
+			}
+			else {
+				this.description = paths.join('/');
+			}
 			// this.iconPath = new ThemeIcon('file');
 			this.tooltip = inner.uri.path;
+			this.iconPath = ThemeIcon.File;
+			this.resourceUri = inner.uri;
 		}
 		else {
 			this.iconPath = new ThemeIcon(mapIcon(inner.kind), new ThemeColor(ColorTable[inner.kind]));
@@ -106,14 +116,15 @@ export class WorkspaceSymbols implements TreeDataProvider<SymbolTreeItem>{
 
 	IncludeSymbols = new Set<SymbolKindStr>(['__om_Tag__', '__om_Region__']);
 
-	IncludeNames:ConfigItem[] = [];
+	IncludeNames: ConfigItem[] = [];
 
-	excludes:ConfigItem[] = [];
+	excludes: ConfigItem[] = [];
 
 	entryMap = new Map<string, SymbolItem[]>();
 
-	workspaceFolders: Uri[] = [];
+	filepathMap = new Map<string, SymbolTreeItem>();
 
+	workspaceFolders: Uri[] = [];
 	constructor(state: Memento, workspaceFolders: Uri[]) {
 		this.state = state;
 		this.entryMap = new Map<string, SymbolItem[]>();
@@ -159,11 +170,11 @@ export class WorkspaceSymbols implements TreeDataProvider<SymbolTreeItem>{
 		// - If false updates Workspace settings.
 		// - If undefined or null updates to Workspace folder settings
 		//	 if configuration is resource specific, otherwise to Workspace settings.
-		config.update('excludes', [...configInTarget, excluding], 
+		config.update('excludes', [...configInTarget, excluding],
 			target === 'global' ? true :
 				target === 'workspace' ? false :
 					null
-		).then(()=>{
+		).then(() => {
 			if (symbol.inner.type === 'file') {
 				this.removeDocuments([symbol.uri]);
 			}
@@ -235,9 +246,13 @@ export class WorkspaceSymbols implements TreeDataProvider<SymbolTreeItem>{
 	 * @param uri 
 	 */
 	mapDocumentUri(uri: Uri): string {
+		if (this.workspaceFolders.length === 1) {
+			return uri.path.replace(this.workspaceFolders[0].path, '');
+		}
 		for (const folder of this.workspaceFolders) {
 			if (uri.path.startsWith(folder.path)) {
-				return uri.path.replace(folder.path, '');
+				const workspaceName = folder.path.split('/').pop() || '';
+				return uri.path.replace(folder.path, workspaceName);
 			}
 		}
 		return uri.path;
@@ -249,7 +264,7 @@ export class WorkspaceSymbols implements TreeDataProvider<SymbolTreeItem>{
 		}
 		workspace.openTextDocument(uri).then(doc => {
 			const outline = new OutlineTree(doc);
-			outline.updateSymbols().then(()=>{
+			outline.updateSymbols().then(() => {
 				this.updateSymbol(outline.getNodes(), uri);
 			});
 		});
@@ -264,6 +279,7 @@ export class WorkspaceSymbols implements TreeDataProvider<SymbolTreeItem>{
 	updateSymbol(symbol: SymbolNode[], uri: Uri) {
 		if (this.matchConfig(new SymbolTreeItem({
 			type: 'file',
+			name: uri.toString(),
 			children: [] as SymbolItem[],
 			uri,
 		} as FileItem, uri, false), this.excludes)) {
@@ -300,7 +316,7 @@ export class WorkspaceSymbols implements TreeDataProvider<SymbolTreeItem>{
 			this.apply();
 		}
 	}
-	
+
 	/**
 	 * Rename a document
 	 */
@@ -399,13 +415,17 @@ export class WorkspaceSymbols implements TreeDataProvider<SymbolTreeItem>{
 			const fileItem: FileItem = {
 				type: 'file' as const,
 				uri: uriParsed,
-				name: this.mapDocumentUri(uriParsed).slice(1),
+				name: this.mapDocumentUri(uriParsed),
 				children,
 			};
 			return fileItem;
 		});
 		console.log('file-items', result);
-		return result.map(item => new SymbolTreeItem(item, item.uri));
+		return result.map(item => {
+			const treeItem = new SymbolTreeItem(item, item.uri);
+			// this.mapFilepath(treeItem);
+			return treeItem;
+		});
 	}
 	//#endregion TreeDataProvider
 

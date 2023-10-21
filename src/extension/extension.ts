@@ -17,8 +17,8 @@ import { OutlineViewCommandList, WorkspaceCommandList } from './commands';
 import { FocusMsg, ScrollMsg } from '../common';
 import { config } from './config';
 import { debounce, throttle } from '../utils';
-import { RegionProvider, tokensLegend } from './region';
 import { WorkspaceSymbols } from './workspace';
+import { RegionProvider  } from './region';
 
 // called when extension is activated
 // extension is activated the very first time the command is executed
@@ -116,9 +116,9 @@ export function activate(context: ExtensionContext) {
 		const regionSymbolProvider = new RegionProvider();
 		languages.registerDocumentSymbolProvider({ scheme: 'file' }, regionSymbolProvider);
 		languages.registerFoldingRangeProvider({ scheme: 'file' }, regionSymbolProvider);
-		if (config.regionHighlight()) {
-			languages.registerDocumentSemanticTokensProvider({ scheme: 'file' }, regionSymbolProvider, tokensLegend);
-		}
+		// if (config.regionHighlight()) {
+		// 	languages.registerDocumentSemanticTokensProvider({ scheme: 'file' }, regionSymbolProvider, tokensLegend);
+		// }
 	}
 
 }

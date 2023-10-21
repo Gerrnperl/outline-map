@@ -15,7 +15,11 @@ import {
 	DocumentSemanticTokensProvider,
 	Position,
 	SemanticTokens,
-	SemanticTokensBuilder} from 'vscode';
+	SemanticTokensBuilder,
+	DecorationOptions,
+	TextEditorDecorationType,
+	window,
+	ThemeColor} from 'vscode';
 import { config } from './config';
 
 interface Region {
@@ -48,15 +52,7 @@ interface Token {
 	range: Range,
 }
 
-export const tokensLegend = new SemanticTokensLegend(
-	[
-		'keyword', // for region start, region end, and tag
-		'decorator', // for region name and tag name
-		'comment', // for region description and tag description
-	], ['declaration', 'definition']);
-
-
-export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvider, DocumentSemanticTokensProvider {
+export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvider {
 
 	/** The document to parse */
 	document: TextDocument | undefined;
@@ -71,7 +67,10 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 
 	folding: FoldingRange[] = [];
 
-	semanticTokens: SemanticTokens | null = null;
+	// decorations: TextEditorDecorationType[] = [];
+	keyDecorationType: TextEditorDecorationType;
+	nameDecorationType: TextEditorDecorationType;
+	descriptionDecorationType: TextEditorDecorationType;
 
 
 	/** The string that marks the start of a region */
@@ -84,6 +83,18 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 
 
 	onDidChangeFoldingRanges?: Event<void> | undefined;
+
+
+	constructor() {
+		this.keyDecorationType = window.createTextEditorDecorationType({
+			color: new ThemeColor('symbolIcon.keywordForeground')
+		});
+		this.nameDecorationType = window.createTextEditorDecorationType({
+			color: new ThemeColor('symbolIcon.variableForeground')
+		});
+		this.descriptionDecorationType = window.createTextEditorDecorationType({
+		});
+	}
 
 	/**
 	 * Clear the regions and tags arrays
@@ -161,7 +172,7 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 		}
 		this.updateSymbols();
 		this.updateFolding();
-		this.updateSemanticTokens();
+		this.updateDecorations();
 	}
 
 	/**
@@ -200,51 +211,38 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 		}
 	}
 
-	updateSemanticTokens() {
-		const tokensBuilder = new SemanticTokensBuilder(tokensLegend);
-		for (const region of this.regions) {
-			tokensBuilder.push(
-				region.key.range,
-				'keyword',
+	updateDecorations() {
+		const editor = window.activeTextEditor;
+		if (!editor) return;
+		const keyDecorations: DecorationOptions[] = [];
+		const nameDecorations: DecorationOptions[] = [];
+		const descriptionDecorations: DecorationOptions[] = [];
+		this.regions.forEach((region) => {
+			keyDecorations.push(
+				{ range: region.key.range, hoverMessage: region.key.text },
+				{ range: region.keyEnd.range, hoverMessage: region.keyEnd.text }
 			);
-			tokensBuilder.push(
-				region.name.range,
-				'decorator',
+			nameDecorations.push(
+				{ range: region.name.range, hoverMessage: region.name.text },
+				...(region.nameEnd ? [{ range: region.nameEnd.range, hoverMessage: region.nameEnd.text }] : [])
 			);
 			if (region.description) {
-				tokensBuilder.push(
-					region.description.range,
-					'comment',
+				descriptionDecorations.push(
+					{ range: region.description.range, hoverMessage: region.description.text }
 				);
 			}
-			tokensBuilder.push(
-				region.keyEnd.range,
-				'keyword',
-			);
-			if (region.nameEnd) {
-				tokensBuilder.push(
-					region.nameEnd.range,
-					'decorator',
-				);
-			}
-		}
-		for (const tag of this.tags) {
-			tokensBuilder.push(
-				tag.key.range,
-				'keyword',
-			);
-			tokensBuilder.push(
-				tag.name.range,
-				'decorator',
-			);
+		});
+		this.tags.forEach((tag) => {
+			keyDecorations.push({ range: tag.key.range, hoverMessage: tag.key.text });
+			nameDecorations.push({ range: tag.name.range, hoverMessage: tag.name.text });
 			if (tag.description) {
-				tokensBuilder.push(
-					tag.description.range,
-					'comment',
-				);
+				descriptionDecorations.push({ range: tag.description.range, hoverMessage: tag.description.text });
 			}
-		}
-		this.semanticTokens = tokensBuilder.build();
+		});
+
+		editor.setDecorations(this.keyDecorationType, keyDecorations);
+		editor.setDecorations(this.nameDecorationType, nameDecorations);
+		editor.setDecorations(this.descriptionDecorationType, descriptionDecorations);
 	}
 
 	//#region providers
@@ -258,11 +256,6 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 		: ProviderResult<DocumentSymbol[] | SymbolInformation[]> {
 		this.update(document);
 		return this.symbols;
-	}
-
-	provideDocumentSemanticTokens(document: TextDocument, token: CancellationToken): ProviderResult<SemanticTokens> {
-		this.update(document);
-		return this.semanticTokens;
 	}
 
 	//#endregion providers

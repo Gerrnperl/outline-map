@@ -165,3 +165,13 @@ typo
 #### Fix 
 
 - search field size
+
+### [1.2.2] - 2023-10-21
+
+#### Fix
+
+- Semantic highlight conflict #49
+
+#### Add
+
+- Text decoration for region and tag #49

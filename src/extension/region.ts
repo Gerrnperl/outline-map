@@ -86,13 +86,29 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 
 
 	constructor() {
-		this.keyDecorationType = window.createTextEditorDecorationType({
+		const regionHighlightStyle = config.regionHighlightStyle();
+		this.keyDecorationType = window.createTextEditorDecorationType(regionHighlightStyle?.key || {
 			color: new ThemeColor('symbolIcon.keywordForeground')
 		});
-		this.nameDecorationType = window.createTextEditorDecorationType({
+		this.nameDecorationType = window.createTextEditorDecorationType(regionHighlightStyle?.name || {
 			color: new ThemeColor('symbolIcon.variableForeground')
 		});
-		this.descriptionDecorationType = window.createTextEditorDecorationType({
+		this.descriptionDecorationType = window.createTextEditorDecorationType(regionHighlightStyle?.description || {
+		});
+	}
+
+	updateDecorationsConfig() {
+		const regionHighlightStyle = config.regionHighlightStyle();
+		this.keyDecorationType.dispose();
+		this.keyDecorationType = window.createTextEditorDecorationType(regionHighlightStyle?.key || {
+			color: new ThemeColor('symbolIcon.keywordForeground')
+		});
+		this.nameDecorationType.dispose();
+		this.nameDecorationType = window.createTextEditorDecorationType(regionHighlightStyle?.name || {
+			color: new ThemeColor('symbolIcon.variableForeground')
+		});
+		this.descriptionDecorationType.dispose();
+		this.descriptionDecorationType = window.createTextEditorDecorationType(regionHighlightStyle?.description || {
 		});
 	}
 
@@ -219,24 +235,24 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 		const descriptionDecorations: DecorationOptions[] = [];
 		this.regions.forEach((region) => {
 			keyDecorations.push(
-				{ range: region.key.range, hoverMessage: region.key.text },
-				{ range: region.keyEnd.range, hoverMessage: region.keyEnd.text }
+				{ range: region.key.range },
+				{ range: region.keyEnd.range}
 			);
 			nameDecorations.push(
-				{ range: region.name.range, hoverMessage: region.name.text },
-				...(region.nameEnd ? [{ range: region.nameEnd.range, hoverMessage: region.nameEnd.text }] : [])
+				{ range: region.name.range, hoverMessage: `${region.key.text} **${region.name.text}** ${region.description?.text || ''}` },
+				...(region.nameEnd ? [{ range: region.nameEnd.range, hoverMessage: `${region.key.text} **${region.name.text}** ${region.description?.text || ''}` }] : [])
 			);
 			if (region.description) {
 				descriptionDecorations.push(
-					{ range: region.description.range, hoverMessage: region.description.text }
+					{ range: region.description.range}
 				);
 			}
 		});
 		this.tags.forEach((tag) => {
-			keyDecorations.push({ range: tag.key.range, hoverMessage: tag.key.text });
-			nameDecorations.push({ range: tag.name.range, hoverMessage: tag.name.text });
+			keyDecorations.push({ range: tag.key.range });
+			nameDecorations.push({ range: tag.name.range, hoverMessage: `${tag.key.text} **${tag.name.text}** ${tag.description?.text || ''}` });
 			if (tag.description) {
-				descriptionDecorations.push({ range: tag.description.range, hoverMessage: tag.description.text });
+				descriptionDecorations.push({ range: tag.description.range });
 			}
 		});
 

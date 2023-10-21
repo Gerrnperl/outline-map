@@ -24,6 +24,11 @@ export const config = {
 	debug: () => getConfig('debug') as boolean,
 	regionEnabled: () => getConfig('enabled', 'outline-map.region') as boolean,
 	regionHighlight: () => getConfig('highlight', 'outline-map.region') as boolean,
+	regionHighlightStyle: () => getConfig('highlightStyle', 'outline-map.region') as {
+		key?: object,
+		name?: object,
+		description?: object,
+	},
 	regionStart: () => getConfig('startRegion', 'outline-map.region') as string,
 	regionEnd: () => getConfig('endRegion', 'outline-map.region') as string,
 	tag: () => getConfig('tag', 'outline-map.region') as string,

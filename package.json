@@ -2,7 +2,7 @@
 	"name": "outline-map",
 	"displayName": "Outline Map",
 	"description": "A visual, interactive outline map that combinesAlternative Minimap. the clarity of the outline with the intuitive overview of the minimap. Enhanced version of vscode built-in outline.",
-	"version": "1.2.1",
+	"version": "1.2.2",
 	"repository": {
 		"url": "https://github.com/Gerrnperl/outline-map.git"
 	},
@@ -187,7 +187,48 @@
 				"outline-map.region.highlight": {
 					"type": "boolean",
 					"default": true,
-					"markdownDescription": "Enable semantic highlighting for custom regions and tags in the editor."
+					"markdownDescription": "Enable highlighting for custom regions and tags in the editor."
+				},
+				"outline-map.region.highlightStyle": {
+					"type": "object",
+					"required": [],
+					"default": {},
+					"markdownDescription": "Text decoration style for regions and tags definition. See [DecorationRenderOptions](https://code.visualstudio.com/api/references/vscode-api#DecorationRenderOptions) for more details.",
+					"properties": {
+						"key": {
+							"type": "object",
+							"description": "The text decoration style for the key of the region or tag.",
+							"required": [],
+							"default": {},
+							"properties": {
+								"color": { "type": "string" },
+								"backgroundColor": { "type": "string" },
+								"overviewRulerColor": { "type": "string" }
+							}
+						},
+						"name": {
+							"type": "object",
+							"description": "The text decoration style for the name of the region or tag.",
+							"required": [],
+							"default": {},
+							"properties": {
+								"color": { "type": "string" },
+								"backgroundColor": { "type": "string" },
+								"overviewRulerColor": { "type": "string" }
+							}
+						},
+						"description": {
+							"type": "object",
+							"description": "The text decoration style for the description of the region or tag.",
+							"required": [],
+							"default": {},
+							"properties": {
+								"color": { "type": "string" },
+								"backgroundColor": { "type": "string" },
+								"overviewRulerColor": { "type": "string" }
+							}
+						}
+					}
 				},
 				"outline-map.region.startRegion": {
 					"type": "string",

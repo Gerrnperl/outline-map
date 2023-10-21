@@ -116,6 +116,9 @@ export function activate(context: ExtensionContext) {
 		const regionSymbolProvider = new RegionProvider();
 		languages.registerDocumentSymbolProvider({ scheme: 'file' }, regionSymbolProvider);
 		languages.registerFoldingRangeProvider({ scheme: 'file' }, regionSymbolProvider);
+		workspace.onDidChangeConfiguration(() => {
+			regionSymbolProvider.updateDecorationsConfig();
+		});
 		// if (config.regionHighlight()) {
 		// 	languages.registerDocumentSemanticTokensProvider({ scheme: 'file' }, regionSymbolProvider, tokensLegend);
 		// }

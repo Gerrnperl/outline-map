@@ -456,6 +456,12 @@
 				"title": "Exclude globally",
 				"category": "outline-map",
 				"shortTitle": "Exclude globally"
+			},
+			{
+				"command": "outline-map.workspace.goToLocation",
+				"title": "Go to location of symbol",
+				"category": "outline-map",
+				"shortTitle": "Go to location of symbol"
 			}
 		],
 		"colors": [

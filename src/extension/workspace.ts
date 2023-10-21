@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { CancellationToken, Command, DocumentSymbol, Event, EventEmitter, Memento, Position, ProviderResult, ThemeColor, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri, workspace } from 'vscode';
+import { CancellationToken, Command, DocumentSymbol, Event, EventEmitter, Memento, Position, ProviderResult, ThemeColor, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri, commands, workspace } from 'vscode';
 import { ColorTable, SymbolKindStr, mapIcon } from '../utils';
 import { SymbolNode } from '../common';
 import { config } from './config';
@@ -31,9 +31,11 @@ interface SymbolItem {
 
 interface FileItem {
 	type: 'file'
-	uri: Uri;
+	uri: string;
 	name: string;
 	children: SymbolItem[];
+	order: number;
+	lastClick?: number;
 }
 
 interface ConfigItem {
@@ -72,31 +74,28 @@ export class SymbolTreeItem extends TreeItem {
 		if (inner.type === 'file') {
 			const paths = inner.name?.split('/');
 			this.label = paths.pop();
+			
 			if (paths[0] === '') {
 				this.description = paths.join('/');
 			}
 			else {
 				this.description = paths.join('/');
 			}
-			// this.iconPath = new ThemeIcon('file');
-			this.tooltip = inner.uri.path;
+			this.tooltip = uri.path;
 			this.iconPath = ThemeIcon.File;
-			this.resourceUri = inner.uri;
+			this.resourceUri = uri;
 		}
 		else {
 			this.iconPath = new ThemeIcon(mapIcon(inner.kind), new ThemeColor(ColorTable[inner.kind]));
 			this.command = {
 				title: 'Jump to',
-				command: 'editor.action.goToLocations',
+				command: 'outline-map.workspace.goToLocation',
 				arguments: [
-					this.uri,
+					this.uri.toString(),
 					new Position(
 						inner.range.start.line,
 						inner.range.start.char
-					),
-					[],
-					'goto',
-					''
+					)
 				],
 			};
 		}
@@ -120,27 +119,57 @@ export class WorkspaceSymbols implements TreeDataProvider<SymbolTreeItem>{
 
 	excludes: ConfigItem[] = [];
 
-	entryMap = new Map<string, SymbolItem[]>();
+	entryMap = new Map<string, FileItem>();
+	
+	// the time of the last click
+	// clickTime: Map<string, number> = new Map<string, number>();
+	// orderMap: Map<string, number> = new Map<string, number>();
 
 	filepathMap = new Map<string, SymbolTreeItem>();
 
 	workspaceFolders: Uri[] = [];
 	constructor(state: Memento, workspaceFolders: Uri[]) {
 		this.state = state;
-		this.entryMap = new Map<string, SymbolItem[]>();
+		this.entryMap = new Map<string, FileItem>();
 		this.workspaceFolders = workspaceFolders;
 		this.updateConfig();
-		const entry = this.state.get<Map<string, SymbolItem[]>>('workspace-symbols');
+		this.init();
+		const entry = this.state.get<Map<string, FileItem>>('workspace-symbols');
 		if (entry) {
-			this.entryMap = new Map<string, SymbolItem[]>(entry);
+			this.entryMap = new Map<string, FileItem>(entry);
 			// remove empty entry
-			for (const [uri, children] of entry) {
-				if (children.length === 0) {
+			for (const [uri, file] of entry) {
+				if (file.children.length === 0) {
 					this.entryMap.delete(uri);
 				}
 			}
 		}
 
+	}
+
+	goToLocation(uri: string, position: Position) { 
+		if (!this.entryMap.has(uri)) {
+			return;
+		}
+		this.entryMap.get(uri)!.lastClick = Date.now();
+		this.updateOrder();
+		commands.executeCommand('editor.action.goToLocations', Uri.parse(uri), position, [], 'goto', '');
+	}
+
+	updateOrder() {
+		const orderMap = new Map<string, number>();
+		const order = Array.from(this.entryMap.entries())
+			.sort((a, b) => {
+				if (b[1].order < 5 && a[1].order < 5) {
+					return a[1].order! - b[1].order!;
+				}
+				return (b[1].lastClick || 0) - (a[1].lastClick || 0);
+			})
+			.map(item => item[0]);
+		order.forEach((uri, index) => {
+			this.entryMap.get(uri)!.order = index;
+		});
+		this._onDidChangeTreeData.fire();
 	}
 
 	//#region Config
@@ -277,15 +306,17 @@ export class WorkspaceSymbols implements TreeDataProvider<SymbolTreeItem>{
 	 * @returns 
 	 */
 	updateSymbol(symbol: SymbolNode[], uri: Uri) {
-		if (this.matchConfig(new SymbolTreeItem({
+		const uriStr = uri.toString();
+		const file: FileItem = {
 			type: 'file',
-			name: uri.toString(),
+			name: this.mapDocumentUri(uri),
 			children: [] as SymbolItem[],
-			uri,
-		} as FileItem, uri, false), this.excludes)) {
+			uri: uriStr,
+			order: this.entryMap.has(uriStr) ? this.entryMap.get(uriStr)!.order : this.entryMap.size,
+		};
+		if (this.matchConfig(new SymbolTreeItem(file, uri, false), this.excludes)) {
 			return;
 		}
-		const uriStr = uri.toString();
 		const symbolItem = this.mapSymbolNode(symbol, uri);
 		if (!symbolItem || symbolItem.length === 0) {
 			if (this.entryMap.has(uriStr)) {
@@ -294,7 +325,8 @@ export class WorkspaceSymbols implements TreeDataProvider<SymbolTreeItem>{
 			}
 			return;
 		}
-		this.entryMap.set(uriStr, symbolItem);
+		file.children = symbolItem;
+		this.entryMap.set(uriStr, file);
 		this.apply();
 	}
 
@@ -309,6 +341,7 @@ export class WorkspaceSymbols implements TreeDataProvider<SymbolTreeItem>{
 			const uriStr = uri.toString();
 			if (this.entryMap.has(uriStr)) {
 				this.entryMap.delete(uriStr);
+				this.updateOrder();
 				changed = true;
 			}
 		}
@@ -410,19 +443,10 @@ export class WorkspaceSymbols implements TreeDataProvider<SymbolTreeItem>{
 		if (element) {
 			return element.children;
 		}
-		const result = Array.from(this.entryMap.entries()).map(([uri, children]) => {
-			const uriParsed = Uri.parse(uri);
-			const fileItem: FileItem = {
-				type: 'file' as const,
-				uri: uriParsed,
-				name: this.mapDocumentUri(uriParsed),
-				children,
-			};
-			return fileItem;
-		});
-		console.log('file-items', result);
+		const result = Array.from(this.entryMap.values()).sort((a, b) => (b.order || Infinity) - (a.order || Infinity));
+		// console.log('file-items', result);
 		return result.map(item => {
-			const treeItem = new SymbolTreeItem(item, item.uri);
+			const treeItem = new SymbolTreeItem(item, Uri.parse(item.uri));
 			// this.mapFilepath(treeItem);
 			return treeItem;
 		});

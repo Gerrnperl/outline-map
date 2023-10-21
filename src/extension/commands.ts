@@ -1,4 +1,4 @@
-import { Memento, commands } from 'vscode';
+import { Memento, Position, Uri, commands } from 'vscode';
 import { OutlineView } from './outline';
 import { config } from './config';
 import { ChangeDepthMsg, FocusMsg, PinSMsg, PinStatus } from '../common';
@@ -119,6 +119,10 @@ function workspaceExcludeName(target: 'global' | 'workspace' | 'folder', withUri
 	workspaceSymbols.excludeName(item, target, withUri);
 }
 
+function workspaceGotoLocation(workspaceSymbols: WorkspaceSymbols, uri: string, pos: Position) {
+	workspaceSymbols.goToLocation(uri, pos);
+}
+
 export const WorkspaceCommandList: Command[] = [
 	{
 		name: 'outline-map.workspace.closeFile',
@@ -139,5 +143,9 @@ export const WorkspaceCommandList: Command[] = [
 	{
 		name: 'outline-map.workspace.excludeInFolder',
 		fn: workspaceExcludeName.bind(null, 'folder', false),
-	}
+	},
+	{
+		name: 'outline-map.workspace.goToLocation',
+		fn: workspaceGotoLocation,
+	},
 ];

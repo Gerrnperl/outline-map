@@ -33,4 +33,6 @@ export const config = {
 	regionEnd: () => getConfig('endRegion', 'outline-map.region') as string,
 	tag: () => getConfig('tag', 'outline-map.region') as string,
 	workspaceEnabled: () => getConfig('enabled', 'outline-map.workspace') as boolean,
+	fixedFiles: () => getConfig('fixedFiles', 'outline-map.workspace') as number,
+	closeFileTimeout: () => getConfig('closeFileTimeout', 'outline-map.workspace') as number,
 };

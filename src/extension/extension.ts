@@ -18,23 +18,21 @@ import { FocusMsg, ScrollMsg } from '../common';
 import { config } from './config';
 import { debounce, throttle } from '../utils';
 import { WorkspaceSymbols } from './workspace';
-import { RegionProvider  } from './region';
+import { RegionProvider } from './region';
+
+let workspaceSymbols = undefined as WorkspaceSymbols | undefined;
 
 // called when extension is activated
 // extension is activated the very first time the command is executed
 export function activate(context: ExtensionContext) {
-	
-	// let disposable = vscode.commands.registerCommand('outline-map.helloWorld', () => {
-	// 	vscode.window.showInformationMessage('Hello World from Outline Map!');
-	// });
+
 	commands.executeCommand('setContext', 'outline-map.workspace.enabled', true);
-	let workspaceSymbols = undefined as WorkspaceSymbols | undefined;
 	if (config.workspaceEnabled()) {
 		workspaceSymbols = new WorkspaceSymbols(context.workspaceState, workspace.workspaceFolders?.map(folder => folder.uri) || []);
 		const treeView = window.createTreeView('outline-map-workspace', {
 			treeDataProvider: workspaceSymbols,
 			showCollapseAll: true,
-		});	
+		});
 		context.subscriptions.push(
 			// File delete
 			workspace.onDidDeleteFiles(event => {
@@ -101,7 +99,7 @@ export function activate(context: ExtensionContext) {
 
 		languages.onDidChangeDiagnostics(debounce((event: DiagnosticChangeEvent) => {
 			const docUri = window.activeTextEditor?.document.uri || event.uris[0];
-			const diagnostics =  languages.getDiagnostics(docUri);
+			const diagnostics = languages.getDiagnostics(docUri);
 			outlineView.updateDiagnostics(diagnostics);
 		}, 300)),
 
@@ -125,6 +123,3 @@ export function activate(context: ExtensionContext) {
 	}
 
 }
-
-// called when extension is deactivated
-// export function deactivate() {}

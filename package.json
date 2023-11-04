@@ -373,6 +373,16 @@
 							}
 						}
 					}
+				},
+				"outline-map.workspace.fixedFiles": {
+					"type": "number",
+					"description": "Specifies the number of files that remain static at the top of the workspace symbol list. Files outside this value will be sorted to the beginning when clicked. Set to 0 to disable this feature.",
+					"default": 0
+				},
+				"outline-map.workspace.closeFileTimeout": {
+					"type": "number",
+					"description": "Specifies the time (in seconds) to close the file when it is not clicked. Set to 0 to disable this feature.",
+					"default": 0
 				}
 			}
 		},

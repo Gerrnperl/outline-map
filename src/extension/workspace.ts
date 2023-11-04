@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { CancellationToken, Command, DocumentSymbol, Event, EventEmitter, Memento, Position, ProviderResult, ThemeColor, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri, commands, workspace } from 'vscode';
+import { CancellationToken, Command, Disposable, DocumentSymbol, Event, EventEmitter, Memento, Position, ProviderResult, ThemeColor, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri, commands, workspace } from 'vscode';
 import { ColorTable, SymbolKindStr, mapIcon } from '../utils';
 import { SymbolNode } from '../common';
 import { config } from './config';
@@ -120,10 +120,6 @@ export class WorkspaceSymbols implements TreeDataProvider<SymbolTreeItem>{
 	excludes: ConfigItem[] = [];
 
 	entryMap = new Map<string, FileItem>();
-	
-	// the time of the last click
-	// clickTime: Map<string, number> = new Map<string, number>();
-	// orderMap: Map<string, number> = new Map<string, number>();
 
 	filepathMap = new Map<string, SymbolTreeItem>();
 
@@ -133,7 +129,7 @@ export class WorkspaceSymbols implements TreeDataProvider<SymbolTreeItem>{
 		this.entryMap = new Map<string, FileItem>();
 		this.workspaceFolders = workspaceFolders;
 		this.updateConfig();
-		this.init();
+		// this.init();
 		const entry = this.state.get<Map<string, FileItem>>('workspace-symbols');
 		if (entry) {
 			this.entryMap = new Map<string, FileItem>(entry);
@@ -144,6 +140,7 @@ export class WorkspaceSymbols implements TreeDataProvider<SymbolTreeItem>{
 				}
 			}
 		}
+		this.skipCloseTime();
 
 	}
 
@@ -152,17 +149,21 @@ export class WorkspaceSymbols implements TreeDataProvider<SymbolTreeItem>{
 			return;
 		}
 		this.entryMap.get(uri)!.lastClick = Date.now();
-		this.updateOrder();
+		if (config.fixedFiles() !== 0 && this.entryMap.get(uri)!.order >= config.fixedFiles()) {
+			this.updateOrder();
+		}
+		if (config.closeFileTimeout() > 0) {
+			this.checkCloseFile();
+		}
 		commands.executeCommand('editor.action.goToLocations', Uri.parse(uri), position, [], 'goto', '');
 	}
 
+	/**
+	 * Update the order of the workspace symbols
+	 */
 	updateOrder() {
-		const orderMap = new Map<string, number>();
 		const order = Array.from(this.entryMap.entries())
 			.sort((a, b) => {
-				if (b[1].order < 5 && a[1].order < 5) {
-					return a[1].order! - b[1].order!;
-				}
 				return (b[1].lastClick || 0) - (a[1].lastClick || 0);
 			})
 			.map(item => item[0]);
@@ -170,6 +171,49 @@ export class WorkspaceSymbols implements TreeDataProvider<SymbolTreeItem>{
 			this.entryMap.get(uri)!.order = index;
 		});
 		this._onDidChangeTreeData.fire();
+	}
+
+	
+	/**
+	 * Update the last click time of each file to skip the time when vscode is closed
+	 */
+	skipCloseTime() {
+		const now = Date.now();
+		const deltaTime = now - this.state.get<number>('time-stamp', now);
+		this.entryMap.forEach(file => {
+			file.lastClick = file.lastClick ? file.lastClick + deltaTime : 0;
+		});
+		this.updateCurrentTime();
+	}
+	
+	// If we set the exit time in the deactivate event or the dispose method, 
+	// this will not succeed (it looks like the state.update is called, 
+	// but the callback that sets the completion is not called)
+	// Update the time-stamp for `skipCloseTime` periodically
+	updateCurrentTime() {
+		this.state.update('time-stamp', Date.now()).then(()=>{
+			setTimeout(()=>{
+				this.updateCurrentTime();
+			}, 1000);
+		});
+	}
+
+
+	checkCloseFile() {
+		const timeout = config.closeFileTimeout() * 1000;
+		if (timeout <= 0) {
+			return;
+		}
+		const now = Date.now();
+		const toDelete: string[] = [];
+		this.entryMap.forEach((file, uri) => {
+			if (file.lastClick && (now - file.lastClick) > timeout) {
+				toDelete.push(uri);
+			}
+		});
+		if (toDelete.length > 0) {
+			this.removeDocuments(toDelete.map(uri => Uri.parse(uri)));
+		}
 	}
 
 	//#region Config
@@ -307,13 +351,17 @@ export class WorkspaceSymbols implements TreeDataProvider<SymbolTreeItem>{
 	 */
 	updateSymbol(symbol: SymbolNode[], uri: Uri) {
 		const uriStr = uri.toString();
-		const file: FileItem = {
-			type: 'file',
-			name: this.mapDocumentUri(uri),
-			children: [] as SymbolItem[],
-			uri: uriStr,
-			order: this.entryMap.has(uriStr) ? this.entryMap.get(uriStr)!.order : this.entryMap.size,
-		};
+		let file = this.entryMap.get(uriStr);
+		if (!file) {
+			file = {
+				type: 'file',
+				name: this.mapDocumentUri(uri),
+				children: [] as SymbolItem[],
+				uri: uriStr,
+				order: this.entryMap.size,
+				lastClick: 0,
+			};
+		}
 		if (this.matchConfig(new SymbolTreeItem(file, uri, false), this.excludes)) {
 			return;
 		}
@@ -406,7 +454,7 @@ export class WorkspaceSymbols implements TreeDataProvider<SymbolTreeItem>{
 				return null;
 			}
 			for (const child of symbol.children) {
-				const childItem = map(child); //map(child, result);
+				const childItem = map(child);
 				if (childItem) {
 					result.children.push(childItem);
 				}
@@ -423,7 +471,7 @@ export class WorkspaceSymbols implements TreeDataProvider<SymbolTreeItem>{
 		};
 		const symbolItem: SymbolItem[] = [];
 		for (const sym of symbol) {
-			const item = map(sym); //map(sym, null);
+			const item = map(sym);
 			if (item) {
 				symbolItem.push(item);
 			}
@@ -443,11 +491,10 @@ export class WorkspaceSymbols implements TreeDataProvider<SymbolTreeItem>{
 		if (element) {
 			return element.children;
 		}
-		const result = Array.from(this.entryMap.values()).sort((a, b) => (b.order || Infinity) - (a.order || Infinity));
-		// console.log('file-items', result);
+		const result = Array.from(this.entryMap.values())
+			.sort((a, b) => a.order - b.order);
 		return result.map(item => {
 			const treeItem = new SymbolTreeItem(item, Uri.parse(item.uri));
-			// this.mapFilepath(treeItem);
 			return treeItem;
 		});
 	}

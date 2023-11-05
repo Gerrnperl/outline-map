@@ -74,6 +74,7 @@ export function activate(context: ExtensionContext) {
 	});
 
 
+
 	context.subscriptions.push(
 		window.registerWebviewViewProvider('outline-map-view', outlineView),
 		//#region event
@@ -90,6 +91,9 @@ export function activate(context: ExtensionContext) {
 		// cursor move
 		window.onDidChangeTextEditorSelection(debounce((event: TextEditorSelectionChangeEvent) => {
 			outlineView.focus(event.selections);
+			if (window.activeTextEditor?.visibleRanges){
+				outlineView.updateViewPort(window.activeTextEditor.visibleRanges[0]);
+			}
 			if (config.follow() === 'cursor') {
 				outlineView.postMessage({
 					type: 'scroll',
@@ -102,8 +106,8 @@ export function activate(context: ExtensionContext) {
 
 		// scroll
 		window.onDidChangeTextEditorVisibleRanges(throttle((event: TextEditorVisibleRangesChangeEvent) => {
-			outlineView.updateViewPort(event.visibleRanges[0]);
 			if (config.follow() === 'viewport') {
+				outlineView.updateViewPort(event.visibleRanges[0]);
 				outlineView.postMessage({
 					type: 'scroll',
 					data: {

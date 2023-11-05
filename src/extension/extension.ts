@@ -21,6 +21,7 @@ import { WorkspaceSymbols } from './workspace';
 import { RegionProvider } from './region';
 
 let workspaceSymbols = undefined as WorkspaceSymbols | undefined;
+let regionSymbolProvider = undefined as RegionProvider | undefined;
 
 // called when extension is activated
 // extension is activated the very first time the command is executed
@@ -34,24 +35,43 @@ export function activate(context: ExtensionContext) {
 			showCollapseAll: true,
 		});
 		context.subscriptions.push(
-			// File delete
-			workspace.onDidDeleteFiles(event => {
+			workspace.onDidDeleteFiles(event => { // File delete
 				workspaceSymbols?.removeDocuments(event.files);
 			}),
-			// File rename
-			workspace.onDidRenameFiles(event => {
+			workspace.onDidRenameFiles(event => { // File rename
 				workspaceSymbols?.renameDocuments(event.files);
 			}),
-
-			// config change
-			workspace.onDidChangeConfiguration(event => {
+			workspace.onDidChangeConfiguration(event => { // config change
 				workspaceSymbols?.updateConfig();
 			}),
 			treeView,
 		);
 	}
 
-	const outlineView = new OutlineView(context, workspaceSymbols, context.globalState.get('searchField', false));
+	if (config.regionEnabled()) {
+		regionSymbolProvider = new RegionProvider();
+		// Registering a DocumentSymbolProvider allows to go to
+		// regions and tags with vscode's Go to Symbol feature, 
+		// but this will pollute the built-in outline and breadcrumbs. 
+		// Sometimes the region and tag symbols will override
+		// the native symbols in the breadcrumbs.
+		// So we only register it when the user wants to.
+		config.regionRegisterSymbolProvider() &&
+			languages.registerDocumentSymbolProvider({ scheme: 'file' }, regionSymbolProvider);
+		languages.registerFoldingRangeProvider({ scheme: 'file' }, regionSymbolProvider);
+		workspace.onDidChangeConfiguration(() => {
+			regionSymbolProvider?.updateDecorationsConfig();
+		});
+	}
+
+	const outlineView = new OutlineView({
+		context,
+		workspaceSymbols,
+		// if we have registered the region symbol provider,
+		// we don't need to pass the region provider to the outline view for manual update.
+		regionProvider: config.regionRegisterSymbolProvider() ? undefined : regionSymbolProvider,
+		initialSearch: context.globalState.get('searchField', false),
+	});
 
 
 	context.subscriptions.push(
@@ -110,16 +130,6 @@ export function activate(context: ExtensionContext) {
 		//#endregion command
 	);
 
-	if (config.regionEnabled()) {
-		const regionSymbolProvider = new RegionProvider();
-		languages.registerDocumentSymbolProvider({ scheme: 'file' }, regionSymbolProvider);
-		languages.registerFoldingRangeProvider({ scheme: 'file' }, regionSymbolProvider);
-		workspace.onDidChangeConfiguration(() => {
-			regionSymbolProvider.updateDecorationsConfig();
-		});
-		// if (config.regionHighlight()) {
-		// 	languages.registerDocumentSemanticTokensProvider({ scheme: 'file' }, regionSymbolProvider, tokensLegend);
-		// }
-	}
+
 
 }

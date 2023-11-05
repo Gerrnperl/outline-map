@@ -4,6 +4,7 @@
 	"om.config.color.deprecationMessage": "颜色配置已经被废弃，请使用`workbench.colorCustomizations`进行配置。符号颜色配置：`symbolIcon.*`；大纲颜色配置：`outline.*`。",
 	"om.config.color.description": "自定义指定项目的颜色。",
 	"om.config.region.enabled.description": "启用自定义区域和标签支持。默认情况下，区域以标签`#region <name>`开头，以标签`#endregion <name>`结尾。此扩展程序不会对特定语言进行语义分析，也可能将不属于注释部分的内容识别为标签。",
+	"om.config.region.registerSymbolProvider.description": "是否注册区域和标签的符号提供程序。<br/>如果设置为false，则区域和标签将不会出现在内置的符号列表中，这包括原生的大纲视图、导航路径`breadcrumbs`、转到编辑器符号`Go to Symbol`等，但不影响Outline Map的视图。",
 	"om.config.region.highlight.description": "启用自定义区域和标签的高亮显示。",
 	"om.config.region.highlightStyle.description": "区域和标签定义的文本装饰样式。有关更多详细信息，请参阅[DecorationRenderOptions](https://code.visualstudio.com/api/references/vscode-api#DecorationRenderOptions)。",
 	"om.config.region.highlightStyle.properties.key.description": "区域和标签的关键字样式。",

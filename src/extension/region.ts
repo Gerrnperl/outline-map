@@ -126,11 +126,11 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 	 * if the document has changed, update the regions and tags arrays
 	 * @param document 
 	 */
-	update(document: TextDocument) {
+	update(document: TextDocument, cancel?: CancellationToken) {
 		if (document !== this.document || document.version !== this.documentVersion) {
 			this.document = document;
 			this.documentVersion = document.version;
-			this.parseDocument();
+			this.parseDocument(cancel);
 		}
 	}
 
@@ -138,21 +138,26 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 	 * Parse the document and update the regions and tags arrays
 	 * @param document 
 	 */
-	parseDocument() {
+	parseDocument(cancel?: CancellationToken) {
 		if (!this.document) return;
 		this.startRegion = config.regionStart();
 		this.endRegion = config.regionEnd();
 		this.tag = config.tag();
 		this.clear();
 		const unpaired: Tag[] = [];
+		const regions: Region[] = [];
+		const tags: Tag[] = [];
 		for (let i = 0; i < this.document.lineCount; i++) {
+			if (cancel && cancel.isCancellationRequested) {
+				return;
+			}
 			const line = this.document.lineAt(i);
 			if (line.isEmptyOrWhitespace) continue;
 			const match = this.matchLine(line.text, i);
 			if (!match) continue;
 
 			if (match.type !== 'region-end' && match.name) {
-				(match.type === 'tag' ? this.tags : unpaired).push({ 
+				(match.type === 'tag' ? tags : unpaired).push({ 
 					name: match.name,
 					at: line.range,
 					key: match.key,
@@ -176,7 +181,7 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 			const startTag = unpaired[startIndex];
 			unpaired.splice(startIndex, 1);
 
-			this.regions.push({
+			regions.push({
 				key: startTag.key,
 				keyEnd: match.key,
 				name: startTag.name,
@@ -186,6 +191,8 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 				description: startTag.description,
 			});
 		}
+		this.regions = regions;
+		this.tags = tags;
 		this.updateSymbols();
 		this.updateFolding();
 		this.updateDecorations();
@@ -264,13 +271,15 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 	//#region providers
 
 	provideFoldingRanges(document: TextDocument, context: FoldingContext, token: CancellationToken): ProviderResult<FoldingRange[]> {
-		this.update(document);
+		if (token.isCancellationRequested) return;
+		this.update(document, token);
 		return this.folding;
 	}
 
 	provideDocumentSymbols(document: TextDocument, token: CancellationToken)
 		: ProviderResult<DocumentSymbol[] | SymbolInformation[]> {
-		this.update(document);
+		if (token.isCancellationRequested) return;
+		this.update(document, token);
 		return this.symbols;
 	}
 

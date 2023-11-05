@@ -1,9 +1,18 @@
 import { config } from './config';
-import { commands, DocumentSymbol, ExtensionContext, TextDocument, Uri, WebviewView, WebviewViewProvider, window, Range, Selection, Position, Diagnostic, DiagnosticSeverity } from 'vscode';
+import { commands, DocumentSymbol, ExtensionContext, TextDocument, Uri, WebviewView, WebviewViewProvider, window, Range, Selection, Position, Diagnostic, DiagnosticSeverity, CancellationTokenSource } from 'vscode';
 import { Msg, UpdateMsg, Op, UpdateOp, DeleteOp, InsertOp, SymbolNode, MoveOp, PinStatus, FocusMsg } from '../common';
 import { WorkspaceSymbols } from './workspace';
+import { RegionProvider } from './region';
 
-
+/**
+ * Initialization options for the outline view.
+ */
+interface OutlineViewInit {
+	context: ExtensionContext;
+	workspaceSymbols?: WorkspaceSymbols;
+	regionProvider?: RegionProvider;
+	initialSearch?: boolean;
+}
 
 /**
  * Provides the outline view.
@@ -30,12 +39,15 @@ export class OutlineView implements WebviewViewProvider {
 
 	private workspaceSymbols: WorkspaceSymbols | undefined;
 
+	private regionProvider: RegionProvider | undefined;
+
 	private initialSearch: boolean;
 
-	constructor(context: ExtensionContext, workspaceSymbols?: WorkspaceSymbols, initialSearch = false) {
-		this.extensionUri = context.extensionUri;
-		this.workspaceSymbols = workspaceSymbols;
-		this.initialSearch = initialSearch;
+	constructor(init: OutlineViewInit) {
+		this.extensionUri = init.context.extensionUri;
+		this.workspaceSymbols = init.workspaceSymbols;
+		this.regionProvider = init.regionProvider;
+		this.initialSearch = init.initialSearch || false;
 	}
 
 	pin(pinStatus: PinStatus) {
@@ -346,7 +358,7 @@ export class OutlineView implements WebviewViewProvider {
 	}
 
 	update(textDocument: TextDocument) {
-		const newOutlineTree = new OutlineTree(textDocument);
+		const newOutlineTree = new OutlineTree(textDocument, this.regionProvider);
 		newOutlineTree.updateSymbols().then(() => {
 			this.workspaceSymbols?.updateSymbol(newOutlineTree.getNodes(), textDocument.uri);
 			const patcher = new Patcher(this.outlineTree?.getNodes() || [], newOutlineTree.getNodes());
@@ -371,6 +383,8 @@ export class OutlineTree {
 
 	private textDocument: TextDocument;
 
+	private regionProvider?: RegionProvider;
+
 	private nodes: SymbolNode[] = [];
 
 	/** The maximum number of times to try to update the symbols before giving up. */
@@ -379,8 +393,9 @@ export class OutlineTree {
 	/** Times has tried to update the symbols. */
 	private attempts = 0;
 
-	constructor(textDocument: TextDocument) {
+	constructor(textDocument: TextDocument, regionProvider?: RegionProvider) {
 		this.textDocument = textDocument;
+		this.regionProvider = regionProvider;
 	}
 
 	getNodes() {
@@ -395,6 +410,19 @@ export class OutlineTree {
 			'vscode.executeDocumentSymbolProvider',
 			this.textDocument.uri,
 		);
+
+		// Get symbols from region provider if this provider is not registered to vscode
+		const regionSymbols = this.regionProvider
+			?.provideDocumentSymbols(this.textDocument, new CancellationTokenSource().token);
+
+		if (regionSymbols) {
+			if ('then' in regionSymbols) {
+				docSymbols?.push(...(await regionSymbols as DocumentSymbol[] || []));
+			}
+			else {
+				docSymbols?.push(...(regionSymbols as DocumentSymbol[]));
+			}
+		}
 
 		if (docSymbols) {
 			config.debug() && console.log(`[Outline-map]: Got symbols from ${this.textDocument.uri.toString()}.`, docSymbols);

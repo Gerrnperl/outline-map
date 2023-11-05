@@ -3,6 +3,7 @@ import { commands, DocumentSymbol, ExtensionContext, TextDocument, Uri, WebviewV
 import { Msg, UpdateMsg, Op, UpdateOp, DeleteOp, InsertOp, SymbolNode, MoveOp, PinStatus, FocusMsg } from '../common';
 import { WorkspaceSymbols } from './workspace';
 import { RegionProvider } from './region';
+import { deepClone } from '../utils';
 
 /**
  * Initialization options for the outline view.
@@ -357,8 +358,36 @@ export class OutlineView implements WebviewViewProvider {
 			</html>`;
 	}
 
+	/**
+	 * Check if the document should be handled by the outline view.
+	 * @param document 
+	 * @returns 
+	 */
+	isValidDocument(document: TextDocument | undefined) {
+		// Note: Some documents like output and vscode settings are not supported 
+		// by the outline view and may interrupt the outline view.
+		// Some documents don't have to be 'file', and their symbolic information may also be supported, 
+		// so we shouldn't use 'file' to filter them, and there may be some schemes that need to be overlooked
+		const ignoreScheme = [
+			'output',
+		];
+		const scheme = document?.uri.scheme;
+		if (!document || !scheme) {
+			return false;
+		}
+		for (const s of ignoreScheme) {
+			if (scheme.startsWith(s)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	update(textDocument: TextDocument) {
-		const newOutlineTree = new OutlineTree(textDocument, this.regionProvider);
+		if (!this.isValidDocument(textDocument)) {
+			return;
+		}
+		const newOutlineTree =new OutlineTree(textDocument, this.regionProvider);
 		newOutlineTree.updateSymbols().then(() => {
 			this.workspaceSymbols?.updateSymbol(newOutlineTree.getNodes(), textDocument.uri);
 			const patcher = new Patcher(this.outlineTree?.getNodes() || [], newOutlineTree.getNodes());
@@ -406,14 +435,16 @@ export class OutlineTree {
 	 * Gets the outline tree.
 	 */
 	async updateSymbols() {
-		const docSymbols = await commands.executeCommand<DocumentSymbol[]>(
+		const docSymbols = (await commands.executeCommand<DocumentSymbol[]>(
 			'vscode.executeDocumentSymbolProvider',
 			this.textDocument.uri,
-		);
+		)) || [];
 
 		// Get symbols from region provider if this provider is not registered to vscode
-		const regionSymbols = this.regionProvider
-			?.provideDocumentSymbols(this.textDocument, new CancellationTokenSource().token);
+		const regionSymbols = deepClone(
+			this.regionProvider
+				?.provideDocumentSymbols(this.textDocument, new CancellationTokenSource().token)
+		);
 
 		if (regionSymbols) {
 			if ('then' in regionSymbols) {

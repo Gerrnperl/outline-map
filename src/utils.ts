@@ -7,11 +7,11 @@
  * SymbolKindStr is a string version of vscode.SymbolKind and
  * extended with custom symbol kinds.
  */
-export type SymbolKindStr = 
-	'File' | 'Module' | 'Namespace' | 'Package' | 'Class' | 'Method' | 
-	'Property' | 'Field' | 'Constructor' | 'Enum' | 'Interface' | 
-	'Function' | 'Variable' | 'Constant' | 'String' | 'Number' | 
-	'Boolean' | 'Array' | 'Object' | 'Key' | 'Null' | 'EnumMember' | 
+export type SymbolKindStr =
+	'File' | 'Module' | 'Namespace' | 'Package' | 'Class' | 'Method' |
+	'Property' | 'Field' | 'Constructor' | 'Enum' | 'Interface' |
+	'Function' | 'Variable' | 'Constant' | 'String' | 'Number' |
+	'Boolean' | 'Array' | 'Object' | 'Key' | 'Null' | 'EnumMember' |
 	'Struct' | 'Event' | 'Operator' | 'TypeParameter' |
 	// custom symbol kinds, not in vscode.SymbolKind
 	'__om_Tag__' | '__om_Region__';
@@ -21,10 +21,10 @@ export type SymbolKindStr =
  * used for iterating all symbol kinds.
  */
 export const SymbolKindList: SymbolKindStr[] = [
-	'File', 'Module', 'Namespace', 'Package', 'Class', 'Method', 
-	'Property', 'Field', 'Constructor', 'Enum', 'Interface', 
-	'Function', 'Variable', 'Constant', 'String', 'Number', 
-	'Boolean', 'Array', 'Object', 'Key', 'Null', 'EnumMember', 
+	'File', 'Module', 'Namespace', 'Package', 'Class', 'Method',
+	'Property', 'Field', 'Constructor', 'Enum', 'Interface',
+	'Function', 'Variable', 'Constant', 'String', 'Number',
+	'Boolean', 'Array', 'Object', 'Key', 'Null', 'EnumMember',
 	'Struct', 'Event', 'Operator', 'TypeParameter',
 	// custom symbol kinds, not in vscode.SymbolKind
 	'__om_Tag__', '__om_Region__',
@@ -67,13 +67,13 @@ export const ColorTable: { [key in SymbolKindStr | 'visibleRange' | 'focusingIte
 };
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-export function debounce(func: Function, delay: number){
+export function debounce(func: Function, delay: number) {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let timer: any = null;
-	
+
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	return function(this: any, ...args: any[]){
-		if (timer){
+	return function (this: any, ...args: any[]) {
+		if (timer) {
 			clearTimeout(timer);
 		}
 		timer = setTimeout(() => {
@@ -83,12 +83,12 @@ export function debounce(func: Function, delay: number){
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-export function throttle(func: Function, limit: number){
+export function throttle(func: Function, limit: number) {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let inThrottle: any = false;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	return function(this: any, ...args: any[]){
-		if (!inThrottle){
+	return function (this: any, ...args: any[]) {
+		if (!inThrottle) {
 			func.apply(this, args);
 			inThrottle = true;
 			setTimeout(() => inThrottle = false, limit);
@@ -116,4 +116,35 @@ export function mapIcon(kind: SymbolKindStr): string {
 		iconName = 'tag';
 	}
 	return iconName;
+}
+
+export function deepClone<T>(obj: T): T {
+	if (obj === null || typeof obj !== 'object') {
+		return obj;
+	}
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	let cloneObj: any;
+	if (Array.isArray(obj)) {
+		cloneObj = [];
+		for (let i = 0; i < obj.length; i++) {
+			cloneObj[i] = deepClone(obj[i]);
+		}
+	} else {
+		const proto = Object.getPrototypeOf(obj);
+		cloneObj = Object.create(proto);
+
+		const propNames = Object.getOwnPropertyNames(obj);
+
+		propNames.forEach((name) => {
+			const desc = Object.getOwnPropertyDescriptor(obj, name);
+			if (desc && desc.get) {
+				cloneObj[name] = desc.get.call(obj);
+			} else {
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				cloneObj[name] = deepClone((obj as any)[name]);
+			}
+		});
+	}
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	return cloneObj as any;
 }

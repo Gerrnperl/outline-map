@@ -65,12 +65,12 @@
 				{
 					"type": "webview",
 					"id": "outline-map-view",
-					"name": "Outline Map"
+					"name": "%om.views.outline%"
 				},
 				{
 					"type": "tree",
 					"id": "outline-map-workspace",
-					"name": "Workspace Symbols",
+					"name": "%om.views.workspace%",
 					"when": "outline-map.workspace.enabled"
 				}
 			]
@@ -80,8 +80,8 @@
 			"properties": {
 				"outline-map.color": {
 					"type": "object",
-					"deprecationMessage": "Custom colors are deprecated. Please customize the colors in `workbench.colorCustomizations` instead. Symbols Color Customizations: `symbolIcon.*`. Outline Color Customizations: `outlineMap.*`.",
-					"description": "override colors of specific symbols and some ui components.",
+					"deprecationMessage": "%om.config.color.deprecationMessage%",
+					"description": "%om.config.color.description%",
 					"properties": {
 						"__om_Tag__": {
 							"type": "string",
@@ -182,22 +182,22 @@
 				"outline-map.region.enabled": {
 					"type": "boolean",
 					"default": true,
-					"markdownDescription": "Enable custom region and tag support. By default, regions start with the tag `#region <name>`and end with the tag `#endregion <name>`.  This extension does not do semantic analysis for specific languages, and content that is not part of the comments section may also be recognized as a tag"
+					"markdownDescription": "%om.config.region.enabled.description%"
 				},
 				"outline-map.region.highlight": {
 					"type": "boolean",
 					"default": true,
-					"markdownDescription": "Enable highlighting for custom regions and tags in the editor."
+					"markdownDescription": "%om.config.region.highlight.description%"
 				},
 				"outline-map.region.highlightStyle": {
 					"type": "object",
 					"required": [],
 					"default": {},
-					"markdownDescription": "Text decoration style for regions and tags definition. See [DecorationRenderOptions](https://code.visualstudio.com/api/references/vscode-api#DecorationRenderOptions) for more details.",
+					"markdownDescription": "%om.config.region.highlightStyle.description%",
 					"properties": {
 						"key": {
 							"type": "object",
-							"description": "The text decoration style for the key of the region or tag.",
+							"description": "%om.config.region.highlightStyle.properties.key.description%",
 							"required": [],
 							"default": {},
 							"properties": {
@@ -208,7 +208,7 @@
 						},
 						"name": {
 							"type": "object",
-							"description": "The text decoration style for the name of the region or tag.",
+							"description": "%om.config.region.highlightStyle.properties.name.description%",
 							"required": [],
 							"default": {},
 							"properties": {
@@ -219,7 +219,7 @@
 						},
 						"description": {
 							"type": "object",
-							"description": "The text decoration style for the description of the region or tag.",
+							"description": "%om.config.region.highlightStyle.properties.description.description%",
 							"required": [],
 							"default": {},
 							"properties": {
@@ -233,17 +233,17 @@
 				"outline-map.region.startRegion": {
 					"type": "string",
 					"default": "#region",
-					"description": "The start region tag. The word after the tag will be seen as the region name."
+					"description": "%om.config.region.startRegion.description%"
 				},
 				"outline-map.region.endRegion": {
 					"type": "string",
 					"default": "#endregion",
-					"description": "The end region tag. The word after the tag will be seen as the region name to close the region. If no name is specified, the last opened region will be closed."
+					"description": "%om.config.region.endRegion.description%"
 				},
 				"outline-map.region.tag": {
 					"type": "string",
 					"default": "#tag",
-					"description": "The start tag. The word after the tag will be seen as the tag name."
+					"description": "%om.config.region.tag.description%"
 				},
 				"outline-map.follow": {
 					"type": "string",
@@ -253,11 +253,11 @@
 						"manual"
 					],
 					"default": "cursor",
-					"description": "Scroll the outline when the cursor moves or the viewport scrolls. if set to manual, the outline will not expand automatically."
+					"description": "%om.config.follow.description%"
 				},
 				"outline-map.hiddenItem": {
 					"type": "array",
-					"description": "Choose items to hide in the outline",
+					"description": "%om.config.hiddenItem.description%",
 					"items": {
 						"type": "string",
 						"enum": [
@@ -292,17 +292,17 @@
 				"outline-map.defaultMaxDepth": {
 					"type": "number",
 					"default": 0,
-					"description": "The default max depth of the outline. 0 means no limit."
+					"description": "%om.config.defaultMaxDepth.description%"
 				},
 				"outline-map.customFont": {
 					"type": "string",
 					"default": "",
-					"markdownDescription": "Custom font for the outline.<br/> Syntax: `[ <family-name> | <generic-family> ]#`"
+					"markdownDescription": "%om.config.customFont.description%"
 				},
 				"outline-map.customCSS": {
 					"type": "string",
 					"default": "",
-					"description": "Custom css for the outline. The css will be injected into the outline's webview."
+					"description": "%om.config.customCSS.description%"
 				},
 				"outline-map.debug": {
 					"type": "boolean",
@@ -312,12 +312,12 @@
 				"outline-map.workspace.enabled": {
 					"type": "boolean",
 					"default": true,
-					"markdownDescription": "Enable workspace symbol support. By default, regions and tags will be included in the workspace symbol list. Symbols that meet the conditions will only be loaded after the file is opened."
+					"markdownDescription": "%om.config.workspace.enabled.description%"
 					
 				},
 				"outline-map.workspace.IncludeSymbols": {
 					"type": "array",
-					"description": "Select types to include in the workspace symbol list",
+					"description": "%om.config.workspace.IncludeSymbols.description%",
 					"items": {
 						"type": "string",
 						"enum": [
@@ -340,48 +340,48 @@
 				},
 				"outline-map.workspace.excludes": {
 					"type": "array",
-					"description": "Items to exclude from the workspace symbol list, which can specify files, symbol names, or both files and symbol names. It has higher priority than `outline-map.workspace.IncludeNames/Symbols`.",
+					"markdownDescription": "%om.config.workspace.excludes.description%",
 					"items": {
 						"type": "object",
 						"required": [],
 						"properties": {
 							"file": {
 								"type": "string",
-								"description": "exclude files with the name, support glob patterns"
+								"description": "%om.config.workspace.excludes.item.properties.file.description%"
 							},
 							"symbol": {
 								"type": "string",
-								"description": "exclude symbols with the name"
+								"description": "%om.config.workspace.excludes.item.properties.symbol.description%"
 							}
 						}
 					}
 				},
 				"outline-map.workspace.IncludeNames": {
 					"type": "array",
-					"description": "Select names to include in the workspace symbol list. It's recommended to write tags in code instead of using this setting.",
+					"description": "%om.config.workspace.IncludeNames.description%",
 					"items": {
 						"type": "object",
 						"required": ["symbol"],
 						"properties": {
 							"file": {
 								"type": "string",
-								"description": "include files with the name"
+								"description": "%om.config.workspace.IncludeNames.item.properties.file.description%"
 							},
 							"symbol": {
 								"type": "string",
-								"description": "include symbols with the name"
+								"description": "%om.config.workspace.IncludeNames.item.properties.symbol.description%"
 							}
 						}
 					}
 				},
 				"outline-map.workspace.fixedFiles": {
 					"type": "number",
-					"description": "Specifies the number of files that remain static at the top of the workspace symbol list. Files outside this value will be sorted to the beginning when clicked. Set to 0 to disable this feature.",
+					"description": "%om.config.workspace.fixedFiles.description%",
 					"default": 0
 				},
 				"outline-map.workspace.closeFileTimeout": {
 					"type": "number",
-					"description": "Specifies the time (in seconds) to close the file when it is not clicked. Set to 0 to disable this feature.",
+					"description": "%om.config.workspace.closeFileTimeout.description%",
 					"default": 0
 				}
 			}
@@ -389,95 +389,82 @@
 		"commands": [
 			{
 				"command": "outline-map.reduceDepth",
-				"title": "Depth-",
+				"title": "%om.cmd.reduceDepth.title%",
 				"icon": "$(chevron-left)",
-				"shortTitle": "Reduce depth",
 				"category": "outline-map"
 			},
 			{
 				"command": "outline-map.addDepth",
-				"title": "Depth+",
+				"title": "%om.cmd.addDepth.title%",
 				"icon": "$(chevron-right)",
-				"shortTitle": "Add depth",
 				"category": "outline-map"
 			},
 			{
 				"command": "outline-map.unpin",
-				"title": "Frozen -> Unpinned",
+				"title": "%om.cmd.unpin.title%",
 				"icon": "$(pinned-dirty)",
-				"shortTitle": "Unpin",
 				"category": "outline-map"
 			},
 			{
 				"command": "outline-map.pin",
-				"title": "Unpinned -> Pinned",
+				"title": "%om.cmd.pin.title%",
 				"icon": "$(pin)",
-				"shortTitle": "Pin",
 				"category": "outline-map"
 			},
 			{
 				"command": "outline-map.freeze",
-				"title": "Pinned -> Frozen",
+				"title": "%om.cmd.freeze.title%",
 				"icon": "$(pinned)",
-				"shortTitle": "Freeze",
 				"category": "outline-map"
 			},
 			{
 				"command": "outline-map.toggleSearch",
-				"title": "Toggle Search Field",
+				"title": "%om.cmd.toggleSearch.title%",
 				"icon": "$(search)",
-				"shortTitle": "Search/Nav",
 				"category": "outline-map"
 			},
 			{
 				"command": "outline-map.focusSearch",
-				"title": "Focus Search Field",
+				"title": "%om.cmd.focusSearch.title%",
 				"icon": "$(search)",
-				"shortTitle": "Search/Nav",
 				"category": "outline-map"
 			},
 			{
 				"command": "outline-map.workspace.closeFile",
-				"title": "Close",
+				"title": "%om.cmd.workspace.closeFile.title%",
 				"category": "outline-map",
-				"icon": "$(close)",
-				"shortTitle": "Close"
+				"icon": "$(close)"
 			},
 			{
 				"command": "outline-map.workspace.deleteSymbol",
-				"title": "Delete",
-				"category": "outline-map",
-				"shortTitle": "Delete"
+				"title": "%om.cmd.workspace.deleteSymbol.title%",
+				"category": "outline-map"
 			},
 			{
 				"command": "outline-map.workspace.excludeInWorkspace",
-				"title": "Exclude in workspace",
-				"category": "outline-map",
-				"shortTitle": "Exclude in workspace"
+				"title": "%om.cmd.workspace.excludeInWorkspace.title%",
+				"category": "outline-map"
 			},
 			{
 				"command": "outline-map.workspace.excludeInFolder",
-				"title": "Exclude in folder",
-				"category": "outline-map",
-				"shortTitle": "Exclude in folder"
+				"title": "%om.cmd.workspace.excludeInFolder.title%",
+				"category": "outline-map"
 			},
 			{
 				"command": "outline-map.workspace.excludeGlobally",
-				"title": "Exclude globally",
-				"category": "outline-map",
-				"shortTitle": "Exclude globally"
+				"title": "%om.cmd.workspace.excludeGlobally.title%",
+				"category": "outline-map"
 			},
 			{
 				"command": "outline-map.workspace.goToLocation",
-				"title": "Go to location of symbol",
-				"category": "outline-map",
-				"shortTitle": "Go to location of symbol"
+				"title": "%om.cmd.workspace.goToLocation.title%",
+				"category": "outline-map"
 			}
 		],
 		"colors": [
 			{
 				"id": "outlineMap.visibleRangeBackground",
-				"description": "The color of the visible range in the outline.",
+				"description": "%om.colors.outlineMap.visibleRangeBackground%",
 				"defaults": {
 					"dark": "scrollbarSlider.background",
 					"light": "scrollbarSlider.background"
@@ -485,7 +472,7 @@
 			},
 			{
 				"id": "outlineMap.focusingItemBackground",
-				"description": "The color of the focusing item in the outline.",
+				"description": "%om.colors.outlineMap.focusingItemBackground%",
 				"defaults": {
 					"dark": "list.hoverBackground",
 					"light": "list.hoverBackground"
@@ -493,7 +480,7 @@
 			},
 			{
 				"id": "symbolIcon.om_RegionForeground",
-				"description": "The color of the custom region symbols in the outline.",
+				"description": "%om.colors.symbolIcon.om_RegionForeground%",
 				"defaults": {
 					"dark": "symbolIcon.packageForeground",
 					"light": "symbolIcon.packageForeground"
@@ -501,7 +488,7 @@
 			},
 			{
 				"id": "symbolIcon.om_TagForeground",
-				"description": "The color of the custom tag symbols in the outline.",
+				"description": "%om.colors.symbolIcon.om_TagForeground%",
 				"defaults": {
 					"dark": "symbolIcon.packageForeground",
 					"light": "symbolIcon.packageForeground"

@@ -387,14 +387,23 @@ export class OutlineView implements WebviewViewProvider {
 		return true;
 	}
 
-	update(textDocument: TextDocument) {
-		if (!this.isValidDocument(textDocument)) {
+	update(textDocument: TextDocument | undefined) {
+		if (textDocument === undefined) { // No active editor
+			this.clear('The active editor cannot provide outline information.');
+			return;
+		}
+		if (!this.isValidDocument(textDocument)) { // Switched to a non-supported document like output
 			return;
 		}
 		const newOutlineTree =new OutlineTree(textDocument, this.regionProvider);
 		newOutlineTree.updateSymbols().then(() => {
-			this.workspaceSymbols?.updateSymbol(newOutlineTree.getNodes(), textDocument.uri);
-			const patcher = new Patcher(this.outlineTree?.getNodes() || [], newOutlineTree.getNodes());
+			const newNodes = newOutlineTree.getNodes();
+			if (!newNodes || newNodes.length === 0) {
+				this.clear(`No symbols found in document '${textDocument.fileName}'.`);
+				return;
+			}
+			this.workspaceSymbols?.updateSymbol(newNodes, textDocument.uri);
+			const patcher = new Patcher(this.outlineTree?.getNodes() || [], newNodes);
 			const ops = patcher.getOps();
 			this.postMessage({
 				type: 'update',
@@ -404,6 +413,22 @@ export class OutlineView implements WebviewViewProvider {
 			} as UpdateMsg);
 			this.outlineTree = newOutlineTree;
 		});
+	}
+
+	/**
+	 * Clears the outline view and send a clear message (The active editor does not provide outline/Can not find outline in the active editor).
+	 */
+	clear(description?: string) {
+		this.outlineTree = undefined;
+		this.inView.clear();
+		this.focusing.clear();
+		this.prevSelections = [];
+		this.postMessage({
+			type: 'clear',
+			data: {
+				description,
+			},
+		} as Msg);
 	}
 
 }

@@ -83,9 +83,7 @@ export function activate(context: ExtensionContext) {
 		// update outline when document is changed
 		window.onDidChangeActiveTextEditor(event => {
 			const document = event?.document || window.activeTextEditor?.document;
-			if (document) {
-				outlineView.update(document);
-			}
+			outlineView.update(document);
 		}),
 
 		// cursor move

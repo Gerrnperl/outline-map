@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { DeleteOp, InsertOp, MoveOp, ScrollMsg, Msg, ChangeDepthMsg , SymbolNode, UpdateOp, UpdateMsg, ConfigMsg, GotoMsg, FocusMsg } from '../common';
+import { DeleteOp, InsertOp, MoveOp, ScrollMsg, Msg, ChangeDepthMsg , SymbolNode, UpdateOp, UpdateMsg, ConfigMsg, GotoMsg, FocusMsg, ClearMsg } from '../common';
 
 const vscode = acquireVsCodeApi();
 
@@ -98,6 +98,12 @@ const SMsgHandler = {
 			inputContainer.classList.toggle('active', true);
 			input.start();
 		}
+	},
+	clear: (description: string) => {
+		const container = document.querySelector('.outline-children') as HTMLDivElement;
+		container.innerHTML = '';
+		const noOutline = document.querySelector('#no-outline') as HTMLDivElement;
+		noOutline.innerText = description;
 	}
 };
 
@@ -157,8 +163,13 @@ function init() {
 	root.innerHTML = /*html*/`
 		<div class="outline-children"></div>
 	`;
+
+	const noOutline = document.createElement('div');
+	noOutline.id = 'no-outline';
+	noOutline.innerText = 'The active editor cannot provide outline information.';
 	
 	document.body.appendChild(root);
+	document.body.appendChild(noOutline);
 
 	const style = document.createElement('style');
 	style.innerHTML = SymbolKindList.map(sym => 
@@ -183,6 +194,7 @@ function init() {
 		debug && console.log('[Outline-Map] Received message', message);
 		switch (message.type) {
 		case 'update':
+			noOutline.innerHTML = '';
 			SMsgHandler.update(message as UpdateMsg);
 			break;
 		case 'scroll':
@@ -196,6 +208,10 @@ function init() {
 			break;
 		case 'focus':
 			SMsgHandler.switchSearchField((message as FocusMsg).toggle);
+			break;
+		case 'clear':
+			SMsgHandler.clear((message as ClearMsg).data.description);
+			break;
 		}
 	});
 

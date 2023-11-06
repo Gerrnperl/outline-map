@@ -28,6 +28,16 @@ body {
 	padding: 5px;
 }
 
+#no-outline {
+    position: absolute;
+    width: 100%;
+    padding: 10px 16px 0;
+    font-family: system-ui;
+	pointer-events: none;
+    opacity: 0.5;
+    z-index: 1;
+}
+
 .outline-node {
 	display: block;
 	width: calc(100vw - var(--depth) * 0.5rem);
@@ -122,9 +132,11 @@ body {
 
 	&.focus {
 		>.outline-label {
+			color: var(--vscode-outlineMap-focusingItemForeground);
+			
 			&::before {
 				background: var(--vscode-outlineMap-focusingItemBackground);
-				opacity: .5;
+				opacity: 1;
 			}
 		}
 	}

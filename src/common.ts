@@ -206,7 +206,7 @@ export class DiagnosticStats {
 }
 
 export interface Msg {
-	type: 'update' | 'config' | 'focus' | 'scroll' | 'changeDepth' | 'pin' | 'goto';
+	type: 'update' | 'config' | 'focus' | 'scroll' | 'changeDepth' | 'pin' | 'goto' | 'clear';
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	data: any;
 }
@@ -250,6 +250,13 @@ export interface GotoMsg extends Msg{
 	data: {
 		position: Position;
 	};
+}
+
+export interface ClearMsg extends Msg{
+	type: 'clear';
+	data: {
+		description: string;
+	}
 }
 
 export enum PinStatus {

@@ -484,6 +484,14 @@
 				}
 			},
 			{
+				"id": "outlineMap.focusingItemForeground",
+				"description": "%om.colors.outlineMap.focusingItemForeground%",
+				"defaults": {
+					"dark": "list.inactiveSelectionForeground",
+					"light": "list.inactiveSelectionForeground"
+				}
+			},
+			{
 				"id": "symbolIcon.om_RegionForeground",
 				"description": "%om.colors.symbolIcon.om_RegionForeground%",
 				"defaults": {

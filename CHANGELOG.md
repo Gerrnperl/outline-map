@@ -175,3 +175,24 @@ typo
 #### Add
 
 - Text decoration for region and tag #49
+
+### [1.3.0] - 2023-11-06
+
+#### Add 
+
+- (preview) Workspace symbols
+- zh-cn translations for package.json
+- Add option whether to register region provider
+
+#### Fix
+
+- keep expand state when editing
+- Keep the visibility of search field #47
+- Keep highlight on the closest outline node when the cursor is out of any symbol #34
+- Missed message when no symbol found 
+- Disable auto-expansion when `follow` to cursor
+
+#### Deprecate
+
+- configuration: `outline-map.color`, use `workbench.colorCustomizations` instead
+

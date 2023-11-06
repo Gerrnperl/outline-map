@@ -68,20 +68,36 @@ You can define regions to group code symbols anywhere in the code (usually comme
 
 ![region and tag](screenshots/region.png)
 
+### Workspace symbols
+
+You can display symbols of multiple files in the workspace, such as regions, tags, functions, etc., and quickly jump to the corresponding location.
+
+After enabling this feature, the symbols of newly opened files will be automatically added to the list. You can manage the symbols in the list in the following ways:
+
+- Set an interval to automatically remove inactive files from the list
+- Manually close the symbols of files that are not needed, exclude a specific symbol, or exclude symbols that match a pattern
+- Sort the list by last access time to find the symbols of the recently used files
+
+By default, region and tag symbols will be added. You can customize the symbols to be added by modifying the `outline-map.IncludeSymbols` setting.
+
 ---
 
 ## Configuration
-Changes will take effect after restarting the outline view
 
 ### Customization
-
-- `outline-map.color`: Color table for specific symbols
 
 - `outline-map.customFont`: Custom font for the outline. 
     
     Syntax: `[ <family-name> | <generic-family> ]#`
   
 - `outline-map.customCSS`: Custom css for the outline. The css will be injected into the outline's webview.
+
+- You can customize the color of the outline by `workbench.colorCustomizations`. Outline Map uses the symbol color settings built into vscode, i.e. `symbolsIcon.*Foreground`, and you can also set the color for the two symbols added by the extension and some UI elements:
+  - `symbolIcon.om_TagForeground` - The color of the tag symbol
+  - `symbolIcon.om_RegionForeground` - The color of the region symbol
+  - `outline-map.visibleRangeBackground` - The background color of the visible area in the outline view
+  - `outline-map.focusingItemBackground` - The  background color of the focusing item in the outline view
+  - `outline-map.focusingItemForeground` - The foreground color of the focusing item in the outline view
 
 ### Behavior
 

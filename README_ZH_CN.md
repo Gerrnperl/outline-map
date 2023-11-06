@@ -66,19 +66,37 @@
 
 ![region and tag](screenshots/region.png)
 
-## 设置
+### 工作区符号
 
-更改将在重启大纲视图后生效
+可以在一个列表中显示工作区中多个文件的符号，例如区域、标签、函数等，并且可以快速跳转到相应的位置。
+
+启用这个功能后，新打开的文件的符号会自动添加到列表中。可以通过以下方式管理列表中的符号：
+
+- 设置一个时间间隔，自动从列表中移除不活跃的文件
+
+- 手动关闭不需要的文件的符号，排除某个特定的符号或排除匹配某个模式的符号
+
+- 按照最后访问的时间来排序列表，方便找到最近使用的文件的符号
+
+默认情况下会添加区域和标签符号。可以通过修改 `outline-map.IncludeSymbols` 的设置来自定义需要添加的符号。
+
+
+## 设置
 
 ### 样式
 
-- `outline-map.color`: 为特定符号设置颜色
-  
 - `outline-map.customFont`: 设置自定义字体. 
   
   语法: `[ <family-name> | <generic-family> ]#`
 
 - `outline-map.customCSS`: 设置自定义CSS. 这些CSS会被插入大纲的Webview视图
+
+- 可以通过`workbench.colorCustomizations`自定义大纲的颜色，Outline Map沿用vscode内置的符号颜色设置，即`symbolsIcon.*Foreground`，此外还可为扩展添加的两个符号以及一些UI元素设置颜色：
+  - `symbolIcon.om_TagForeground` - 标签符号的颜色
+  - `symbolIcon.om_RegionForeground` - 区域符号的颜色
+  - `outline-map.visibleRangeBackground` - 大纲视图中可见区域的背景色
+  - `outline-map.focusingItemBackground` - 大纲视图中聚焦项目的背景色
+  - `outline-map.focusingItemForeground` - 大纲视图中聚焦项目的前景色
 
 ### 行为
 

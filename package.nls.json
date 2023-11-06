@@ -42,7 +42,8 @@
     "om.cmd.workspace.excludeGlobally.title": "Exclude Globally",
     "om.cmd.workspace.goToLocation.title": "Go To Symbol Location",
     "om.colors.outlineMap.visibleRangeBackground": "The color of the visible range in the outline.",
-    "om.colors.outlineMap.focusingItemBackground": "The color of the focusing item in the outline.",
+    "om.colors.outlineMap.focusingItemBackground": "The background color of the focusing item in the outline.",
+    "om.colors.outlineMap.focusingItemForeground": "The color of the focusing item in the outline.",
     "om.colors.symbolIcon.om_RegionForeground": "The color of the Outline-Map region symbols in the outline.",
     "om.colors.symbolIcon.om_TagForeground": "The color of the Outline-Map tag symbols in the outline."
 }

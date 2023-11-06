@@ -154,15 +154,19 @@ export class OutlineView implements WebviewViewProvider {
 		// 2. focus the nodes in the selection
 		for (const selection of selections) {
 			
-			const {inRange} = this.outlineTree.findNodesIn(selection);
+			const {inRange, closest} = this.outlineTree.findNodesIn(selection);
 			
 			inRange?.forEach((n) => {
 				n.focus = true;
-				if (this.focusing.has(n)) {
-					return;
-				}
 				this.focusing.add(n);
 			});
+
+			// If no node is focused, focus the most closest node
+			// To avoid losing focus when the cursor is between two nodes
+			if (inRange.length === 0 && closest) {
+				closest.focus = true;
+				this.focusing.add(closest);
+			}
 		}
 
 		// 3. send the update message && remove the unfocused nodes
@@ -480,13 +484,20 @@ export class OutlineTree {
 	 * 
 	 * if the range contains the start of a node, the node will be included.
 	 * if the range does not contain any node, the node that contains the range will be included.
+	 * 
+	 * Returns the nodes that are in the range, 
+	 * the nodes that overlaps with the range,
+	 * and the closest node that is not in the range.
 	 */
 	findNodesIn(range: Range): {
 			inRange: SymbolNode[],
 			involves: SymbolNode[],
+			closest: SymbolNode | undefined,
 	} {
 		const nodesInRange: SymbolNode[] = [];
 		const nodesInvolved: SymbolNode[] = [];
+		let closest: SymbolNode | undefined = undefined;
+		let distance = Number.MAX_SAFE_INTEGER;
 
 		(function find(nodes: SymbolNode[]) {
 			let found = false;
@@ -495,10 +506,12 @@ export class OutlineTree {
 				const end = node.range.end.line;
 				const rs = range.start.line;
 				const re = range.end.line;
+				let isInRange = false;
 				if (re >= anchor && rs <= anchor) {
 					// the anchor is in the range
 					nodesInRange.push(node);
 					found = true;
+					isInRange = true;
 				}
 				if (anchor <= re && end >= rs && node.children) {
 					// the range and the node overlap
@@ -510,6 +523,15 @@ export class OutlineTree {
 					// the end is in the range
 					nodesInRange.push(node);
 					found = true;
+					isInRange = true;
+				}
+				if (!isInRange) {
+					// the node is not in the range
+					const d = Math.min(Math.abs(anchor - re), Math.abs(anchor - rs));
+					if (d < distance) {
+						distance = d;
+						closest = node;
+					}
 				}
 			});
 			return found;
@@ -518,6 +540,7 @@ export class OutlineTree {
 		return {
 			inRange: nodesInRange,
 			involves: nodesInvolved,
+			closest,
 		};
 	}
 }

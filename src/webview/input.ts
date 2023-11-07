@@ -338,17 +338,31 @@ class TreeNode {
 			return false;
 		}
 		const name = this.element.querySelector('.symbol-name')!;
+		if (!name.textContent) return false;
 		if (search instanceof RegExp) {
-			const matched = name.textContent?.match(search);
+			const matched = name.textContent.match(search);
 			if (matched) {
 				name.innerHTML = name.textContent?.replace(search, `<b>${matched[0]}</b>`) || '';
 			}
 			this.matched = !!matched;
 		}
 		else {
-			const matched = name.textContent?.indexOf(search);
+			// use automatic case insensitive
+			// if there is uppercase in search, use case sensitive
+			const isCaseSensitive = search.toLowerCase() !== search;
+			let matched;
+			let str;
+			if (isCaseSensitive) {
+				matched = name.textContent.indexOf(search);
+				str = search;
+			}
+			else {
+				matched = name.textContent.toLowerCase().indexOf(search.toLowerCase());
+				str = name.textContent.substring(matched, matched + search.length);
+			}
+			
 			if (matched !== -1) {
-				name.innerHTML = name.textContent?.replace(search, `<b>${search}</b>`) || '';
+				name.innerHTML = name.textContent?.replace(str, `<b>${str}</b>`) || '';
 			}
 			this.matched = matched !== -1;
 		}
@@ -384,19 +398,20 @@ class Searcher {
 	}
 
 	search(config: SearchConfig) {
+		const isCaseSensitive = config.pattern.toLowerCase() !== config.pattern;
 		switch (config.mode) {
 		case Mode.Normal:
 			this.searchReg = config.pattern;
 			break;
 		case Mode.Regex:
 			try {
-				this.searchReg = new RegExp(config.pattern);
+				this.searchReg = new RegExp(config.pattern, isCaseSensitive ? 'u' : 'ui');
 			} catch (e) {
 				this.searchReg = null;
 			}
 			break;
 		case Mode.Fuzzy:
-			this.searchReg = new RegExp(config.pattern.split('').join('.*?'));
+			this.searchReg = new RegExp(config.pattern.split('').join('.*?'), isCaseSensitive ? 'u' : 'ui');
 			break;
 		default:
 			this.searchReg = null;

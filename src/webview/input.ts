@@ -90,6 +90,7 @@ export class Input {
 	intoQuickNav() {
 		this.enterNav();
 		if (!this.searcher) return;
+		if (!this.searcher.foundAny) return;
 		this.quickNavs = this.searcher.setQuickNavKey();
 	}
 
@@ -392,6 +393,8 @@ class Searcher {
 	private tree: TreeNode;
 	private searchReg: RegExp | string | null = null;
 
+	foundAny = false;
+
 	constructor(root: HTMLDivElement, init: SearchConfig) {
 		this.tree = new TreeNode(root);
 		this.search(init);
@@ -418,7 +421,7 @@ class Searcher {
 			break;
 		}
 		if (this.searchReg) {
-			this.searchTree(this.tree, this.searchReg, config.filter);
+			this.foundAny = this.searchTree(this.tree, this.searchReg, config.filter);
 		}
 	}
 

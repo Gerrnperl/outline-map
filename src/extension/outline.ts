@@ -374,8 +374,11 @@ export class OutlineView implements WebviewViewProvider {
 		// so we shouldn't use 'file' to filter them, and there may be some schemes that need to be overlooked
 		const ignoreScheme = [
 			'output',
+			'vscode-scm',
+			'walkThroughSnippet',
 		];
 		const scheme = document?.uri.scheme;
+		// console.log('scheme:', scheme);
 		if (!document || !scheme) {
 			return false;
 		}

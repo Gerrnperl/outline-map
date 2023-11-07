@@ -196,3 +196,10 @@ typo
 
 - configuration: `outline-map.color`, use `workbench.colorCustomizations` instead
 
+### [1.3.1] - 2023-11-07
+
+#### Fix
+
+- Now search is case-insensitive (For normal search, case-sensitive is automatically enabled when you type a capital letter)
+- A failed search will not cause the outline running into an error state
+- Ignore scheme vscode-scm and workThroughSnippet

@@ -266,6 +266,7 @@ function renderSymbolNode(symbolNode: SymbolNode, depth = 0): HTMLDivElement {
 
 	const label = container.querySelector('.outline-label') as HTMLSpanElement;
 	label.addEventListener('click', () => {
+		input.stopSearch();
 		vscode.postMessage({
 			type: 'goto',
 			data: {

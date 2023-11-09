@@ -203,3 +203,10 @@ typo
 - Now search is case-insensitive (For normal search, case-sensitive is automatically enabled when you type a capital letter)
 - A failed search will not cause the outline running into an error state
 - Ignore scheme vscode-scm and workThroughSnippet
+
+### [1.3.2] - 2023-11-09
+
+#### Fix
+
+- Overlap items when the height of the outline is not enough #50
+- Other minor fixes

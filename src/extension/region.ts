@@ -179,6 +179,7 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 			}
 
 			const startTag = unpaired[startIndex];
+			if (!startTag) continue;
 			unpaired.splice(startIndex, 1);
 
 			regions.push({

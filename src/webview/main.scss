@@ -159,7 +159,7 @@ body {
 
 		>.outline-children {
 			height: auto;
-			max-height: 200vh;
+			max-height: none;
 			opacity: 1;
 			transform: translateX(0);
 			pointer-events: auto;
@@ -223,7 +223,7 @@ body:hover {
 	.outline-node.matched-children {
 		opacity: 1;
 		pointer-events: auto;
-		max-height: 200vh;
+		max-height: none;
 	}
 
 	.outline-node.matched>.outline-label>.symbol-text b {

@@ -83,7 +83,8 @@ export class OutlineView implements WebviewViewProvider {
 		this.view.webview.onDidReceiveMessage((msg: Msg) => {
 			switch (msg.type) {
 			case 'goto':
-				commands.executeCommand(
+				// eslint-disable-next-line no-case-declarations
+				const res = commands.executeCommand(
 					'editor.action.goToLocations', 
 					window.activeTextEditor?.document.uri,
 					// vscode doesn't seem to recognize `msg.data.position` as a `Position` object
@@ -93,8 +94,12 @@ export class OutlineView implements WebviewViewProvider {
 						msg.data.position.character,
 					), [], 'goto', ''
 				);
-				if(config.findRefEnabled())
-					commands.executeCommand(config.findRefUseFindImpl() ? 'references-view.findImplementations' : 'references-view.findReferences');
+				if(config.findRefEnabled()){
+					res.then(() => {
+						commands.executeCommand(config.findRefUseFindImpl() ? 
+							'references-view.findImplementations' : 'references-view.findReferences');
+					});
+				}
 			}
 		});
 	}

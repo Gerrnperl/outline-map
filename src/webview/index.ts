@@ -270,7 +270,7 @@ function renderSymbolNode(symbolNode: SymbolNode, depth = 0): HTMLDivElement {
 		vscode.postMessage({
 			type: 'goto',
 			data: {
-				position: symbolNode.range.start,
+				position: symbolNode.selectionRange.start,
 			}
 		} as GotoMsg);
 	});

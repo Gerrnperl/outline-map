@@ -3,6 +3,7 @@
 import { DocumentSymbol, Position, Range, SymbolKind } from 'vscode';
 import { config } from './extension/config';
 import { SymbolKindStr } from './utils';
+import { start } from 'repl';
 
 /**
  * Node of a tree of symbols.
@@ -16,6 +17,11 @@ export class SymbolNode {
 	detail: string;
 	/** The range enclosing this symbol not including leading/trailing whitespace but everything else, e.g. comments and code. */
 	range: {start: Position, end: Position};
+	/**
+	 * The range that should be selected and reveal when this symbol is being picked, e.g. the name of a function.
+	 * Must be contained by the {@linkcode DocumentSymbol.range range}.
+	 */
+	selectionRange: {start: Position, end: Position};
 	/** Indicates if the node is expanded. */
 	expand: boolean;
 	/** Indicates if the node is in viewport. */
@@ -43,6 +49,10 @@ export class SymbolNode {
 		this.range = {
 			start: new Position(docSymbol.range.start.line, docSymbol.range.start.character),
 			end: new Position(docSymbol.range.end.line, docSymbol.range.end.character),
+		};
+		this.selectionRange = {
+			start: new Position(docSymbol.selectionRange.start.line, docSymbol.selectionRange.start.character),
+			end: new Position(docSymbol.selectionRange.end.line, docSymbol.selectionRange.end.character),
 		};
 		this.children = [];
 		this.selector = ['#outline-root'];

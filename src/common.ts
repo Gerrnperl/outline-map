@@ -3,7 +3,6 @@
 import { DocumentSymbol, Position, Range, SymbolKind } from 'vscode';
 import { config } from './extension/config';
 import { SymbolKindStr } from './utils';
-import { start } from 'repl';
 
 /**
  * Node of a tree of symbols.

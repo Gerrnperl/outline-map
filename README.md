@@ -107,6 +107,8 @@ By default, region and tag symbols will be added. You can customize the symbols 
 
 - `outline-map.defaultMaxDepth`: Set the default maximum depth of the outline tree. Set this to non-zero to enable the depth button `>` & `<`.
 
+- `outline-map.findRef.enabled`: Enable references to be displayed when clicking to jump.
+
 ### Region and tag
 
 - `outline-map.region.enabled`: Enable region and tag support

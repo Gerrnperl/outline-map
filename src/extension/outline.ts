@@ -93,8 +93,8 @@ export class OutlineView implements WebviewViewProvider {
 						msg.data.position.character,
 					), [], 'goto', ''
 				);
-				if(config.finRefEnabled())
-					commands.executeCommand('references-view.findReferences');
+				if(config.findRefEnabled())
+					commands.executeCommand(config.findRefUseFindImpl() ? 'references-view.findImplementations' : 'references-view.findReferences');
 			}
 		});
 	}

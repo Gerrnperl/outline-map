@@ -109,6 +109,8 @@ By default, region and tag symbols will be added. You can customize the symbols 
 
 - `outline-map.findRef.enabled`: Enable references to be displayed when clicking to jump.
 
+- `outline-map.findRef.useFindImpl`: Display implements instead of references.
+
 ### Region and tag
 
 - `outline-map.region.enabled`: Enable region and tag support

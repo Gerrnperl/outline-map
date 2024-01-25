@@ -5,6 +5,7 @@
     "om.config.color.description": "Customize the color of specified items.",
     "om.config.region.enabled.description": "Enable custom region and tag support. By default, regions start with the tag `#region <name>` and end with the tag `#endregion <name>`. This extension does not perform semantic analysis for specific languages and may recognize content that does not belong to comments as tags.",
     "om.config.findRef.enabled.description": "When clicking on an index entry, it triggers a search for the entry's reference to provide developers with more information. When turning on this option, it is recommended to place the reference-view panel and the plug-in display panel in the same place.",
+    "om.config.findRef.useFindImpl.description": "Display implements instead of references.",
 	"om.config.region.registerSymbolProvider.description": "Whether to register symbol providers for regions and tags.<br/>If set to false, regions and tags will not appear in the built-in symbol list, including the built-in outline view, breadcrumbs, Go to Symbol, etc., but does not affect the Outline Map view.",
 	"om.config.region.highlight.description": "Enable highlighting of custom regions and tags in the editor..",
     "om.config.region.highlightStyle.description": "Text decoration style for regions and tags definition. For more details, please refer to [DecorationRenderOptions](https://code.visualstudio.com/api/references/vscode-api#DecorationRenderOptions).",

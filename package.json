@@ -189,6 +189,11 @@
 					"default": false,
 					"markdownDescription": "%om.config.findRef.enabled.description%"
 				},
+				"outline-map.findRef.uesFindImpl": {
+					"type": "boolean",
+					"default": false,
+					"markdownDescription": "%om.config.findRef.useFindImpl.description%"
+				},
 				"outline-map.region.registerSymbolProvider": {
 					"type": "boolean",
 					"default": false,

@@ -106,6 +106,10 @@
   
 - `outline-map.defaultMaxDepth`: 设置默认最大深度.  将其设置为正值以启用命令按钮 `>` & `<`.
 
+- `outline-map.findRef.enabled`: 启用点击跳转时同时显示references
+
+- `outline-map.findRef.useFindImpl`: 显示implement而不是reference
+
 ### 区域与标签
 
 - `outline-map.region.enabled`: 启用区域与标签功能

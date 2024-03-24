@@ -216,7 +216,9 @@ export class OutlineView implements WebviewViewProvider {
 		// 1. remove all nodes in the viewport
 		for (const node of this.inView) {
 			node.inView = false;
-			node.expand = false;
+			if (config.expand() !== 'manual') {
+				node.expand = false;
+			}
 		}
 
 		// 2. add the nodes in the viewport
@@ -263,7 +265,7 @@ export class OutlineView implements WebviewViewProvider {
 				property: 'inview',
 				value: node.inView,
 			} as UpdateOp);
-			if (this.pinStatus === PinStatus.unpinned) {
+			if (this.pinStatus === PinStatus.unpinned && config.expand() !== 'manual') {
 				Ops.push({
 					type: 'update',
 					selector: node.selector.join(' >.outline-children> '),

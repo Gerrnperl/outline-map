@@ -61,6 +61,7 @@ export class OutlineView implements WebviewViewProvider {
 
 	sort(sortBy: Sortby) {
 		this.sortby = sortBy;
+		this.clear('Re-sorting the outline...');
 		this.update(window.activeTextEditor?.document || window.visibleTextEditors[0].document);
 	}
 

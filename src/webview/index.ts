@@ -55,7 +55,7 @@ const SMsgHandler = {
 		const node = document.querySelector(`.${msg.data.follow}`) as HTMLDivElement | null;
 		if (!node) return;
 		const rect = node.getBoundingClientRect();
-		const offset = rect.top + window.pageYOffset - window.innerHeight * target;		
+		const offset = rect.top + window.scrollY - window.innerHeight * target;		
 		// smooth scroll
 		window.scrollTo({
 			top: offset,

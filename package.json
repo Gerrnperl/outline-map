@@ -732,17 +732,17 @@
 				{
 					"command": "outline-map.addDepth",
 					"when": "view == outline-map-view && outline-map.defaultMaxDepthSet",
-					"group": "navigation"
+					"group": "navigation@2"
 				},
 				{
 					"command": "outline-map.reduceDepth",
 					"when": "view == outline-map-view && outline-map.defaultMaxDepthSet",
-					"group": "navigation"
+					"group": "navigation@1"
 				},
 				{
 					"command": "outline-map.toggleSearch",
 					"when": "view == outline-map-view",
-					"group": "navigation"
+					"group": "navigation@3"
 				}
 			],
 			"view/item/context": [

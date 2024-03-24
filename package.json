@@ -427,6 +427,12 @@
 				"category": "outline-map"
 			},
 			{
+				"command": "outline-map.unfreeze",
+				"title": "%om.cmd.unfreeze.title%",
+				"icon": "$(pinned)",
+				"category": "outline-map"
+			},
+			{
 				"command": "outline-map.freeze",
 				"title": "%om.cmd.freeze.title%",
 				"icon": "$(pinned)",
@@ -525,21 +531,77 @@
 			}
 		],
 		"menus": {
-			"view/title": [
-				{
-					"command": "outline-map.pin",
-					"when": "view == outline-map-view && outline-map.pin-status == 0",
-					"group": "navigation"
-				},
+			"commandPalette": [
 				{
 					"command": "outline-map.unpin",
-					"when": "view == outline-map-view && outline-map.pin-status == 2",
-					"group": "navigation"
+					"when": "false"
+				},
+				{
+					"command": "outline-map.pin",
+					"when": "false"
+				},
+				{
+					"command": "outline-map.unfreeze",
+					"when": "false"
 				},
 				{
 					"command": "outline-map.freeze",
+					"when": "false"
+				},
+				{
+					"command": "outline-map.addDepth",
+					"when": "false"
+				},
+				{
+					"command": "outline-map.reduceDepth",
+					"when": "false"
+				},
+				{
+					"command": "outline-map.workspace.closeFile",
+					"when": "false"
+				},
+				{
+					"command": "outline-map.workspace.deleteSymbol",
+					"when": "false"
+				},
+				{
+					"command": "outline-map.workspace.excludeInFolder",
+					"when": "false"
+				},
+				{
+					"command": "outline-map.workspace.excludeInWorkspace",
+					"when": "false"
+				},
+				{
+					"command": "outline-map.workspace.excludeGlobally",
+					"when": "false"
+				},
+				{
+					"command": "outline-map.workspace.goToLocation",
+					"when": "false"
+				}
+			],
+			"view/title": [
+				{
+					"command": "outline-map.pin",
+					"when": "view == outline-map-view && outline-map.pin-status != 1",
+					"group": "pin@1"
+				},
+				{
+					"command": "outline-map.unpin",
 					"when": "view == outline-map-view && outline-map.pin-status == 1",
-					"group": "navigation"
+					"group": "pin@2"
+				},
+				{
+					"command": "outline-map.freeze",
+					"when": "view == outline-map-view && outline-map.pin-status != 2",
+					"group": "pin@3"
+				},
+				{
+					"command": "outline-map.unfreeze",
+					"when": "view == outline-map-view && outline-map.pin-status == 2",
+					"group": "pin@4"
+				},
 				},
 				{
 					"command": "outline-map.addDepth",

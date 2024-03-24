@@ -4,6 +4,14 @@ import { config } from './config';
 import { ChangeDepthMsg, FocusMsg, PinSMsg, PinStatus } from '../common';
 import { SymbolTreeItem, WorkspaceSymbols } from './workspace';
 
+
+export interface Command {
+	name: string;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	fn: (...args: any[]) => any;
+}
+
+
 function changeDepth(outlineProvider: OutlineView, deltaDepth = 1) {
 	outlineProvider.postMessage({
 		type: 'changeDepth',
@@ -71,13 +79,6 @@ if (config.defaultMaxDepth() > 0) {
 // Set initial pin status as unpinned
 commands.executeCommand('setContext', 'outline-map.pin-status', PinStatus.unpinned);
 
-
-export interface Command {
-	name: string;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	fn: (...args: any[]) => any;
-}
-
 export const OutlineViewCommandList: Command[] = [
 	{
 		name: 'outline-map.reduceDepth',
@@ -98,6 +99,10 @@ export const OutlineViewCommandList: Command[] = [
 	{
 		name: 'outline-map.freeze',
 		fn: freeze,
+	},
+	{
+		name: 'outline-map.unfreeze',
+		fn: unpin,
 	},
 	{
 		name: 'outline-map.toggleSearch',

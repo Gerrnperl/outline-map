@@ -69,11 +69,11 @@ export class OutlineView implements WebviewViewProvider {
 		setTimeout(() => {
 			this.build();
 		}, 1000);
-		this.view.onDidChangeVisibility(()=>{
-			if(this.view?.visible && window.activeTextEditor){
+		this.view.onDidChangeVisibility(() => {
+			if (this.view?.visible && window.activeTextEditor) {
 				this.build();
 			}
-			if(!this.view?.visible){
+			if (!this.view?.visible) {
 				this.outlineTree = undefined;
 				this.inView.clear();
 				this.focusing.clear();
@@ -82,10 +82,9 @@ export class OutlineView implements WebviewViewProvider {
 		});
 		this.view.webview.onDidReceiveMessage((msg: Msg) => {
 			switch (msg.type) {
-			case 'goto':
-				// eslint-disable-next-line no-case-declarations
+			case 'goto': {
 				const res = commands.executeCommand(
-					'editor.action.goToLocations', 
+					'editor.action.goToLocations',
 					window.activeTextEditor?.document.uri,
 					// vscode doesn't seem to recognize `msg.data.position` as a `Position` object
 					// so we have to create a new one
@@ -94,17 +93,18 @@ export class OutlineView implements WebviewViewProvider {
 						msg.data.position.character,
 					), [], 'goto', ''
 				);
-				if(config.findRefEnabled()){
+				if (config.findRefEnabled()) {
 					res.then(() => {
-						commands.executeCommand(config.findRefUseFindImpl() ? 
+						commands.executeCommand(config.findRefUseFindImpl() ?
 							'references-view.findImplementations' : 'references-view.findReferences');
 					});
 				}
 			}
+			}
 		});
 	}
 
-	build(){
+	build() {
 		this.update(window.activeTextEditor?.document || window.visibleTextEditors[0].document);
 		this.postMessage({
 			type: 'config',
@@ -112,7 +112,7 @@ export class OutlineView implements WebviewViewProvider {
 				color: config.color(),
 				depth: config.defaultMaxDepth(),
 				debug: config.debug(),
-			},	
+			},
 		});
 		if (this.initialSearch) {
 			this.postMessage({
@@ -160,9 +160,9 @@ export class OutlineView implements WebviewViewProvider {
 
 		// 2. focus the nodes in the selection
 		for (const selection of selections) {
-			
-			const {inRange, closest} = this.outlineTree.findNodesIn(selection);
-			
+
+			const { inRange, closest } = this.outlineTree.findNodesIn(selection);
+
 			inRange?.forEach((n) => {
 				n.focus = true;
 				this.focusing.add(n);
@@ -208,7 +208,7 @@ export class OutlineView implements WebviewViewProvider {
 		}
 
 		// 2. add the nodes in the viewport
-		const {inRange, involves} = this.outlineTree.findNodesIn(range);
+		const { inRange, involves } = this.outlineTree.findNodesIn(range);
 		inRange.forEach((node) => {
 			node.inView = true;
 			node.expand = true;
@@ -284,7 +284,7 @@ export class OutlineView implements WebviewViewProvider {
 			if (diagnostic.range.end.line < node.range.start.line) return node.diagnosticStats.getStat();
 			// the current diagnostic is in the node or in the child nodes
 			for (const child of node.children) {
-				const diagnosticInChild =  findNodes(child);
+				const diagnosticInChild = findNodes(child);
 				if (diagnosticInChild.type !== 'none') {
 					// the current diagnostic is in the child node
 					node.diagnosticStats.add(diagnosticInChild.type, true);
@@ -314,12 +314,12 @@ export class OutlineView implements WebviewViewProvider {
 				property: 'diagnostictype',
 				value: diagnostic.type,
 			} as UpdateOp,
-			{
-				type: 'update',
-				selector: node.selector.join(' >.outline-children> '),
-				property: 'diagnosticcount',
-				value: diagnostic.count,
-			} as UpdateOp);
+				{
+					type: 'update',
+					selector: node.selector.join(' >.outline-children> '),
+					property: 'diagnosticcount',
+					value: diagnostic.count,
+				} as UpdateOp);
 			if (diagnostic.type === 'none') {
 				this.hasDiagnostic.delete(node);
 			}
@@ -405,7 +405,7 @@ export class OutlineView implements WebviewViewProvider {
 		if (!this.isValidDocument(textDocument)) { // Switched to a non-supported document like output
 			return;
 		}
-		const newOutlineTree =new OutlineTree(textDocument, this.regionProvider);
+		const newOutlineTree = new OutlineTree(textDocument, this.regionProvider);
 		newOutlineTree.updateSymbols().then(() => {
 			const newNodes = newOutlineTree.getNodes();
 			if (!newNodes || newNodes.length === 0) {
@@ -509,7 +509,7 @@ export class OutlineTree {
 			setTimeout(() => this.updateSymbols(), 300 * this.attempts);
 			config.debug() && console.log(`Outline-map: Failed to get symbols of ${this.textDocument.uri.toString()}. Attempt ${this.attempts} of ${this.MAX_ATTEMPTS}.`);
 		}
-		else if (config.debug()){
+		else if (config.debug()) {
 			throw new Error(`Outline-map: Failed to get symbols of ${this.textDocument.uri.toString()}.`);
 		}
 	}
@@ -525,9 +525,9 @@ export class OutlineTree {
 	 * and the closest node that is not in the range.
 	 */
 	findNodesIn(range: Range): {
-			inRange: SymbolNode[],
-			involves: SymbolNode[],
-			closest: SymbolNode | undefined,
+		inRange: SymbolNode[],
+		involves: SymbolNode[],
+		closest: SymbolNode | undefined,
 	} {
 		const nodesInRange: SymbolNode[] = [];
 		const nodesInvolved: SymbolNode[] = [];

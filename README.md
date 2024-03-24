@@ -9,6 +9,9 @@ A visual, interactive outline map that combines the clarity of the outline with 
 ![version](https://img.shields.io/visual-studio-marketplace/v/gerrnperl.outline-map?color=8bf7c7&logo=visualstudio&style=flat-square)
 ![installs](https://img.shields.io/visual-studio-marketplace/i/gerrnperl.outline-map?color=56b6c2&logo=visualstudiocode&style=flat-square)
 ![rating](https://img.shields.io/visual-studio-marketplace/stars/gerrnperl.outline-map?color=97dbf3&style=flat-square)
+![downloads](https://img.shields.io/visual-studio-marketplace/d/gerrnperl.outline-map?color=62abf5&logo=visualstudiocode&style=flat-square)
+![stars](https://img.shields.io/github/stars/gerrnperl/outline-map?color=f2c661&logo=github&style=flat-square)
+![license](https://img.shields.io/github/license/gerrnperl/outline-map?color=f9e2ae&logo=github&style=flat-square)
 
 
 ## Features
@@ -103,6 +106,8 @@ By default, region and tag symbols will be added. You can customize the symbols 
 
 - `outline-map.follow`: Scroll the outline when the cursor moves or the viewport scrolls
 
+- `outline-map.expand`: Set the automatic expansion mode of the outline view. Select `cursor` to expand only to the node where the cursor is located, and `viewport` to expand all nodes in the viewport.
+
 - `outline-map.hiddenItem`: Choose items you do not want to see in the outline.
 
 - `outline-map.defaultMaxDepth`: Set the default maximum depth of the outline tree. Set this to non-zero to enable the depth button `>` & `<`.
@@ -124,20 +129,52 @@ By default, region and tag symbols will be added. You can customize the symbols 
 - `outline-map.region.highlight`: Enable region and tag syntax highlighting
 
 ## Commands
-- `outline-map.toggleSearch`: Switch the visibility of search and navigation field. Default keybinding: `<Alt-l>`
 
-- `outline-map.addDepth` | `outline-map.reduceDepth`: Add / Reduce a level to the outline tree. Only works when `outline-map.defaultMaxDepth` is set to non-zero.
+
+<!-- - `outline-map.focusSearch`: 聚焦搜索框, 默认键位 `<Alt-l>`
+- `outline-map.toggleSearch`: 切换搜索及导航区域可见性.
+
+### 视图操作
+
+- 深度限制: 增加 / 减少大纲的一级. `outline-map.defaultMaxDepth` 为正值时可用.
+  - `增加深度 >`
+  - `减少深度 <`
+
+- 临时固定
+  -	`固定`: 大纲节点将不会自动展开;
+  - `冻结`: 大纲节点将不会自动展开, 同时大纲视图不会自动滚动;
+
+- 排序
+  - `按位置排序`: 按位置排序大纲节点;
+  - `按名称排序`: 按名称排序大纲节点;
+  - `按类型排序`: 按类型排序大纲节点; -->
   
-- `outline-map.pin` | `outline-map.unpin` | `outline-map.freeze` : Pin / Unpin / Freeze the outline tree.
+- `outline-map.focusSearch`: Focus the search box, default keybinding `<Alt-l>`
+- `outline-map.toggleSearch`: Toggle the visibility of the search and navigation area.
+
+### View Actions
+
+- Depth limit: Increase / decrease the outline by one level. Available when `outline-map.defaultMaxDepth` is a positive value.
+  - `Increase depth >`
+  - `Decrease depth <`
+
+- Temporarily fix
+  - `Fixed`: The outline node will not be automatically expanded;
+  - `Frozen`: The outline node will not be automatically expanded, and the outline view will not automatically scroll;
+
+- Sort
+  - `Sort by position`: Sort the outline nodes by position;
+  - `Sort by name`: Sort the outline nodes by name;
+  - `Sort by kind`: Sort the outline nodes by kind;
 
 ---
 
-## Suggestion: move view to secondary side panel (vscode ^1.64)
+Suggestion: move view to secondary side panel (vscode ^1.64)
 
-> Outline Map relies on vscode or other extensions to provide symbol information
+> Outline Map does not perform language-specific symbol parsing, symbol information is provided by vscode or other extensions.
 > 
 >  Refer to the following links for more information: [vscode-code-outline/  language-support](https://github.com/patrys/vscode-code-outline#language-support)
 
 ---
 
-**Enjoy!**
+**Enjoy! ❤️**

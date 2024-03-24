@@ -210,3 +210,19 @@ typo
 
 - Overlap items when the height of the outline is not enough #50
 - Other minor fixes
+
+### [1.4.0] - 2024-03-24
+
+#### Add
+
+- Add find References when goto tag #59 @howin98
+- Provide outline sorting feature #54
+- Expand to the symbol under the cursor
+
+### Fix
+
+- Now the outline will not scroll automatically when in the `manual` follow mode #53
+
+#### Other
+
+- Collapse pin state switch actions for less buttons in navigation bar

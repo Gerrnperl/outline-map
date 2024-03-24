@@ -179,86 +179,17 @@
 						}
 					}
 				},
-				"outline-map.region.enabled": {
-					"type": "boolean",
-					"default": true,
-					"markdownDescription": "%om.config.region.enabled.description%"
-				},
-				"outline-map.findRef.enabled": {
-					"type": "boolean",
-					"default": false,
-					"markdownDescription": "%om.config.findRef.enabled.description%"
-				},
-				"outline-map.findRef.uesFindImpl": {
-					"type": "boolean",
-					"default": false,
-					"markdownDescription": "%om.config.findRef.useFindImpl.description%"
-				},
-				"outline-map.region.registerSymbolProvider": {
-					"type": "boolean",
-					"default": false,
-					"markdownDescription": "%om.config.region.registerSymbolProvider.description%"
-				},
-				"outline-map.region.highlight": {
-					"type": "boolean",
-					"default": true,
-					"markdownDescription": "%om.config.region.highlight.description%"
-				},
-				"outline-map.region.highlightStyle": {
-					"type": "object",
-					"required": [],
-					"default": {},
-					"markdownDescription": "%om.config.region.highlightStyle.description%",
-					"properties": {
-						"key": {
-							"type": "object",
-							"description": "%om.config.region.highlightStyle.properties.key.description%",
-							"required": [],
-							"default": {},
-							"properties": {
-								"color": { "type": "string" },
-								"backgroundColor": { "type": "string" },
-								"overviewRulerColor": { "type": "string" }
-							}
-						},
-						"name": {
-							"type": "object",
-							"description": "%om.config.region.highlightStyle.properties.name.description%",
-							"required": [],
-							"default": {},
-							"properties": {
-								"color": { "type": "string" },
-								"backgroundColor": { "type": "string" },
-								"overviewRulerColor": { "type": "string" }
-							}
-						},
-						"description": {
-							"type": "object",
-							"description": "%om.config.region.highlightStyle.properties.description.description%",
-							"required": [],
-							"default": {},
-							"properties": {
-								"color": { "type": "string" },
-								"backgroundColor": { "type": "string" },
-								"overviewRulerColor": { "type": "string" }
-							}
-						}
-					}
-				},
-				"outline-map.region.startRegion": {
+				"outline-map.customCSS": {
 					"type": "string",
-					"default": "#region",
-					"description": "%om.config.region.startRegion.description%"
+					"default": "",
+					"description": "%om.config.customCSS.description%",
+					"order": 1
 				},
-				"outline-map.region.endRegion": {
+				"outline-map.customFont": {
 					"type": "string",
-					"default": "#endregion",
-					"description": "%om.config.region.endRegion.description%"
-				},
-				"outline-map.region.tag": {
-					"type": "string",
-					"default": "#tag",
-					"description": "%om.config.region.tag.description%"
+					"default": "",
+					"markdownDescription": "%om.config.customFont.description%",
+					"order": 2
 				},
 				"outline-map.follow": {
 					"type": "string",
@@ -268,7 +199,29 @@
 						"manual"
 					],
 					"default": "cursor",
-					"description": "%om.config.follow.description%"
+					"description": "%om.config.follow.description%",
+					"markdownEnumDescriptions": [
+						"%om.config.follow.enumDescriptions.cursor%",
+						"%om.config.follow.enumDescriptions.viewport%",
+						"%om.config.follow.enumDescriptions.manual%"
+					],
+					"order": 3
+				},
+				"outline-map.expand": {
+					"type": "string",
+					"enum": [
+						"cursor",
+						"viewport",
+						"manual"
+					],
+					"default": "viewport",
+					"description": "%om.config.expand.description%",
+					"markdownEnumDescriptions": [
+						"%om.config.expand.enumDescriptions.cursor%",
+						"%om.config.expand.enumDescriptions.viewport%",
+						"%om.config.expand.enumDescriptions.manual%"
+					],
+					"order": 4
 				},
 				"outline-map.hiddenItem": {
 					"type": "array",
@@ -302,33 +255,108 @@
 							"operator",
 							"typeparameter"
 						]
-					}
+					},
+					"order": 5
 				},
 				"outline-map.defaultMaxDepth": {
 					"type": "number",
 					"default": 0,
-					"description": "%om.config.defaultMaxDepth.description%"
+					"description": "%om.config.defaultMaxDepth.description%",
+					"order": 6
 				},
-				"outline-map.customFont": {
-					"type": "string",
-					"default": "",
-					"markdownDescription": "%om.config.customFont.description%"
+				"outline-map.region.enabled": {
+					"type": "boolean",
+					"default": true,
+					"markdownDescription": "%om.config.region.enabled.description%"
 				},
-				"outline-map.customCSS": {
-					"type": "string",
-					"default": "",
-					"description": "%om.config.customCSS.description%"
-				},
-				"outline-map.debug": {
+				"outline-map.region.registerSymbolProvider": {
 					"type": "boolean",
 					"default": false,
-					"description": "Enable debug mode. Debug messages will be printed to the console."
+					"markdownDescription": "%om.config.region.registerSymbolProvider.description%"
+				},
+				"outline-map.region.highlight": {
+					"type": "boolean",
+					"default": true,
+					"markdownDescription": "%om.config.region.highlight.description%"
+				},
+				"outline-map.region.highlightStyle": {
+					"type": "object",
+					"required": [],
+					"default": {},
+					"markdownDescription": "%om.config.region.highlightStyle.description%",
+					"properties": {
+						"key": {
+							"type": "object",
+							"description": "%om.config.region.highlightStyle.properties.key.description%",
+							"required": [],
+							"default": {},
+							"properties": {
+								"color": {
+									"type": "string"
+								},
+								"backgroundColor": {
+									"type": "string"
+								},
+								"overviewRulerColor": {
+									"type": "string"
+								}
+							}
+						},
+						"name": {
+							"type": "object",
+							"description": "%om.config.region.highlightStyle.properties.name.description%",
+							"required": [],
+							"default": {},
+							"properties": {
+								"color": {
+									"type": "string"
+								},
+								"backgroundColor": {
+									"type": "string"
+								},
+								"overviewRulerColor": {
+									"type": "string"
+								}
+							}
+						},
+						"description": {
+							"type": "object",
+							"description": "%om.config.region.highlightStyle.properties.description.description%",
+							"required": [],
+							"default": {},
+							"properties": {
+								"color": {
+									"type": "string"
+								},
+								"backgroundColor": {
+									"type": "string"
+								},
+								"overviewRulerColor": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"outline-map.region.startRegion": {
+					"type": "string",
+					"default": "#region",
+					"description": "%om.config.region.startRegion.description%"
+				},
+				"outline-map.region.endRegion": {
+					"type": "string",
+					"default": "#endregion",
+					"description": "%om.config.region.endRegion.description%"
+				},
+				"outline-map.region.tag": {
+					"type": "string",
+					"default": "#tag",
+					"description": "%om.config.region.tag.description%"
 				},
 				"outline-map.workspace.enabled": {
 					"type": "boolean",
 					"default": true,
 					"markdownDescription": "%om.config.workspace.enabled.description%"
-					
 				},
 				"outline-map.workspace.IncludeSymbols": {
 					"type": "array",
@@ -398,6 +426,21 @@
 					"type": "number",
 					"description": "%om.config.workspace.closeFileTimeout.description%",
 					"default": 0
+				},
+				"outline-map.findRef.enabled": {
+					"type": "boolean",
+					"default": false,
+					"markdownDescription": "%om.config.findRef.enabled.description%"
+				},
+				"outline-map.findRef.uesFindImpl": {
+					"type": "boolean",
+					"default": false,
+					"markdownDescription": "%om.config.findRef.useFindImpl.description%"
+				},
+				"outline-map.debug": {
+					"type": "boolean",
+					"default": false,
+					"description": "Enable debug mode. Debug messages will be printed to the console."
 				}
 			}
 		},
@@ -448,6 +491,36 @@
 				"command": "outline-map.focusSearch",
 				"title": "%om.cmd.focusSearch.title%",
 				"icon": "$(search)",
+				"category": "outline-map"
+			},
+			{
+				"command": "outline-map.sortByPosition",
+				"title": "%om.cmd.sortByPosition.title%",
+				"category": "outline-map"
+			},
+			{
+				"command": "outline-map.sortByName",
+				"title": "%om.cmd.sortByName.title%",
+				"category": "outline-map"
+			},
+			{
+				"command": "outline-map.sortByKind",
+				"title": "%om.cmd.sortByKind.title%",
+				"category": "outline-map"
+			},
+			{
+				"command": "outline-map.sortByPositionChecked",
+				"title": "%om.cmd.sortByPosition.titleChecked%",
+				"category": "outline-map"
+			},
+			{
+				"command": "outline-map.sortByNameChecked",
+				"title": "%om.cmd.sortByName.titleChecked%",
+				"category": "outline-map"
+			},
+			{
+				"command": "outline-map.sortByKindChecked",
+				"title": "%om.cmd.sortByKind.titleChecked%",
 				"category": "outline-map"
 			},
 			{
@@ -557,6 +630,30 @@
 					"when": "false"
 				},
 				{
+					"command": "outline-map.sortByPositionChecked",
+					"when": "false"
+				},
+				{
+					"command": "outline-map.sortByNameChecked",
+					"when": "false"
+				},
+				{
+					"command": "outline-map.sortByKindChecked",
+					"when": "false"
+				},
+				{
+					"command": "outline-map.sortByPosition",
+					"when": "false"
+				},
+				{
+					"command": "outline-map.sortByName",
+					"when": "false"
+				},
+				{
+					"command": "outline-map.sortByKind",
+					"when": "false"
+				},
+				{
 					"command": "outline-map.workspace.closeFile",
 					"when": "false"
 				},
@@ -602,6 +699,35 @@
 					"when": "view == outline-map-view && outline-map.pin-status == 2",
 					"group": "pin@4"
 				},
+				{
+					"command": "outline-map.sortByPosition",
+					"when": "view == outline-map-view && outline-map.sort-by != 0",
+					"group": "sort@1"
+				},
+				{
+					"command": "outline-map.sortByName",
+					"when": "view == outline-map-view && outline-map.sort-by != 1",
+					"group": "sort@3"
+				},
+				{
+					"command": "outline-map.sortByKind",
+					"when": "view == outline-map-view && outline-map.sort-by != 2",
+					"group": "sort@5"
+				},
+				{
+					"command": "outline-map.sortByPositionChecked",
+					"when": "view == outline-map-view && outline-map.sort-by == 0",
+					"group": "sort@2"
+				},
+				{
+					"command": "outline-map.sortByNameChecked",
+					"when": "view == outline-map-view && outline-map.sort-by == 1",
+					"group": "sort@4"
+				},
+				{
+					"command": "outline-map.sortByKindChecked",
+					"when": "view == outline-map-view && outline-map.sort-by == 2",
+					"group": "sort@6"
 				},
 				{
 					"command": "outline-map.addDepth",

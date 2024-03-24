@@ -220,22 +220,38 @@ export class OutlineView implements WebviewViewProvider {
 
 		// 2. add the nodes in the viewport
 		const { inRange, involves } = this.outlineTree.findNodesIn(range);
+		// 2.1 Update the nodes in the viewport (change background color)
 		inRange.forEach((node) => {
 			node.inView = true;
-			node.expand = true;
-			if (this.inView.has(node)) {
-				return;
-			}
-			this.inView.add(node);
-		});
-		if (this.pinStatus === PinStatus.unpinned) {
-			involves.forEach((node) => {
-				node.expand = true;
-				if (this.inView.has(node)) {
-					return;
-				}
+			if (!this.inView.has(node)) {
 				this.inView.add(node);
-			});
+			}
+		});
+		// 2.2 Update the nodes that overlaps with the viewport (expand the node)
+		if (this.pinStatus === PinStatus.unpinned) {
+			if (config.expand() === 'viewport') {
+				inRange.forEach((node) => {
+					node.expand = true;
+				});
+				involves.forEach((node) => {
+					node.expand = true;
+					if (!this.inView.has(node)) {
+						this.inView.add(node);
+					}
+				});
+			}
+			else if(config.expand() === 'cursor' && window.activeTextEditor?.selection) {
+				const { inRange: cursorInRange, involves: cursorInvolves } = this.outlineTree.findNodesIn(window.activeTextEditor.selection);
+				cursorInRange.forEach((node) => {
+					node.expand = true;
+				});
+				cursorInvolves.forEach((node) => {
+					node.expand = true;
+					if (!this.inView.has(node)) {
+						this.inView.add(node);
+					}
+				});
+			}
 		}
 
 		// 3. send the update message && remove the nodes out of the viewport

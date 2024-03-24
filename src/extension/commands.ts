@@ -1,7 +1,7 @@
 import { Memento, Position, Uri, commands } from 'vscode';
 import { OutlineView } from './outline';
 import { config } from './config';
-import { ChangeDepthMsg, FocusMsg, PinSMsg, PinStatus } from '../common';
+import { ChangeDepthMsg, FocusMsg, PinSMsg, PinStatus, Sortby } from '../common';
 import { SymbolTreeItem, WorkspaceSymbols } from './workspace';
 
 
@@ -70,6 +70,27 @@ function focusSearchField(outlineProvider: OutlineView, state: Memento) {
 	} as FocusMsg);
 }
 
+function setSortBy(outlineProvider: OutlineView, sortBy: Sortby, state: Memento) {
+	state.update('sortBy', sortBy);
+	commands.executeCommand('setContext', 'outline-map.sort-by', sortBy);
+	outlineProvider.sort(sortBy);
+}
+
+// export
+function setSortByPosition(outlineProvider: OutlineView, state: Memento) {
+	setSortBy(outlineProvider, Sortby.position, state);
+}
+
+// export
+function setSortByName(outlineProvider: OutlineView, state: Memento) {
+	setSortBy(outlineProvider, Sortby.name, state);
+}
+
+// export
+function setSortByKind(outlineProvider: OutlineView, state: Memento) {
+	setSortBy(outlineProvider, Sortby.kind, state);
+}
+
 if (config.defaultMaxDepth() > 0) {
 	// if defaultMaxDepth is set, set the context to true
 	// so that the Add/Reduce Depth buttons are visible
@@ -112,6 +133,31 @@ export const OutlineViewCommandList: Command[] = [
 		name: 'outline-map.focusSearch',
 		fn: focusSearchField,
 	},
+	{
+		name: 'outline-map.sortByPosition',
+		fn: setSortByPosition,
+	},
+	{
+		name: 'outline-map.sortByName',
+		fn: setSortByName,
+	},
+	{
+		name: 'outline-map.sortByKind',
+		fn: setSortByKind,
+	},
+	{
+		name: 'outline-map.sortByPositionChecked',
+		fn: () => undefined,
+	},
+	{
+		name: 'outline-map.sortByNameChecked',
+		fn: () => undefined,
+	},
+	{
+		name: 'outline-map.sortByKindChecked',
+		fn: () => undefined,
+	},
+
 ];
 
 

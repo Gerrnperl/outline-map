@@ -89,7 +89,7 @@ export class SymbolNode {
 	 * @param parent The parent node of the tree.
 	 * @returns The root node of the tree.
 	 */
-	static fromDocumentSymbols(docSymbols: DocumentSymbol[]) : SymbolNode[] {
+	static fromDocumentSymbols(docSymbols: DocumentSymbol[], sortBy: Sortby = Sortby.position) : SymbolNode[] {
 
 		const root: SymbolNode[] = [];
 		const hiddenItem = config.hiddenItem();
@@ -123,8 +123,19 @@ export class SymbolNode {
 		}
 
 		// Inner function to recursively transform the DocumentSymbols into SymbolNodes
-		function recursiveTransform(docSymbols: DocumentSymbol[], parent: SymbolNode | SymbolNode[]) {
-			docSymbols.sort((a, b) => a.range.start.line - b.range.start.line);
+		function recursiveTransform(docSymbols: DocumentSymbol[], parent: SymbolNode | SymbolNode[], sortBy: Sortby = Sortby.position) {
+			switch (sortBy) {
+			case Sortby.name:
+				docSymbols.sort((a,b) => a.name.localeCompare(b.name));
+				break;
+			case Sortby.kind:
+				docSymbols.sort((a,b) => a.kind.toString().localeCompare(b.kind.toString()));
+				break;
+			case Sortby.position:
+			default:
+				docSymbols.sort((a, b) => a.range.start.line - b.range.start.line);
+				break;
+			}
 			reconstructTree(docSymbols);
 			docSymbols.forEach((docSymbol) => {
 				const node = new SymbolNode(docSymbol);
@@ -140,12 +151,12 @@ export class SymbolNode {
 					parent.children.push(node);
 				}
 				if (docSymbol.children.length > 0) {
-					recursiveTransform(docSymbol.children, node);
+					recursiveTransform(docSymbol.children, node, sortBy);
 				}
 			});
 		}
 
-		recursiveTransform(docSymbols, root);
+		recursiveTransform(docSymbols, root, sortBy);
 
 		return root;
 	}
@@ -272,6 +283,12 @@ export enum PinStatus {
 	unpinned,
 	pinned,
 	frozen,
+}
+
+export enum Sortby {
+	position,
+	name,
+	kind,
 }
 
 export interface PinSMsg {

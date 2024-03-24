@@ -14,7 +14,7 @@ import {
 import { OutlineView } from './outline';
 
 import { OutlineViewCommandList, WorkspaceCommandList } from './commands';
-import { FocusMsg, ScrollMsg } from '../common';
+import { FocusMsg, PinStatus, ScrollMsg, Sortby } from '../common';
 import { config } from './config';
 import { debounce, throttle } from '../utils';
 import { WorkspaceSymbols } from './workspace';
@@ -24,7 +24,7 @@ let workspaceSymbols = undefined as WorkspaceSymbols | undefined;
 let regionSymbolProvider = undefined as RegionProvider | undefined;
 
 export function activate(context: ExtensionContext) {
-
+	restoreContext(context);
 	if (config.workspaceEnabled()) {
 		initWorkspaceSymbols(context);
 	}
@@ -50,6 +50,14 @@ export function activate(context: ExtensionContext) {
 		...OutlineViewCommandList.map(command => commands.registerCommand(command.name, command.fn.bind(null, outlineView, context.globalState))),
 		...WorkspaceCommandList.map(command => commands.registerCommand(command.name, command.fn.bind(null, workspaceSymbols))),
 	);
+}
+
+/**
+ * Restore context from global state
+ * @param context 
+ */
+function restoreContext(context: ExtensionContext) {
+	commands.executeCommand('setContext', 'outline-map.sort-by', context.globalState.get('sortBy', Sortby.position));
 }
 
 /**

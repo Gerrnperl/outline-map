@@ -1,6 +1,6 @@
 import { config } from './config';
 import { commands, DocumentSymbol, ExtensionContext, TextDocument, Uri, WebviewView, WebviewViewProvider, window, Range, Selection, Position, Diagnostic, DiagnosticSeverity, CancellationTokenSource } from 'vscode';
-import { Msg, UpdateMsg, Op, UpdateOp, DeleteOp, InsertOp, SymbolNode, MoveOp, PinStatus, FocusMsg } from '../common';
+import { Msg, UpdateMsg, Op, UpdateOp, DeleteOp, InsertOp, SymbolNode, MoveOp, PinStatus, FocusMsg, Sortby } from '../common';
 import { WorkspaceSymbols } from './workspace';
 import { RegionProvider } from './region';
 import { deepClone } from '../utils';
@@ -13,6 +13,7 @@ interface OutlineViewInit {
 	workspaceSymbols?: WorkspaceSymbols;
 	regionProvider?: RegionProvider;
 	initialSearch?: boolean;
+	sortBy?: Sortby;
 }
 
 /**
@@ -44,15 +45,23 @@ export class OutlineView implements WebviewViewProvider {
 
 	private initialSearch: boolean;
 
+	private sortby: Sortby = Sortby.position;
+
 	constructor(init: OutlineViewInit) {
 		this.extensionUri = init.context.extensionUri;
 		this.workspaceSymbols = init.workspaceSymbols;
 		this.regionProvider = init.regionProvider;
 		this.initialSearch = init.initialSearch || false;
+		this.sortby = init.sortBy || Sortby.position;
 	}
 
 	pin(pinStatus: PinStatus) {
 		this.pinStatus = pinStatus;
+	}
+
+	sort(sortBy: Sortby) {
+		this.sortby = sortBy;
+		this.update(window.activeTextEditor?.document || window.visibleTextEditors[0].document);
 	}
 
 	resolveWebviewView(webviewView: WebviewView): void | Thenable<void> {
@@ -96,7 +105,9 @@ export class OutlineView implements WebviewViewProvider {
 				if (config.findRefEnabled()) {
 					res.then(() => {
 						commands.executeCommand(config.findRefUseFindImpl() ?
-							'references-view.findImplementations' : 'references-view.findReferences');
+							'references-view.findImplementations' : 'references-view.findReferences').then(ref=>{
+							config.debug() && console.log(ref);
+						});
 					});
 				}
 			}
@@ -405,7 +416,7 @@ export class OutlineView implements WebviewViewProvider {
 		if (!this.isValidDocument(textDocument)) { // Switched to a non-supported document like output
 			return;
 		}
-		const newOutlineTree = new OutlineTree(textDocument, this.regionProvider);
+		const newOutlineTree = new OutlineTree(textDocument, this.regionProvider, this.sortby);
 		newOutlineTree.updateSymbols().then(() => {
 			const newNodes = newOutlineTree.getNodes();
 			if (!newNodes || newNodes.length === 0) {
@@ -461,9 +472,12 @@ export class OutlineTree {
 	/** Times has tried to update the symbols. */
 	private attempts = 0;
 
-	constructor(textDocument: TextDocument, regionProvider?: RegionProvider) {
+	private sortBy: Sortby = Sortby.position;
+
+	constructor(textDocument: TextDocument, regionProvider?: RegionProvider, sortBy: Sortby = Sortby.position) {
 		this.textDocument = textDocument;
 		this.regionProvider = regionProvider;
+		this.sortBy = sortBy;
 	}
 
 	getNodes() {
@@ -496,7 +510,7 @@ export class OutlineTree {
 
 		if (docSymbols) {
 			config.debug() && console.log(`[Outline-map]: Got symbols from ${this.textDocument.uri.toString()}.`, docSymbols);
-			this.nodes = SymbolNode.fromDocumentSymbols(docSymbols);
+			this.nodes = SymbolNode.fromDocumentSymbols(docSymbols, this.sortBy);
 			// Reset attempts
 			this.attempts = 0;
 		}

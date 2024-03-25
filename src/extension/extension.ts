@@ -100,6 +100,7 @@ function initRegionSymbolProvider() {
 		languages.registerDocumentSymbolProvider({ scheme: 'file' }, regionSymbolProvider);
 	}
 	languages.registerFoldingRangeProvider({ scheme: 'file' }, regionSymbolProvider);
+	languages.registerRenameProvider({ scheme: 'file' }, regionSymbolProvider);
 	workspace.onDidChangeConfiguration(() => {
 		regionSymbolProvider?.updateDecorationsConfig();
 	});

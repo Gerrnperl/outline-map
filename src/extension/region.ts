@@ -19,7 +19,9 @@ import {
 	DecorationOptions,
 	TextEditorDecorationType,
 	window,
-	ThemeColor} from 'vscode';
+	ThemeColor,
+	RenameProvider,
+	WorkspaceEdit} from 'vscode';
 import { config } from './config';
 
 interface Region {
@@ -52,7 +54,7 @@ interface Token {
 	range: Range,
 }
 
-export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvider {
+export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvider, RenameProvider {
 
 	/** The document to parse */
 	document: TextDocument | undefined;
@@ -80,7 +82,7 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 	/** The string that marks a tag */
 	tag = config.tag();
 
-
+	renamingRegionOrTag?: Region | Tag;
 
 	onDidChangeFoldingRanges?: Event<void> | undefined;
 
@@ -282,6 +284,42 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 		if (token.isCancellationRequested) return;
 		this.update(document, token);
 		return this.symbols;
+	}
+
+	prepareRename(document: TextDocument, position: Position, token: CancellationToken)
+		: ProviderResult<Range | {placeholder: string, range: Range}> {
+		if (token.isCancellationRequested) return;
+		this.update(document, token);
+		const find = (regionOrTags: (Region | Tag)[]) => {
+			for (const regionOrTag of regionOrTags) {
+				if (regionOrTag.name.range.contains(position)) {
+					return [regionOrTag, regionOrTag.name.range] as const;
+				}
+				else if (('nameEnd' in regionOrTag) && regionOrTag.nameEnd?.range.contains(position)) {
+					return [regionOrTag, regionOrTag.nameEnd.range] as const;
+				}
+			}
+		};
+		const [regionOrTag, rangeToRename] = find(this.regions) || find(this.tags) || [];
+		if (regionOrTag) {
+			this.renamingRegionOrTag = regionOrTag;
+			return rangeToRename;
+		}
+		throw new Error('No region or tag found at position');
+	}
+
+	provideRenameEdits(document: TextDocument, position: Position, newName: string, token: CancellationToken)
+		: ProviderResult<WorkspaceEdit> {
+		if (token.isCancellationRequested) return;
+		const regionOrTag = this.renamingRegionOrTag;
+		if (!regionOrTag) return;
+		const edit = new WorkspaceEdit();
+		edit.replace(document.uri, regionOrTag.name.range, newName);
+		if (('nameEnd' in regionOrTag) && regionOrTag.nameEnd) {
+			edit.replace(document.uri, regionOrTag.nameEnd.range, newName);
+		}
+		this.renamingRegionOrTag = undefined;
+		return edit;
 	}
 
 	//#endregion providers

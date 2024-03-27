@@ -21,7 +21,15 @@ import {
 	window,
 	ThemeColor,
 	RenameProvider,
-	WorkspaceEdit} from 'vscode';
+	WorkspaceEdit,
+	CompletionItemProvider,
+	CompletionContext,
+	CompletionItem,
+	CompletionList,
+	CompletionItemKind,
+	SnippetString,
+	commands,
+	MarkdownString} from 'vscode';
 import { config } from './config';
 
 interface Region {
@@ -423,4 +431,60 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 
 	//#endregion syntax
 
+}
+
+/**
+ * A completion provider for regions and tags
+ */
+export class RegionCompletionProvider implements CompletionItemProvider {
+
+	startRegion = config.regionStart();
+	endRegion = config.regionEnd();
+	tag = config.tag();
+	addCommentLineCommand = { command: 'editor.action.addCommentLine', title: 'Toggle Line Comment' };
+	
+	get regionCompletionItem() {
+		const insertText = new SnippetString(`${this.startRegion} $\{1:name} $\{2:description}\n$0\n${this.endRegion} $\{1:name}`);
+		const mdDocument = new MarkdownString(
+			'Insert a region pair to fold the content between them');
+		const detail = 'Code Region (Outline-Map)';
+		mdDocument.appendCodeblock(`${this.startRegion} name description\n...\n${this.endRegion} name`);
+		const item = new CompletionItem(this.startRegion, CompletionItemKind.Issue);
+		item.insertText = insertText;
+		item.documentation = mdDocument;
+		item.detail = detail;
+		return item;
+	}
+
+	get tagCompletionItem() {
+		const insertText = new SnippetString(`${this.tag} $\{1:name} $\{2:description}`);
+		const mdDocument = new MarkdownString(
+			'Insert a tag to mark a specific point in the source code');
+		const detail = 'Code Tag (Outline-Map)';
+		mdDocument.appendCodeblock(`${this.tag} name description`);
+		const item = new CompletionItem(this.tag, CompletionItemKind.Issue);
+		item.insertText = insertText;
+		item.documentation = mdDocument;
+		item.detail = detail;
+		return item;
+	}
+
+	provideCompletionItems(document: TextDocument, position: Position, token: CancellationToken, context: CompletionContext): ProviderResult<CompletionItem[] | CompletionList<CompletionItem>> {
+		if (token.isCancellationRequested) return;
+		const currentLine = document.lineAt(position.line).text.trim();
+
+		const regionCompletionItem = this.regionCompletionItem;
+		const tagCompletionItem = this.tagCompletionItem;
+
+		if (this.startRegion.startsWith(currentLine) || this.tag.startsWith(currentLine)) {
+			regionCompletionItem.command = this.addCommentLineCommand;
+			tagCompletionItem.command = this.addCommentLineCommand;
+		}
+
+		return [
+			regionCompletionItem,
+			tagCompletionItem
+		];
+	}
+	
 }

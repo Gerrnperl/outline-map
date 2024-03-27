@@ -18,10 +18,11 @@ import { FocusMsg, PinStatus, ScrollMsg, Sortby } from '../common';
 import { config } from './config';
 import { debounce, throttle } from '../utils';
 import { WorkspaceSymbols } from './workspace';
-import { RegionProvider } from './region';
+import { RegionCompletionProvider, RegionProvider } from './region';
 
 let workspaceSymbols = undefined as WorkspaceSymbols | undefined;
 let regionSymbolProvider = undefined as RegionProvider | undefined;
+let regionCompletionProvider = undefined as RegionCompletionProvider | undefined;
 
 export function activate(context: ExtensionContext) {
 	restoreContext(context);
@@ -90,6 +91,7 @@ function initWorkspaceSymbols(context: ExtensionContext) {
  */
 function initRegionSymbolProvider() {
 	regionSymbolProvider = new RegionProvider();
+	regionCompletionProvider = new RegionCompletionProvider();
 	// Registering a DocumentSymbolProvider allows to go to
 	// regions and tags with vscode's Go to Symbol feature, 
 	// but this will pollute the built-in outline and breadcrumbs. 
@@ -101,6 +103,7 @@ function initRegionSymbolProvider() {
 	}
 	languages.registerFoldingRangeProvider({ scheme: 'file' }, regionSymbolProvider);
 	languages.registerRenameProvider({ scheme: 'file' }, regionSymbolProvider);
+	languages.registerCompletionItemProvider({ scheme: 'file' }, regionCompletionProvider);
 	workspace.onDidChangeConfiguration(() => {
 		regionSymbolProvider?.updateDecorationsConfig();
 	});

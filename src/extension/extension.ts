@@ -13,7 +13,7 @@ import {
 
 import { OutlineView } from './outline';
 
-import { OutlineViewCommandList, WorkspaceCommandList } from './commands';
+import { ContextCommandList, OutlineViewCommandList, WorkspaceCommandList } from './commands';
 import { FocusMsg, PinStatus, ScrollMsg, Sortby } from '../common';
 import { config } from './config';
 import { debounce, throttle } from '../utils';
@@ -50,6 +50,7 @@ export function activate(context: ExtensionContext) {
 		registerDiagnosticEvent(outlineView),
 		...OutlineViewCommandList.map(command => commands.registerCommand(command.name, command.fn.bind(null, outlineView, context.globalState))),
 		...WorkspaceCommandList.map(command => commands.registerCommand(command.name, command.fn.bind(null, workspaceSymbols))),
+		...ContextCommandList.map(command => commands.registerCommand(command.name, command.fn.bind(null))),
 	);
 }
 

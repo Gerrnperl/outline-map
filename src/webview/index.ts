@@ -234,6 +234,15 @@ function renderSymbolNode(symbolNode: SymbolNode, depth = 0): HTMLDivElement {
 	container.dataset.inview = symbolNode.inView.toString();
 	container.dataset.focus = symbolNode.focus.toString();
 	container.dataset.range = JSON.stringify(symbolNode.range);
+	// container.dataset['vscode-context'] = JSON.stringify({webviewSection: 'outline-item'});
+	container.setAttribute(
+		'data-vscode-context', 
+		JSON.stringify({
+			webviewSection: 'outline-item',
+			pos: symbolNode.selectionRange.start,
+			preventDefaultContextMenuItems: true,
+		})
+	);
 	container.classList.toggle('leaf', symbolNode.children.length === 0);
 	container.style.setProperty('--depth', depth.toString());
 

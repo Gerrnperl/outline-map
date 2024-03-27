@@ -1,4 +1,4 @@
-import { Memento, Position, Uri, commands } from 'vscode';
+import { Memento, Position, Uri, commands, window } from 'vscode';
 import { OutlineView } from './outline';
 import { config } from './config';
 import { ChangeDepthMsg, FocusMsg, PinSMsg, PinStatus, Sortby } from '../common';
@@ -198,5 +198,40 @@ export const WorkspaceCommandList: Command[] = [
 	{
 		name: 'outline-map.workspace.goToLocation',
 		fn: workspaceGotoLocation,
+	},
+];
+
+// export
+const goToLocation = ({pos}: {pos: Position}) => {
+	const uri = window.activeTextEditor?.document.uri;
+	commands.executeCommand('editor.action.goToLocations', uri, new Position(pos.line, pos.character), [], 'goto', '');
+};
+
+// export
+const showReferences = (arg: {pos: Position}) => {
+	commands.executeCommand('outline-map.context.goToLocation', arg).then(() => {
+		commands.executeCommand('editor.action.referenceSearch.trigger');
+	});
+};
+
+const showCallHierarchy = (arg: {pos: Position}) => {
+	commands.executeCommand('outline-map.context.goToLocation', arg).then(() => {
+		commands.executeCommand('editor.showCallHierarchy');
+	});
+};
+
+
+export const ContextCommandList: Command[] = [
+	{
+		name: 'outline-map.context.goToLocation',
+		fn: goToLocation,
+	},
+	{
+		name: 'outline-map.context.showReferences',
+		fn: showReferences,
+	},
+	{
+		name: 'outline-map.context.showCallHierarchy',
+		fn: showCallHierarchy,
 	},
 ];

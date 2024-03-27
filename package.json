@@ -588,6 +588,21 @@
 				"command": "outline-map.workspace.goToLocation",
 				"title": "%om.cmd.workspace.goToLocation.title%",
 				"category": "outline-map"
+			},
+			{
+				"command": "outline-map.context.goToLocation",
+				"title": "%om.cmd.context.goToLocation.title%",
+				"category": "outline-map"
+			},
+			{
+				"command": "outline-map.context.showReferences",
+				"title": "%om.cmd.context.showReferences.title%",
+				"category": "outline-map"
+			},
+			{
+				"command": "outline-map.context.showCallHierarchy",
+				"title": "%om.cmd.context.showCallHierarchy.title%",
+				"category": "outline-map"
 			}
 		],
 		"colors": [
@@ -711,6 +726,27 @@
 				{
 					"command": "outline-map.workspace.goToLocation",
 					"when": "false"
+				},
+				{
+					"command": "outline-map.context.goToLocation",
+					"when": "false"
+				}
+			],
+			"webview/context": [
+				{
+					"command": "outline-map.context.goToLocation",
+					"when": "webviewId == 'outline-map-view' && webviewSection == 'outline-item'",
+					"group": "navigation@1"
+				},
+				{
+					"command": "outline-map.context.showReferences",
+					"when": "webviewId == 'outline-map-view' && webviewSection == 'outline-item'",
+					"group": "navigation@2"
+				},
+				{
+					"command": "outline-map.context.showCallHierarchy",
+					"when": "webviewId == 'outline-map-view' && webviewSection == 'outline-item'",
+					"group": "navigation@3"
 				}
 			],
 			"view/title": [

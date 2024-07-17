@@ -51,7 +51,16 @@ const webExtensionConfig = {
 			},
 			{
 				test: /\.scss$/,
-				use: ['style-loader', 'css-loader', 'sass-loader'],
+				use: [
+					'style-loader',
+					'css-loader',
+					{
+						loader: 'sass-loader',
+						options: {
+							implementation: require('sass'),
+						}
+					}
+				],
 			},
 			{
 				test: /\.css$/,
@@ -72,7 +81,7 @@ const webExtensionConfig = {
 	},
 	devtool: 'nosources-source-map', // create a source map that points to the original source file
 	infrastructureLogging: {
-		level: "log", // enables logging required for problem matchers
+		level: 'log', // enables logging required for problem matchers
 	},
 };
 

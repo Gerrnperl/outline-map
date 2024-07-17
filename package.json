@@ -379,15 +379,33 @@
 					"items": {
 						"type": "string",
 						"enum": [
-							"File", "Module", "Namespace",
-							"Package", "Class", "Method",
-							"Property", "Field", "Constructor",
-							"Enum", "Interface", "Function",
-							"Variable", "Constant", "String",
-							"Number", "Boolean", "Array",
-							"Object", "Key", "Null",
-							"EnumMember", "Struct", "Event",
-							"Operator", "TypeParameter", "__om_Tag__",
+							"File",
+							"Module",
+							"Namespace",
+							"Package",
+							"Class",
+							"Method",
+							"Property",
+							"Field",
+							"Constructor",
+							"Enum",
+							"Interface",
+							"Function",
+							"Variable",
+							"Constant",
+							"String",
+							"Number",
+							"Boolean",
+							"Array",
+							"Object",
+							"Key",
+							"Null",
+							"EnumMember",
+							"Struct",
+							"Event",
+							"Operator",
+							"TypeParameter",
+							"__om_Tag__",
 							"__om_Region__"
 						]
 					},
@@ -419,7 +437,9 @@
 					"description": "%om.config.workspace.IncludeNames.description%",
 					"items": {
 						"type": "object",
-						"required": ["symbol"],
+						"required": [
+							"symbol"
+						],
 						"properties": {
 							"file": {
 								"type": "string",
@@ -811,7 +831,6 @@
 		"css-loader": "^6.7.3",
 		"eslint": "^8.18.0",
 		"mocha": "^10.0.0",
-		"node-sass": "^8.0.0",
 		"process": "^0.11.10",
 		"sass-loader": "^13.2.0",
 		"style-loader": "^3.3.1",
@@ -824,6 +843,7 @@
 		"@types/vscode-webview": "^1.57.1",
 		"@vscode/codicons": "^0.0.31",
 		"minimatch": "^9.0.3",
-		"overlayscrollbars": "^2.1.0"
+		"overlayscrollbars": "^2.1.0",
+		"sass": "^1.77.8"
 	}
 }

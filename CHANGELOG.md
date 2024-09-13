@@ -208,21 +208,33 @@ typo
 
 #### Fix
 
-- Overlap items when the height of the outline is not enough #50
+- Overlap items when the height of the outline is not enough #50 [@zcf0508](https://github.com/zcf0508)
 - Other minor fixes
 
 ### [1.4.0] - 2024-03-24
 
 #### Add
 
-- Add find References when goto tag #59 @howin98
+- Add find References when goto tag #59 [@howin98](https://github.com/howin98)
 - Provide outline sorting feature #54
 - Expand to the symbol under the cursor
 
-### Fix
+#### Fix
 
 - Now the outline will not scroll automatically when in the `manual` follow mode #53
 
 #### Other
 
 - Collapse pin state switch actions for less buttons in navigation bar
+
+### [1.4.1] - 2024-09-13
+#### Add
+- Support renaming regions and tags
+- Code completion for regions and tags
+- Add context menu for view reference and call hierarchy
+
+#### Fix
+- Handle trailing endregion #56 #76 [@joshua-dean](https://github.com/joshua-dean)
+
+#### Other
+- Use dart-sass instead of node-sass #73 [@abandon888](https://github.com/abandon888) 

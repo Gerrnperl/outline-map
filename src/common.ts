@@ -113,7 +113,15 @@ export class SymbolNode {
 				const docSymbol = docSymbols[i];
 				for (let j = i + 1; j < docSymbols.length; j++) {
 					const sibling = docSymbols[j];
-					if (docSymbol.range.contains(sibling.range)) {
+					// The second clause handles the case when the sibling is a region,
+					// so the "endregion" might not be contained by the docSymbol.range
+					if (
+						docSymbol.range.contains(sibling.range) ||
+						(
+							docSymbol.range.contains(sibling.range.start) &&
+							sibling.detail === "__om_Region__"
+						)
+					) {
 						docSymbol.children.push(sibling);
 						docSymbols.splice(j, 1);
 						j--;

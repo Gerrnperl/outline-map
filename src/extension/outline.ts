@@ -428,6 +428,9 @@ export class OutlineView implements WebviewViewProvider {
 	}
 
 	update(textDocument: TextDocument | undefined) {
+		if (!this.view?.visible) { // Outline view isn't visible, updates won't work
+			return
+		}
 		if (textDocument === undefined) { // No active editor
 			this.clear('The active editor cannot provide outline information.');
 			return;

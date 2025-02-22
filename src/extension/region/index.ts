@@ -30,7 +30,7 @@ import {
 	SnippetString,
 	commands,
 	MarkdownString} from 'vscode';
-import { config } from './config';
+import { config } from '../config';
 
 interface Region {
 	key: Token;

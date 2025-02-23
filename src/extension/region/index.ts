@@ -29,49 +29,60 @@ import {
 	CompletionItemKind,
 	SnippetString,
 	commands,
-	MarkdownString} from 'vscode';
+	MarkdownString,
+} from 'vscode';
 import { config } from '../config';
+import './parser';
+import {
+	RegionParser,
+	RegionEntry,
+	RegionType,
+	RegionTokenType,
+} from './parser';
 
 interface Region {
-	key: Token;
-	keyEnd: Token;
-	name: Token;
-	nameEnd?: Token;
-	description?: Token;
-	start: Range;
-	end: Range;
+  key: Token;
+  keyEnd: Token;
+  name: Token;
+  nameEnd?: Token;
+  description?: Token;
+  start: Range;
+  end: Range;
 }
 
+type RegionPair = [RegionEntry, RegionEntry];
+
 interface Tag {
-	key: Token;
-	name: Token;
-	description?: Token;
-	at: Range;
+  key: Token;
+  name: Token;
+  description?: Token;
+  at: Range;
 }
 
 interface RegionMatch {
-	type: 'region-start' | 'region-end' | 'tag',
-	key: Token;
-	name?: Token;
-	description?: Token;
+  type: 'region-start' | 'region-end' | 'tag';
+  key: Token;
+  name?: Token;
+  description?: Token;
 }
 
 interface Token {
-	type: string,
-	text: string,
-	range: Range,
+  type: string;
+  text: string;
+  range: Range;
 }
 
-export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvider, RenameProvider {
-
+export class RegionProvider
+implements DocumentSymbolProvider, FoldingRangeProvider, RenameProvider
+{
 	/** The document to parse */
 	document: TextDocument | undefined;
 	documentVersion = 0;
 
 	/** The regions in the document */
-	regions: Region[] = [];
+	regions: RegionPair[] = [];
 	/** The tags in the document */
-	tags: Tag[] = [];
+	tags: RegionEntry[] = [];
 
 	symbols: DocumentSymbol[] = [];
 
@@ -82,7 +93,6 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 	nameDecorationType: TextEditorDecorationType;
 	descriptionDecorationType: TextEditorDecorationType;
 
-
 	/** The string that marks the start of a region */
 	startRegion = config.regionStart();
 	/** The string that marks the end of a region */
@@ -90,41 +100,59 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 	/** The string that marks a tag */
 	tag = config.tag();
 
-	renamingRegionOrTag?: Region | Tag;
+	renamingRegionOrTag?: RegionPair | RegionEntry;
 
 	onDidChangeFoldingRanges?: Event<void> | undefined;
 
+	private parser: RegionParser;
 
 	constructor() {
 		const regionHighlightStyle = config.regionHighlightStyle();
-		this.keyDecorationType = window.createTextEditorDecorationType(regionHighlightStyle?.key || {
-			color: new ThemeColor('symbolIcon.keywordForeground')
-		});
-		this.nameDecorationType = window.createTextEditorDecorationType(regionHighlightStyle?.name || {
-			color: new ThemeColor('symbolIcon.variableForeground')
-		});
-		this.descriptionDecorationType = window.createTextEditorDecorationType(regionHighlightStyle?.description || {
-		});
+		this.keyDecorationType = window.createTextEditorDecorationType(
+			regionHighlightStyle?.key || {
+				color: new ThemeColor('symbolIcon.keywordForeground'),
+			}
+		);
+		this.nameDecorationType = window.createTextEditorDecorationType(
+			regionHighlightStyle?.name || {
+				color: new ThemeColor('symbolIcon.variableForeground'),
+			}
+		);
+		this.descriptionDecorationType = window.createTextEditorDecorationType(
+			regionHighlightStyle?.description || {}
+		);
+		this.parser = new RegionParser(
+			new Map([
+				[this.startRegion, RegionType.RegionOpen],
+				[this.endRegion, RegionType.RegionClose],
+				[this.tag, RegionType.Tag],
+			])
+		);
 	}
 
 	updateDecorationsConfig() {
 		const regionHighlightStyle = config.regionHighlightStyle();
 		this.keyDecorationType.dispose();
-		this.keyDecorationType = window.createTextEditorDecorationType(regionHighlightStyle?.key || {
-			color: new ThemeColor('symbolIcon.keywordForeground')
-		});
+		this.keyDecorationType = window.createTextEditorDecorationType(
+			regionHighlightStyle?.key || {
+				color: new ThemeColor('symbolIcon.keywordForeground'),
+			}
+		);
 		this.nameDecorationType.dispose();
-		this.nameDecorationType = window.createTextEditorDecorationType(regionHighlightStyle?.name || {
-			color: new ThemeColor('symbolIcon.variableForeground')
-		});
+		this.nameDecorationType = window.createTextEditorDecorationType(
+			regionHighlightStyle?.name || {
+				color: new ThemeColor('symbolIcon.variableForeground'),
+			}
+		);
 		this.descriptionDecorationType.dispose();
-		this.descriptionDecorationType = window.createTextEditorDecorationType(regionHighlightStyle?.description || {
-		});
+		this.descriptionDecorationType = window.createTextEditorDecorationType(
+			regionHighlightStyle?.description || {}
+		);
 	}
 
 	/**
-	 * Clear the regions and tags arrays
-	 */
+   * Clear the regions and tags arrays
+   */
 	clear() {
 		this.regions = [];
 		this.tags = [];
@@ -133,11 +161,14 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 	}
 
 	/**
-	 * if the document has changed, update the regions and tags arrays
-	 * @param document 
-	 */
+   * if the document has changed, update the regions and tags arrays
+   * @param document
+   */
 	update(document: TextDocument, cancel?: CancellationToken) {
-		if (document !== this.document || document.version !== this.documentVersion) {
+		if (
+			document !== this.document ||
+      document.version !== this.documentVersion
+		) {
 			this.document = document;
 			this.documentVersion = document.version;
 			this.parseDocument(cancel);
@@ -145,18 +176,28 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 	}
 
 	/**
-	 * Parse the document and update the regions and tags arrays
-	 * @param document 
-	 */
+   * Parse the document and update the regions and tags arrays
+   * @param document
+   */
 	parseDocument(cancel?: CancellationToken) {
 		if (!this.document) return;
+
 		this.startRegion = config.regionStart();
 		this.endRegion = config.regionEnd();
 		this.tag = config.tag();
+		this.parser = new RegionParser(
+			new Map([
+				[this.startRegion, RegionType.RegionOpen],
+				[this.endRegion, RegionType.RegionClose],
+				[this.tag, RegionType.Tag],
+			])
+		);
+
 		this.clear();
-		const unpaired: Tag[] = [];
-		const regions: Region[] = [];
-		const tags: Tag[] = [];
+		const unpaired: RegionEntry[] = [];
+		const regions: RegionPair[] = [];
+		const tags: RegionEntry[] = [];
+
 		for (let i = 0; i < this.document.lineCount; i++) {
 			if (cancel && cancel.isCancellationRequested) {
 				return;
@@ -166,20 +207,16 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 			const match = this.matchLine(line.text, i);
 			if (!match) continue;
 
-			if (match.type !== 'region-end' && match.name) {
-				(match.type === 'tag' ? tags : unpaired).push({ 
-					name: match.name,
-					at: line.range,
-					key: match.key,
-					description: match.description,
-				});
+			if (match.type.value !== RegionType.RegionClose && match.identifier) {
+				(match.type.value === RegionType.Tag ? tags : unpaired).push(match);
 				continue;
 			}
 			// for unnamed end tags, use the last unpaired start tag, otherwise find the matching start tag
 			let startIndex = unpaired.length - 1;
-			if (match.name) {
+			if (match.identifier) {
+				startIndex = -1;
 				for (let j = unpaired.length - 1; j >= 0; j--) {
-					if (unpaired[j].name === match.name) {
+					if (unpaired[j].identifier?.value === match.identifier.value) {
 						startIndex = j;
 						break;
 					}
@@ -192,15 +229,7 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 			if (!startTag) continue;
 			unpaired.splice(startIndex, 1);
 
-			regions.push({
-				key: startTag.key,
-				keyEnd: match.key,
-				name: startTag.name,
-				nameEnd: match.name,
-				start: startTag.at,
-				end: line.range,
-				description: startTag.description,
-			});
+			regions.push([startTag, match]);
 		}
 		this.regions = regions;
 		this.tags = tags;
@@ -210,38 +239,53 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 	}
 
 	/**
-	 * Update the symbols array from the regions and tags arrays
-	 */
+   * Update the symbols array from the regions and tags arrays
+   */
 	updateSymbols() {
 		for (const region of this.regions) {
+			const identifierToken = region[0].identifier;
+			if (!identifierToken) continue;
+
 			const symbol = new DocumentSymbol(
-				region.name.text,
-				`__om_Region__${region.description?.text || ''}`,
+				identifierToken.value,
+				`__om_Region__${region[0].description?.value ?? ''}`,
+				// As we can not extend the SymbolKind enum,
+				// here we use `SymbolKind.Number` as a replacement.
+				// And store the real SymbolKind in the detail field.
 				SymbolKind.Number,
-				new Range(region.start.start, region.end.end),
-				new Range(region.name.range.start, region.name.range.end),
+				// Full range of the region is
+				// the range that spans from the start of the first region
+				// to the end of the second region
+				region[0].range.union(region[1].range),
+				// Selection range is the range that should be revealed when this symbol is selected
+				// It is the range of the identifier token if it exists, otherwise the range of the first region
+				identifierToken?.range ?? region[0].range
 			);
 			this.symbols.push(symbol);
 		}
 
 		for (const tag of this.tags) {
+			const identifierToken = tag.identifier;
+			if (!identifierToken) continue;
 			const symbol = new DocumentSymbol(
-				tag.name.text,
-				`__om_Tag__${tag.description?.text || ''}`,
+				identifierToken.value,
+				`__om_Tag__${tag.description?.value ?? ''}`,
 				SymbolKind.Number,
-				tag.at,
-				tag.name.range,
+				tag.range,
+				identifierToken.range ?? tag.range
 			);
 			this.symbols.push(symbol);
 		}
 	}
 
 	/**
-	 * Update the folding ranges from the regions array
-	 */
+   * Update the folding ranges from the regions array
+   */
 	updateFolding() {
 		for (const region of this.regions) {
-			this.folding.push(new FoldingRange(region.start.start.line, region.end.end.line));
+			this.folding.push(
+				new FoldingRange(region[0].range.start.line, region[1].range.end.line)
+			);
 		}
 	}
 
@@ -251,64 +295,112 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 		const keyDecorations: DecorationOptions[] = [];
 		const nameDecorations: DecorationOptions[] = [];
 		const descriptionDecorations: DecorationOptions[] = [];
-		this.regions.forEach((region) => {
+		for (const region of this.regions) {
+			if (!region[0].identifier) continue;
 			keyDecorations.push(
-				{ range: region.key.range },
-				{ range: region.keyEnd.range}
+				{ range: region[0].type.range },
+				{ range: region[1].type.range }
 			);
 			nameDecorations.push(
-				{ range: region.name.range, hoverMessage: `${region.key.text} **${region.name.text}** ${region.description?.text || ''}` },
-				...(region.nameEnd ? [{ range: region.nameEnd.range, hoverMessage: `${region.key.text} **${region.name.text}** ${region.description?.text || ''}` }] : [])
+				{
+					range: region[0].identifier.range,
+					hoverMessage: `${region[0].type.text} **${
+						region[0].identifier.value
+					}** \n ${region[0].description?.value || ''}`,
+				},
 			);
-			if (region.description) {
-				descriptionDecorations.push(
-					{ range: region.description.range}
-				);
+			if (region[1].identifier) {
+				nameDecorations.push({
+					range: region[1].identifier.range,
+					hoverMessage: `${region[0].type.text} **${
+						region[0].identifier.value
+					}** \n ${region[0].description?.value || ''}`,
+				});
 			}
-		});
-		this.tags.forEach((tag) => {
-			keyDecorations.push({ range: tag.key.range });
-			nameDecorations.push({ range: tag.name.range, hoverMessage: `${tag.key.text} **${tag.name.text}** ${tag.description?.text || ''}` });
+			// if (region.description) {
+			// 	descriptionDecorations.push(
+			// 		{ range: region.description.range}
+			// 	);
+			// }
+			if (region[0].description) {
+				descriptionDecorations.push({ range: region[0].description.range });
+			}
+			if (region[1].description) {
+				descriptionDecorations.push({ range: region[1].description.range });
+			}
+		}
+		// this.tags.forEach((tag) => {
+		for (const tag of this.tags) {
+			if (!tag.identifier) continue;
+
+			keyDecorations.push({ range: tag.type.range });
+			nameDecorations.push({
+				range: tag.identifier.range,
+				hoverMessage: `${tag.type.text} **${tag.identifier.value}** ${
+					tag.description?.value || ''
+				}`,
+			});
 			if (tag.description) {
 				descriptionDecorations.push({ range: tag.description.range });
 			}
-		});
+		}
 
 		editor.setDecorations(this.keyDecorationType, keyDecorations);
 		editor.setDecorations(this.nameDecorationType, nameDecorations);
-		editor.setDecorations(this.descriptionDecorationType, descriptionDecorations);
+		editor.setDecorations(
+			this.descriptionDecorationType,
+			descriptionDecorations
+		);
 	}
 
 	//#region providers
 
-	provideFoldingRanges(document: TextDocument, context: FoldingContext, token: CancellationToken): ProviderResult<FoldingRange[]> {
+	provideFoldingRanges(
+		document: TextDocument,
+		context: FoldingContext,
+		token: CancellationToken
+	): ProviderResult<FoldingRange[]> {
 		if (token.isCancellationRequested) return;
 		this.update(document, token);
 		return this.folding;
 	}
 
-	provideDocumentSymbols(document: TextDocument, token: CancellationToken)
-		: ProviderResult<DocumentSymbol[] | SymbolInformation[]> {
+	provideDocumentSymbols(
+		document: TextDocument,
+		token: CancellationToken
+	): ProviderResult<DocumentSymbol[] | SymbolInformation[]> {
 		if (token.isCancellationRequested) return;
 		this.update(document, token);
 		return this.symbols;
 	}
 
-	prepareRename(document: TextDocument, position: Position, token: CancellationToken)
-		: ProviderResult<Range | {placeholder: string, range: Range}> {
+	prepareRename(
+		document: TextDocument,
+		position: Position,
+		token: CancellationToken
+	): ProviderResult<Range | { placeholder: string; range: Range }> {
 		if (token.isCancellationRequested) return;
 		this.update(document, token);
-		const find = (regionOrTags: (Region | Tag)[]) => {
-			for (const regionOrTag of regionOrTags) {
-				if (regionOrTag.name.range.contains(position)) {
-					return [regionOrTag, regionOrTag.name.range] as const;
+
+		const findRegion = (regions: RegionPair[]) => {
+			for (const region of regions) {
+				if (region[0].identifier?.range.contains(position)) {
+					return [region[0], region[0].identifier.range] as const;
 				}
-				else if (('nameEnd' in regionOrTag) && regionOrTag.nameEnd?.range.contains(position)) {
-					return [regionOrTag, regionOrTag.nameEnd.range] as const;
+				if (region[1].identifier?.range.contains(position)) {
+					return [region[1], region[1].identifier.range] as const;
 				}
 			}
 		};
-		const [regionOrTag, rangeToRename] = find(this.regions) || find(this.tags) || [];
+
+		const findTag = (tags: RegionEntry[]) => {
+			for (const tag of tags) {
+				if (tag.identifier?.range.contains(position)) {
+					return [tag, tag.identifier.range] as const;
+				}
+			}
+		};
+		const [regionOrTag, rangeToRename] = findTag(this.tags) || findRegion(this.regions) || [];
 		if (regionOrTag) {
 			this.renamingRegionOrTag = regionOrTag;
 			return rangeToRename;
@@ -316,16 +408,31 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 		throw new Error('No region or tag found at position');
 	}
 
-	provideRenameEdits(document: TextDocument, position: Position, newName: string, token: CancellationToken)
-		: ProviderResult<WorkspaceEdit> {
+	provideRenameEdits(
+		document: TextDocument,
+		position: Position,
+		newName: string,
+		token: CancellationToken
+	): ProviderResult<WorkspaceEdit> {
 		if (token.isCancellationRequested) return;
 		const regionOrTag = this.renamingRegionOrTag;
 		if (!regionOrTag) return;
 		const edit = new WorkspaceEdit();
-		edit.replace(document.uri, regionOrTag.name.range, newName);
-		if (('nameEnd' in regionOrTag) && regionOrTag.nameEnd) {
-			edit.replace(document.uri, regionOrTag.nameEnd.range, newName);
+
+		if (regionOrTag instanceof Array) {
+			if (regionOrTag[0].identifier) {
+				edit.replace(document.uri, regionOrTag[0].identifier.range, newName);
+			}
+			if (regionOrTag[1].identifier) {
+				edit.replace(document.uri, regionOrTag[1].identifier.range, newName);
+			}
 		}
+		else {
+			if (regionOrTag.identifier) {
+				edit.replace(document.uri, regionOrTag.identifier.range, newName);
+			}
+		}
+
 		this.renamingRegionOrTag = undefined;
 		return edit;
 	}
@@ -335,23 +442,28 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 	//#region syntax syntax parsing
 
 	/**
-	 * Match a line against the region and tag patterns
-	 * @param line the line to match
-	 * @param n the line number
-	 * @returns a RegionMatch object if the line matches, otherwise null
-	 */
-	private matchLine(line: string, n: number): RegionMatch | null {
-		return this.matchStart(line, n) || this.matchEnd(line, n) || this.matchTag(line, n);
+   * Match a line against the region and tag patterns
+   * @param line the line to match
+   * @param n the line number
+   * @returns a RegionMatch object if the line matches, otherwise null
+   */
+	private matchLine(line: string, n: number): RegionEntry | null {
+		// return this.matchStart(line, n) || this.matchEnd(line, n) || this.matchTag(line, n);
+		this.parser.parse(line, n);
+		const result = this.parser.emit();
+		return result;
 	}
 
 	/**
-	 * Match a line against the region start pattern
-	 * @param line the line to match
-	 * @param n the line number
-	 * @returns 
-	 */
+   * Match a line against the region start pattern
+   * @param line the line to match
+   * @param n the line number
+   * @returns
+   */
 	private matchStart(line: string, n: number): RegionMatch | null {
-		const startPattern = new RegExp(`${this.startRegion}[\\t ]+(?<name>[\\S]*)[\\t ]*(?<description>.*)`);
+		const startPattern = new RegExp(
+			`${this.startRegion}[\\t ]+(?<name>[\\S]*)[\\t ]*(?<description>.*)`
+		);
 		const matchStart = line.match(startPattern);
 		if (!matchStart) {
 			return null;
@@ -369,7 +481,9 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 	}
 
 	private matchTag(line: string, n: number): RegionMatch | null {
-		const tagPattern = new RegExp(`${this.tag}[\\t ]+(?<name>[\\S]*)[\\t ]*(?<description>.*)`);
+		const tagPattern = new RegExp(
+			`${this.tag}[\\t ]+(?<name>[\\S]*)[\\t ]*(?<description>.*)`
+		);
 		const matchTag = line.match(tagPattern);
 		if (!matchTag) {
 			return null;
@@ -378,14 +492,19 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 	}
 
 	/**
-	 * Get the tokens from a match
-	 * @param match  the match to get tokens from
-	 * @param key 
-	 * @param n line number
-	 * @param type 
-	 * @returns 
-	 */
-	private getTokens(match: RegExpMatchArray, key: string, n: number, type: RegionMatch['type']): RegionMatch {
+   * Get the tokens from a match
+   * @param match  the match to get tokens from
+   * @param key
+   * @param n line number
+   * @param type
+   * @returns
+   */
+	private getTokens(
+		match: RegExpMatchArray,
+		key: string,
+		n: number,
+		type: RegionMatch['type']
+	): RegionMatch {
 		let index = match.index || 0; // the beginning of syntax
 		const keyToken = {
 			type: 'key',
@@ -393,7 +512,7 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 			range: new Range(
 				new Position(n, index),
 				new Position(n, index + key.length)
-			)
+			),
 		};
 		const result: RegionMatch = {
 			type,
@@ -403,14 +522,16 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 		if (!name) {
 			return result;
 		}
-		index = (match.index || 0) + match[0].indexOf(match.groups?.name || '', key.length);
+		index =
+      (match.index || 0) +
+      match[0].indexOf(match.groups?.name || '', key.length);
 		result.name = {
 			type: 'name',
 			text: name,
 			range: new Range(
 				new Position(n, index),
 				new Position(n, index + name.length)
-			)
+			),
 		};
 		const description = match.groups?.description || null;
 		if (!description) {
@@ -423,32 +544,38 @@ export class RegionProvider implements DocumentSymbolProvider, FoldingRangeProvi
 			range: new Range(
 				new Position(n, index),
 				new Position(n, index + description.length)
-			)
+			),
 		};
 
 		return result;
 	}
 
 	//#endregion syntax
-
 }
 
 /**
  * A completion provider for regions and tags
  */
 export class RegionCompletionProvider implements CompletionItemProvider {
-
 	startRegion = config.regionStart();
 	endRegion = config.regionEnd();
 	tag = config.tag();
-	addCommentLineCommand = { command: 'editor.action.addCommentLine', title: 'Toggle Line Comment' };
-	
+	addCommentLineCommand = {
+		command: 'editor.action.addCommentLine',
+		title: 'Toggle Line Comment',
+	};
+
 	get regionCompletionItem() {
-		const insertText = new SnippetString(`${this.startRegion} $\{1:name} $\{2:description}\n$0\n${this.endRegion} $\{1:name}`);
+		const insertText = new SnippetString(
+			`${this.startRegion} $\{1:name} $\{2:description}\n$0\n${this.endRegion} $\{1:name}`
+		);
 		const mdDocument = new MarkdownString(
-			'Insert a region pair to fold the content between them');
+			'Insert a region pair to fold the content between them'
+		);
 		const detail = 'Code Region (Outline-Map)';
-		mdDocument.appendCodeblock(`${this.startRegion} name description\n...\n${this.endRegion} name`);
+		mdDocument.appendCodeblock(
+			`${this.startRegion} name description\n...\n${this.endRegion} name`
+		);
 		const item = new CompletionItem(this.startRegion, CompletionItemKind.Issue);
 		item.insertText = insertText;
 		item.documentation = mdDocument;
@@ -457,9 +584,12 @@ export class RegionCompletionProvider implements CompletionItemProvider {
 	}
 
 	get tagCompletionItem() {
-		const insertText = new SnippetString(`${this.tag} $\{1:name} $\{2:description}`);
+		const insertText = new SnippetString(
+			`${this.tag} $\{1:name} $\{2:description}`
+		);
 		const mdDocument = new MarkdownString(
-			'Insert a tag to mark a specific point in the source code');
+			'Insert a tag to mark a specific point in the source code'
+		);
 		const detail = 'Code Tag (Outline-Map)';
 		mdDocument.appendCodeblock(`${this.tag} name description`);
 		const item = new CompletionItem(this.tag, CompletionItemKind.Issue);
@@ -469,22 +599,26 @@ export class RegionCompletionProvider implements CompletionItemProvider {
 		return item;
 	}
 
-	provideCompletionItems(document: TextDocument, position: Position, token: CancellationToken, context: CompletionContext): ProviderResult<CompletionItem[] | CompletionList<CompletionItem>> {
+	provideCompletionItems(
+		document: TextDocument,
+		position: Position,
+		token: CancellationToken,
+		context: CompletionContext
+	): ProviderResult<CompletionItem[] | CompletionList<CompletionItem>> {
 		if (token.isCancellationRequested) return;
 		const currentLine = document.lineAt(position.line).text.trim();
 
 		const regionCompletionItem = this.regionCompletionItem;
 		const tagCompletionItem = this.tagCompletionItem;
 
-		if (this.startRegion.startsWith(currentLine) || this.tag.startsWith(currentLine)) {
+		if (
+			this.startRegion.startsWith(currentLine) ||
+      this.tag.startsWith(currentLine)
+		) {
 			regionCompletionItem.command = this.addCommentLineCommand;
 			tagCompletionItem.command = this.addCommentLineCommand;
 		}
 
-		return [
-			regionCompletionItem,
-			tagCompletionItem
-		];
+		return [regionCompletionItem, tagCompletionItem];
 	}
-	
 }

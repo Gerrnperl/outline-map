@@ -28,7 +28,6 @@ import {
 	CompletionList,
 	CompletionItemKind,
 	SnippetString,
-	commands,
 	MarkdownString,
 } from 'vscode';
 import { config } from '../config';
@@ -37,40 +36,9 @@ import {
 	RegionParser,
 	RegionEntry,
 	RegionType,
-	RegionTokenType,
 } from './parser';
 
-interface Region {
-  key: Token;
-  keyEnd: Token;
-  name: Token;
-  nameEnd?: Token;
-  description?: Token;
-  start: Range;
-  end: Range;
-}
-
 type RegionPair = [RegionEntry, RegionEntry];
-
-interface Tag {
-  key: Token;
-  name: Token;
-  description?: Token;
-  at: Range;
-}
-
-interface RegionMatch {
-  type: 'region-start' | 'region-end' | 'tag';
-  key: Token;
-  name?: Token;
-  description?: Token;
-}
-
-interface Token {
-  type: string;
-  text: string;
-  range: Range;
-}
 
 export class RegionProvider
 implements DocumentSymbolProvider, FoldingRangeProvider, RenameProvider
@@ -317,11 +285,6 @@ implements DocumentSymbolProvider, FoldingRangeProvider, RenameProvider
 					}** \n ${region[0].description?.value || ''}`,
 				});
 			}
-			// if (region.description) {
-			// 	descriptionDecorations.push(
-			// 		{ range: region.description.range}
-			// 	);
-			// }
 			if (region[0].description) {
 				descriptionDecorations.push({ range: region[0].description.range });
 			}
@@ -352,8 +315,6 @@ implements DocumentSymbolProvider, FoldingRangeProvider, RenameProvider
 			descriptionDecorations
 		);
 	}
-
-	//#region providers
 
 	provideFoldingRanges(
 		document: TextDocument,
@@ -437,10 +398,6 @@ implements DocumentSymbolProvider, FoldingRangeProvider, RenameProvider
 		return edit;
 	}
 
-	//#endregion providers
-
-	//#region syntax syntax parsing
-
 	/**
    * Match a line against the region and tag patterns
    * @param line the line to match
@@ -448,109 +405,10 @@ implements DocumentSymbolProvider, FoldingRangeProvider, RenameProvider
    * @returns a RegionMatch object if the line matches, otherwise null
    */
 	private matchLine(line: string, n: number): RegionEntry | null {
-		// return this.matchStart(line, n) || this.matchEnd(line, n) || this.matchTag(line, n);
 		this.parser.parse(line, n);
 		const result = this.parser.emit();
 		return result;
 	}
-
-	/**
-   * Match a line against the region start pattern
-   * @param line the line to match
-   * @param n the line number
-   * @returns
-   */
-	private matchStart(line: string, n: number): RegionMatch | null {
-		const startPattern = new RegExp(
-			`${this.startRegion}[\\t ]+(?<name>[\\S]*)[\\t ]*(?<description>.*)`
-		);
-		const matchStart = line.match(startPattern);
-		if (!matchStart) {
-			return null;
-		}
-		return this.getTokens(matchStart, this.startRegion, n, 'region-start');
-	}
-
-	private matchEnd(line: string, n: number): RegionMatch | null {
-		const endPattern = new RegExp(`${this.endRegion}([\t ]+(?<name>[\\S]*))?`);
-		const matchEnd = line.match(endPattern);
-		if (!matchEnd) {
-			return null;
-		}
-		return this.getTokens(matchEnd, this.endRegion, n, 'region-end');
-	}
-
-	private matchTag(line: string, n: number): RegionMatch | null {
-		const tagPattern = new RegExp(
-			`${this.tag}[\\t ]+(?<name>[\\S]*)[\\t ]*(?<description>.*)`
-		);
-		const matchTag = line.match(tagPattern);
-		if (!matchTag) {
-			return null;
-		}
-		return this.getTokens(matchTag, this.tag, n, 'tag');
-	}
-
-	/**
-   * Get the tokens from a match
-   * @param match  the match to get tokens from
-   * @param key
-   * @param n line number
-   * @param type
-   * @returns
-   */
-	private getTokens(
-		match: RegExpMatchArray,
-		key: string,
-		n: number,
-		type: RegionMatch['type']
-	): RegionMatch {
-		let index = match.index || 0; // the beginning of syntax
-		const keyToken = {
-			type: 'key',
-			text: key,
-			range: new Range(
-				new Position(n, index),
-				new Position(n, index + key.length)
-			),
-		};
-		const result: RegionMatch = {
-			type,
-			key: keyToken,
-		};
-		const name = match.groups?.name || null;
-		if (!name) {
-			return result;
-		}
-		index =
-      (match.index || 0) +
-      match[0].indexOf(match.groups?.name || '', key.length);
-		result.name = {
-			type: 'name',
-			text: name,
-			range: new Range(
-				new Position(n, index),
-				new Position(n, index + name.length)
-			),
-		};
-		const description = match.groups?.description || null;
-		if (!description) {
-			return result;
-		}
-		index = (match.index || 0) + match[0].lastIndexOf(description);
-		result.description = {
-			type: 'description',
-			text: description,
-			range: new Range(
-				new Position(n, index),
-				new Position(n, index + description.length)
-			),
-		};
-
-		return result;
-	}
-
-	//#endregion syntax
 }
 
 /**

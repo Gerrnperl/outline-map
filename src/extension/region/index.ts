@@ -32,11 +32,7 @@ import {
 } from 'vscode';
 import { config } from '../config';
 import './parser';
-import {
-	RegionParser,
-	RegionEntry,
-	RegionType,
-} from './parser';
+import { RegionParser, RegionEntry, RegionType } from './parser';
 
 type RegionPair = [RegionEntry, RegionEntry];
 
@@ -265,24 +261,56 @@ implements DocumentSymbolProvider, FoldingRangeProvider, RenameProvider
 		const descriptionDecorations: DecorationOptions[] = [];
 		for (const region of this.regions) {
 			if (!region[0].identifier) continue;
+
+			const getHoverMessage = (index: 0 | 1) => {
+				const hoverMessage = new MarkdownString();
+
+				hoverMessage.supportThemeIcons = true;
+				hoverMessage.isTrusted = true;
+
+				hoverMessage.appendCodeblock(
+					`(Region) ${region[0].identifier?.value || region[1].identifier?.value}`,
+					'js'
+				);
+				hoverMessage.appendMarkdown(
+					`${
+						region[0].description?.value || region[1].description?.value || ''
+					}\n\n`
+				);
+
+				const GoToPairArgs = encodeURIComponent(
+					JSON.stringify({
+						pos: region[1 - index].identifier?.range.start,
+					})
+				);
+
+				const command = `command:outline-map.context.goToLocation?${GoToPairArgs}`;
+				const commandLabel = `Jump to ${
+					index === 0 ? 'end' : 'start'
+				} (Line ${region[1 - index].identifier?.range.start.line})`;
+
+				hoverMessage.appendMarkdown(
+					`[${commandLabel}](${command})`
+				);
+
+				return hoverMessage;
+			};
+
+			const hoverMessage1 = getHoverMessage(0);
+			const hoverMessage2 = getHoverMessage(1);
+
 			keyDecorations.push(
-				{ range: region[0].type.range },
-				{ range: region[1].type.range }
+				{ range: region[0].type.range, hoverMessage: hoverMessage1 },
+				{ range: region[1].type.range, hoverMessage: hoverMessage2 }
 			);
-			nameDecorations.push(
-				{
-					range: region[0].identifier.range,
-					hoverMessage: `${region[0].type.text} **${
-						region[0].identifier.value
-					}** \n ${region[0].description?.value || ''}`,
-				},
-			);
+			nameDecorations.push({
+				range: region[0].identifier.range,
+				hoverMessage: hoverMessage1,
+			});
 			if (region[1].identifier) {
 				nameDecorations.push({
 					range: region[1].identifier.range,
-					hoverMessage: `${region[0].type.text} **${
-						region[0].identifier.value
-					}** \n ${region[0].description?.value || ''}`,
+					hoverMessage: hoverMessage2,
 				});
 			}
 			if (region[0].description) {
@@ -296,12 +324,18 @@ implements DocumentSymbolProvider, FoldingRangeProvider, RenameProvider
 		for (const tag of this.tags) {
 			if (!tag.identifier) continue;
 
-			keyDecorations.push({ range: tag.type.range });
+			const hoverMessage = new MarkdownString();
+
+			hoverMessage.supportThemeIcons = true;
+			hoverMessage.isTrusted = true;
+
+			hoverMessage.appendCodeblock(`(Tag) ${tag.identifier.value}`, 'js');
+			hoverMessage.appendMarkdown(`${tag.description?.value || ''}\n\n`);
+
+			keyDecorations.push({ range: tag.type.range, hoverMessage });
 			nameDecorations.push({
 				range: tag.identifier.range,
-				hoverMessage: `${tag.type.text} **${tag.identifier.value}** ${
-					tag.description?.value || ''
-				}`,
+				hoverMessage,
 			});
 			if (tag.description) {
 				descriptionDecorations.push({ range: tag.description.range });
@@ -361,7 +395,8 @@ implements DocumentSymbolProvider, FoldingRangeProvider, RenameProvider
 				}
 			}
 		};
-		const [regionOrTag, rangeToRename] = findTag(this.tags) || findRegion(this.regions) || [];
+		const [regionOrTag, rangeToRename] =
+      findTag(this.tags) || findRegion(this.regions) || [];
 		if (regionOrTag) {
 			this.renamingRegionOrTag = regionOrTag;
 			return rangeToRename;
@@ -387,8 +422,7 @@ implements DocumentSymbolProvider, FoldingRangeProvider, RenameProvider
 			if (regionOrTag[1].identifier) {
 				edit.replace(document.uri, regionOrTag[1].identifier.range, newName);
 			}
-		}
-		else {
+		} else {
 			if (regionOrTag.identifier) {
 				edit.replace(document.uri, regionOrTag.identifier.range, newName);
 			}

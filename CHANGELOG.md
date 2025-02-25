@@ -238,3 +238,15 @@ typo
 
 #### Other
 - Use dart-sass instead of node-sass #73 [@abandon888](https://github.com/abandon888) 
+
+### [1.4.2] - 2024-02-26
+#### Add
+- Support for region/tag name escaping (use \ to escape a space) #80
+- Improve parsing quality with new region/tag syntax parser
+- Improve region/tag hover message.
+- Support expanding all symbols on startup (set `outline-map.expand` to `expanded`) #81 #80
+- L10n support for extension UI, 
+  - and provide de, es, fr, jp, zh-tw translations (translated by copilot :D)
+
+#### Fix
+Don't update if the webview isn't visible. #77 #69 [@joshua-dean](https://github.com/joshua-dean)

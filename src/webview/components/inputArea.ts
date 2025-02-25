@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { $t } from '../../l10n/webview';
 import { SymbolKindList, SymbolKindStr, camelToDash, mapIcon } from '../../utils';
 import { Mode } from '../input';
 
@@ -37,7 +38,7 @@ export class InputArea extends HTMLElement {
 				name="input-text"
 				id="input-text"
 				style="height: calc(var(--vscode-font-size) + 10px);overflow-y:hidden;"
-				title="Navigate to symbol by 🢐⬍🢒(append @ to filter symbols or /=? to search)"
+				title="${$t('Navigate with ↑↓←→ (append @ to filter symbols or /=? to search)')}"
 			></textarea>
 			<div class="highlight"></div>
 			<div id="symbol-list">
@@ -113,7 +114,7 @@ export class InputArea extends HTMLElement {
 		this.filteredSymbol = symbol;
 		this._filterEle.querySelector('.icon')!.className = 
 			`icon codicon codicon-${mapIcon(this.filteredSymbol)}`;
-		this._filterEle.title = `Search for ${this.filteredSymbol}`;
+		this._filterEle.title = $t('Search for {0}', this.filteredSymbol);
 		this.filtering = false;
 		this.filter('');
 		this._textarea.value = '';

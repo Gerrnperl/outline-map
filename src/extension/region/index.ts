@@ -33,6 +33,7 @@ import {
 import { config } from '../config';
 import './parser';
 import { RegionParser, RegionEntry, RegionType } from './parser';
+import { $t } from '../../l10n/host';
 
 type RegionPair = [RegionEntry, RegionEntry];
 
@@ -285,9 +286,17 @@ implements DocumentSymbolProvider, FoldingRangeProvider, RenameProvider
 				);
 
 				const command = `command:outline-map.context.goToLocation?${GoToPairArgs}`;
-				const commandLabel = `Jump to ${
-					index === 0 ? 'end' : 'start'
-				} (Line ${region[1 - index].identifier?.range.start.line})`;
+
+
+				const commandLabel = $t(
+					'Jump to {anchor} ({line})',
+					{
+						anchor: index === 0 ? $t('end') : $t('start'),
+						line: $t('Line {line}', {
+							line: region[1 - index].identifier?.range.start.line,
+						}),
+					}
+				);
 
 				hoverMessage.appendMarkdown(
 					`[${commandLabel}](${command})`
@@ -462,9 +471,9 @@ export class RegionCompletionProvider implements CompletionItemProvider {
 			`${this.startRegion} $\{1:name} $\{2:description}\n$0\n${this.endRegion} $\{1:name}`
 		);
 		const mdDocument = new MarkdownString(
-			'Insert a region pair to fold the content between them'
+			$t('Insert a region pair to fold the content between them')
 		);
-		const detail = 'Code Region (Outline-Map)';
+		const detail = $t('Code Region (Outline-Map)');
 		mdDocument.appendCodeblock(
 			`${this.startRegion} name description\n...\n${this.endRegion} name`
 		);
@@ -480,9 +489,9 @@ export class RegionCompletionProvider implements CompletionItemProvider {
 			`${this.tag} $\{1:name} $\{2:description}`
 		);
 		const mdDocument = new MarkdownString(
-			'Insert a tag to mark a specific point in the source code'
+			$t('Insert a tag to mark a specific point in the source code')
 		);
-		const detail = 'Code Tag (Outline-Map)';
+		const detail = $t('Code Tag (Outline-Map)');
 		mdDocument.appendCodeblock(`${this.tag} name description`);
 		const item = new CompletionItem(this.tag, CompletionItemKind.Issue);
 		item.insertText = insertText;

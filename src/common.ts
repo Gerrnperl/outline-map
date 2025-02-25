@@ -120,7 +120,7 @@ export class SymbolNode {
 						docSymbol.range.contains(sibling.range) ||
 						(
 							docSymbol.range.contains(sibling.range.start) &&
-							sibling.detail === "__om_Region__"
+							sibling.detail === '__om_Region__'
 						)
 					) {
 						docSymbol.children.push(sibling);

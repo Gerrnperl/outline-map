@@ -2,6 +2,7 @@
 import { SwitchButton } from './components/switchButton';
 import { InputArea } from './components/inputArea';
 import { SymbolKindStr, throttle } from '../utils';
+import { $t } from '../l10n/webview';
 
 customElements.define('switch-button', SwitchButton);
 customElements.define('input-area', InputArea);
@@ -25,17 +26,17 @@ const InputContainerHTML = /*html*/`
 		></input-area>
 		<div class="input-controllers" id="inner-controllers">
 			<switch-button id="regex-switch" name="regex" icon="regex" highlight
-				desc="Regex mode(=)"
+				desc="${$t('[=] Regular expression')}"
 			></switch-button>
 			<switch-button id="fuzzy-switch" name="fuzzy" icon="zap" highlight
-				desc="Fuzzy mode(?)"
+				desc="${$t('[?] Fuzzy search')}"
 			></switch-button>
 		</div>
 	</div>
 	<div class="input-controllers" id="outer-controllers">
 		<switch-button id="nav-switch" name="nav"
 			icon-off="clear-all" icon-on="search"
-			desc="Nav mode, use arrow keys to navigate"
+			desc="${$t('Navigation mode. Use ↑↓←→ to navigate.')}"
 		></switch-button>
 	</div>
 </div>

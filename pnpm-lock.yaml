@@ -14,6 +14,9 @@ importers:
       '@vscode/codicons':
         specifier: ^0.0.31
         version: 0.0.31
+      '@vscode/l10n':
+        specifier: ^0.0.18
+        version: 0.0.18
       minimatch:
         specifier: ^9.0.3
         version: 9.0.3
@@ -50,7 +53,7 @@ importers:
         version: 2.0.0
       css-loader:
         specifier: ^6.7.3
-        version: 6.7.3(webpack@5.75.0(webpack-cli@4.10.0))
+        version: 6.7.3(webpack@5.75.0)
       eslint:
         specifier: ^8.18.0
         version: 8.34.0
@@ -62,13 +65,13 @@ importers:
         version: 0.11.10
       sass-loader:
         specifier: ^13.2.0
-        version: 13.2.0(node-sass@8.0.0)(sass@1.77.8)(webpack@5.75.0(webpack-cli@4.10.0))
+        version: 13.2.0(node-sass@8.0.0)(sass@1.77.8)(webpack@5.75.0)
       style-loader:
         specifier: ^3.3.1
-        version: 3.3.1(webpack@5.75.0(webpack-cli@4.10.0))
+        version: 3.3.1(webpack@5.75.0)
       ts-loader:
         specifier: ^9.3.1
-        version: 9.4.2(typescript@4.9.5)(webpack@5.75.0(webpack-cli@4.10.0))
+        version: 9.4.2(typescript@4.9.5)(webpack@5.75.0)
       typescript:
         specifier: ^4.7.4
         version: 4.9.5
@@ -281,6 +284,9 @@ packages:
   '@vscode/codicons@0.0.31':
     resolution: {integrity: sha512-fldpXy7pHsQAMlU1pnGI23ypQ6xLk5u6SiABMFoAmlj4f2MR0iwg7C19IB1xvAEGG+dkxOfRSrbKF8ry7QqGQA==}
 
+  '@vscode/l10n@0.0.18':
+    resolution: {integrity: sha512-KYSIHVmslkaCDyw013pphY+d7x1qV8IZupYfeIfzNA+nsaWHbn5uPuQRvdRFsa9zFzGeudPuoGoZ1Op4jrJXIQ==}
+
   '@vscode/test-web@0.0.26':
     resolution: {integrity: sha512-H7h6/W7VTlKttwjebGNs4fYLW9q2be4+hgnkzv4LCaCJS88yJh4dBi6shVHMdy7gHgt+GL98beldQFe63HzvmQ==}
     engines: {node: '>=8.9.3'}
@@ -366,6 +372,7 @@ packages:
 
   acorn-import-assertions@1.8.0:
     resolution: {integrity: sha512-m7VZ3jwz4eK6A4Vtt8Ew1/mNbP24u0FhdyfA7fSvnJR6LMdfOYnmuIrrJAgrYfYJ10F/otaHTtrtrtmHdMNzEw==}
+    deprecated: package has been renamed to acorn-import-attributes
     peerDependencies:
       acorn: ^8
 
@@ -815,6 +822,7 @@ packages:
   eslint@8.34.0:
     resolution: {integrity: sha512-1Z8iFsucw+7kSqXNZVslXS8Ioa4u2KM7GPwuKtkTFAqZ/cHMcEaR+1+Br0wLlot49cNxIiZk5wp8EAbPcYZxTg==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
 
   espree@9.4.1:
@@ -1492,6 +1500,7 @@ packages:
   node-sass@8.0.0:
     resolution: {integrity: sha512-jPzqCF2/e6JXw6r3VxfIqYc8tKQdkj5Z/BDATYyG6FL6b/LuYBNFGFVhus0mthcWifHm/JzBpKAd+3eXsWeK/A==}
     engines: {node: '>=14'}
+    deprecated: Node Sass is no longer supported. Please use `sass` or `sass-embedded` instead.
     hasBin: true
 
   nopt@5.0.0:
@@ -2491,6 +2500,8 @@ snapshots:
 
   '@vscode/codicons@0.0.31': {}
 
+  '@vscode/l10n@0.0.18': {}
+
   '@vscode/test-web@0.0.26':
     dependencies:
       '@koa/cors': 3.4.3
@@ -2585,17 +2596,17 @@ snapshots:
       '@webassemblyjs/ast': 1.11.1
       '@xtuc/long': 4.2.2
 
-  '@webpack-cli/configtest@1.2.0(webpack-cli@4.10.0(webpack@5.75.0))(webpack@5.75.0(webpack-cli@4.10.0))':
+  '@webpack-cli/configtest@1.2.0(webpack-cli@4.10.0)(webpack@5.75.0)':
     dependencies:
       webpack: 5.75.0(webpack-cli@4.10.0)
       webpack-cli: 4.10.0(webpack@5.75.0)
 
-  '@webpack-cli/info@1.5.0(webpack-cli@4.10.0(webpack@5.75.0))':
+  '@webpack-cli/info@1.5.0(webpack-cli@4.10.0)':
     dependencies:
       envinfo: 7.8.1
       webpack-cli: 4.10.0(webpack@5.75.0)
 
-  '@webpack-cli/serve@1.7.0(webpack-cli@4.10.0(webpack@5.75.0))':
+  '@webpack-cli/serve@1.7.0(webpack-cli@4.10.0)':
     dependencies:
       webpack-cli: 4.10.0(webpack@5.75.0)
 
@@ -2928,7 +2939,7 @@ snapshots:
       shebang-command: 2.0.0
       which: 2.0.2
 
-  css-loader@6.7.3(webpack@5.75.0(webpack-cli@4.10.0)):
+  css-loader@6.7.3(webpack@5.75.0):
     dependencies:
       icss-utils: 5.1.0(postcss@8.4.21)
       postcss: 8.4.21
@@ -4254,7 +4265,7 @@ snapshots:
       yargs: 17.7.1
     optional: true
 
-  sass-loader@13.2.0(node-sass@8.0.0)(sass@1.77.8)(webpack@5.75.0(webpack-cli@4.10.0)):
+  sass-loader@13.2.0(node-sass@8.0.0)(sass@1.77.8)(webpack@5.75.0):
     dependencies:
       klona: 2.0.6
       neo-async: 2.6.2
@@ -4421,7 +4432,7 @@ snapshots:
 
   strip-json-comments@3.1.1: {}
 
-  style-loader@3.3.1(webpack@5.75.0(webpack-cli@4.10.0)):
+  style-loader@3.3.1(webpack@5.75.0):
     dependencies:
       webpack: 5.75.0(webpack-cli@4.10.0)
 
@@ -4462,7 +4473,7 @@ snapshots:
       yallist: 4.0.0
     optional: true
 
-  terser-webpack-plugin@5.3.6(webpack@5.75.0(webpack-cli@4.10.0)):
+  terser-webpack-plugin@5.3.6(webpack@5.75.0):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.17
       jest-worker: 27.5.1
@@ -4496,7 +4507,7 @@ snapshots:
   true-case-path@2.2.1:
     optional: true
 
-  ts-loader@9.4.2(typescript@4.9.5)(webpack@5.75.0(webpack-cli@4.10.0)):
+  ts-loader@9.4.2(typescript@4.9.5)(webpack@5.75.0):
     dependencies:
       chalk: 4.1.2
       enhanced-resolve: 5.12.0
@@ -4599,9 +4610,9 @@ snapshots:
   webpack-cli@4.10.0(webpack@5.75.0):
     dependencies:
       '@discoveryjs/json-ext': 0.5.7
-      '@webpack-cli/configtest': 1.2.0(webpack-cli@4.10.0(webpack@5.75.0))(webpack@5.75.0(webpack-cli@4.10.0))
-      '@webpack-cli/info': 1.5.0(webpack-cli@4.10.0(webpack@5.75.0))
-      '@webpack-cli/serve': 1.7.0(webpack-cli@4.10.0(webpack@5.75.0))
+      '@webpack-cli/configtest': 1.2.0(webpack-cli@4.10.0)(webpack@5.75.0)
+      '@webpack-cli/info': 1.5.0(webpack-cli@4.10.0)
+      '@webpack-cli/serve': 1.7.0(webpack-cli@4.10.0)
       colorette: 2.0.19
       commander: 7.2.0
       cross-spawn: 7.0.3
@@ -4642,7 +4653,7 @@ snapshots:
       neo-async: 2.6.2
       schema-utils: 3.1.1
       tapable: 2.2.1
-      terser-webpack-plugin: 5.3.6(webpack@5.75.0(webpack-cli@4.10.0))
+      terser-webpack-plugin: 5.3.6(webpack@5.75.0)
       watchpack: 2.4.0
       webpack-sources: 3.2.3
     optionalDependencies:

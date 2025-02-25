@@ -24,7 +24,7 @@
 	},
 	"license": "MIT",
 	"engines": {
-		"vscode": "^1.60.0"
+		"vscode": "^1.73.0"
 	},
 	"categories": [
 		"Other"
@@ -33,6 +33,7 @@
 		"onView:outline-map-view"
 	],
 	"main": "./out/extension/index.js",
+	"l10n": "./l10n",
 	"badges": [
 		{
 			"href": "https://img.shields.io/",
@@ -880,6 +881,7 @@
 	"dependencies": {
 		"@types/vscode-webview": "^1.57.1",
 		"@vscode/codicons": "^0.0.31",
+		"@vscode/l10n": "^0.0.18",
 		"minimatch": "^9.0.3",
 		"overlayscrollbars": "^2.1.0",
 		"sass": "^1.77.8"

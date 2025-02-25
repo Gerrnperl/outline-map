@@ -10,6 +10,8 @@ import './main.scss';
 import { Input } from './input';
 import '@vscode/codicons/dist/codicon.css';
 import { ColorTable, SymbolKindList, mapIcon } from '../utils';
+import '../l10n/webview';
+import { $t } from '../l10n/webview';
 
 /**
  * The root element of the outline
@@ -87,7 +89,7 @@ const SMsgHandler = {
 	},
 	changeDepth: (msg: ChangeDepthMsg) => {
 		maxDepth = Math.max(1, maxDepth + msg.data.delta);
-		new Toast(`Depth: ${maxDepth}`, 3000);
+		new Toast($t('Depth: {0}', maxDepth), 3000);
 	},
 	switchSearchField: (toggle: boolean) => {
 		const inputContainer = document.querySelector('#input-container') as HTMLDivElement;
@@ -166,7 +168,7 @@ function init() {
 
 	const noOutline = document.createElement('div');
 	noOutline.id = 'no-outline';
-	noOutline.innerText = 'The active editor cannot provide outline information.';
+	noOutline.innerText = $t('The active editor cannot provide outline information.');
 	
 	document.body.appendChild(root);
 	document.body.appendChild(noOutline);
@@ -332,8 +334,8 @@ function mutationCallback(mutationsList: MutationRecord[], observer: MutationObs
 			element.querySelector('.diagnostic')!
 				.setAttribute('title', 
 					count === -1 ? 
-						'Contains elements with problems' : 
-						`${count} problems in this element`
+						$t('Contains elements with problems') : 
+						$t('{count} problems in this element', {count: count})
 				);
 			element.classList.toggle('has-diagnostic', count !== 0);
 			element.classList.toggle('diagnostic-in-children', count === -1);

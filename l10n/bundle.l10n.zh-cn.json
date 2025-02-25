@@ -1,0 +1,21 @@
+{
+  "Navigate with ↑↓←→ (append @ to filter symbols or /=? to search)": "通过 ↑↓←→ 进行键盘导航（追加 @ 来过滤符号或 /=? 来搜索）",
+  "Search for {0}": "搜索 {0}",
+  "Depth: {0}": "深度: {0}",
+  "The active editor cannot provide outline information.": "当前编辑器无法提供大纲信息。",
+  "Contains elements with problems": "包含存在问题的元素",
+  "{count} problems in this element": "此元素存在 {count} 个问题",
+  "Navigation mode. Use ↑↓←→ to navigate.": "导航模式，使用 ↑↓←→ 进行导航",
+  "[=] Regular expression": "[=] 正则搜索",  
+  "[?] Fuzzy search": "[?] 模糊搜索",
+  "Jump to {anchor} ({line})": "跳转到 {anchor} ({line})",
+  "start": "开始",
+  "end": "结束",
+  "Line {line}": "行 {line}",
+  "Insert a region pair to fold the content between them": "插入一对区域标记来折叠它们之间的内容",
+  "Code Region (Outline-Map)": "代码区域 (Outline-Map)",
+  "Insert a tag to mark a specific point in the source code": "插入一个标记来标记源代码中的特定位置",
+  "Code Tag (Outline-Map)": "代码标记 (Outline-Map)",
+  "Re-sorting the outline...": "正在重新排序大纲...",
+  "No symbols found in document {fileName}.": "在文档 {fileName} 中找不到符号。"
+}

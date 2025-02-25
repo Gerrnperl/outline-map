@@ -4,6 +4,7 @@ import { Msg, UpdateMsg, Op, UpdateOp, DeleteOp, InsertOp, SymbolNode, MoveOp, P
 import { WorkspaceSymbols } from './workspace';
 import { RegionProvider } from './region';
 import { deepClone } from '../utils';
+import { $t, injectL10nBundle } from '../l10n/host';
 
 /**
  * Initialization options for the outline view.
@@ -61,7 +62,7 @@ export class OutlineView implements WebviewViewProvider {
 
 	sort(sortBy: Sortby) {
 		this.sortby = sortBy;
-		this.clear('Re-sorting the outline...');
+		this.clear($t('Re-sorting the outline...'));
 		this.update(window.activeTextEditor?.document || window.visibleTextEditors[0].document);
 	}
 
@@ -394,6 +395,7 @@ export class OutlineView implements WebviewViewProvider {
 				<style id="color-style"></style>
 			  </head>
 			  <body>
+				${injectL10nBundle()}
 				<script type="module" src="${getAssetUri('out/webview/index.js')}"></script>
 			  </body>
 			</html>`;
@@ -429,10 +431,10 @@ export class OutlineView implements WebviewViewProvider {
 
 	update(textDocument: TextDocument | undefined) {
 		if (!this.view?.visible) { // Outline view isn't visible, updates won't work
-			return
+			return;
 		}
 		if (textDocument === undefined) { // No active editor
-			this.clear('The active editor cannot provide outline information.');
+			this.clear($t('The active editor cannot provide outline information.'));
 			return;
 		}
 		if (!this.isValidDocument(textDocument)) { // Switched to a non-supported document like output
@@ -442,7 +444,8 @@ export class OutlineView implements WebviewViewProvider {
 		newOutlineTree.updateSymbols().then(() => {
 			const newNodes = newOutlineTree.getNodes();
 			if (!newNodes || newNodes.length === 0) {
-				this.clear(`No symbols found in document '${textDocument.fileName}'.`);
+				const fileName = textDocument.fileName.split('/').pop();
+				this.clear($t('No symbols found in document {fileName}.', { fileName: fileName }));
 				return;
 			}
 			this.workspaceSymbols?.updateSymbol(newNodes, textDocument.uri);

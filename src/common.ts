@@ -93,6 +93,7 @@ export class SymbolNode {
 
 		const root: SymbolNode[] = [];
 		const hiddenItem = config.hiddenItem();
+		const expandOnInit = config.expand() === 'expanded';
 
 		// A known issue of vscode is that the DocumentSymbols returned by 
 		// command 'vscode.executeDocumentSymbolProvider' does not include the 
@@ -149,6 +150,9 @@ export class SymbolNode {
 				const node = new SymbolNode(docSymbol);
 				if (hiddenItem.includes(node.kind.toLowerCase())) {
 					return;
+				}
+				if (expandOnInit) {
+					node.expand = true;
 				}
 				if (Array.isArray(parent)) {
 					parent.push(node);

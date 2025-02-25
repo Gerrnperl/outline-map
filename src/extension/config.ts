@@ -15,7 +15,7 @@ export const config = {
 	//#endregion DEPRECATED
 	/** When to expand the outline. */
 	follow: () => getConfig('follow') as 'cursor' | 'viewport' | 'manual',
-	expand: () => getConfig('expand') as 'cursor' | 'viewport' | 'manual',
+	expand: () => getConfig('expand') as 'cursor' | 'viewport' | 'manual' | 'expanded',
 	/** Hide specified items. */
 	hiddenItem: () => getConfig('hiddenItem') as string[],
 	/** The initial maximum depth of the outline. */

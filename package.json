@@ -227,14 +227,16 @@
 					"enum": [
 						"cursor",
 						"viewport",
-						"manual"
+						"manual",
+						"expanded"
 					],
 					"default": "viewport",
 					"description": "%om.config.expand.description%",
 					"markdownEnumDescriptions": [
 						"%om.config.expand.enumDescriptions.cursor%",
 						"%om.config.expand.enumDescriptions.viewport%",
-						"%om.config.expand.enumDescriptions.manual%"
+						"%om.config.expand.enumDescriptions.manual%",
+						"%om.config.expand.enumDescriptions.expanded%"
 					],
 					"order": 4
 				},

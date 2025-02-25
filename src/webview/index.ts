@@ -244,6 +244,7 @@ function renderSymbolNode(symbolNode: SymbolNode, depth = 0): HTMLDivElement {
 		})
 	);
 	container.classList.toggle('leaf', symbolNode.children.length === 0);
+	container.classList.toggle('expand', depth >= maxDepth ? false : symbolNode.expand);
 	container.style.setProperty('--depth', depth.toString());
 
 	container.innerHTML = /*html*/`

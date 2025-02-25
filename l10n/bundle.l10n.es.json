@@ -1,0 +1,21 @@
+{
+  "Navigate with ↑↓←→ (append @ to filter symbols or /=? to search)": "Navegar con ↑↓←→ (añadir @ para filtrar símbolos o /=? para buscar)",
+  "Search for {0}": "Buscar {0}",
+  "Depth: {0}": "Profundidad: {0}",
+  "The active editor cannot provide outline information.": "El editor activo no puede proporcionar información del esquema.",
+  "Contains elements with problems": "Contiene elementos con problemas",
+  "{count} problems in this element": "{count} problemas en este elemento",
+  "Navigation mode. Use ↑↓←→ to navigate.": "Modo de navegación. Utilice ↑↓←→ para navegar.",
+  "[=] Regular expression": "[=] Expresión regular",  
+  "[?] Fuzzy search": "[?] Búsqueda difusa",
+  "Jump to {anchor} ({line})": "Saltar a {anchor} ({line})",
+  "start": "inicio",
+  "end": "fin",
+  "Line {line}": "Línea {line}",
+  "Insert a region pair to fold the content between them": "Inserte un par de regiones para plegar el contenido entre ellas",
+  "Code Region (Outline-Map)": "Región de código (Outline-Map)",
+  "Insert a tag to mark a specific point in the source code": "Inserte una etiqueta para marcar un punto específico en el código fuente",
+  "Code Tag (Outline-Map)": "Etiqueta de código (Outline-Map)",
+  "Re-sorting the outline...": "Reordenando el esquema...",
+  "No symbols found in document {fileName}.": "No se encontraron símbolos en el documento {fileName}."
+}

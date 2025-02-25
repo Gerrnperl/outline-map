@@ -1,0 +1,21 @@
+{
+  "Navigate with ↑↓←→ (append @ to filter symbols or /=? to search)": "Navigieren mit ↑↓←→ (fügen Sie @ hinzu, um Symbole zu filtern oder /=? zu suchen)",
+  "Search for {0}": "Suche nach {0}",
+  "Depth: {0}": "Tiefe: {0}",
+  "The active editor cannot provide outline information.": "Der aktive Editor kann keine Umrissinformationen bereitstellen.",
+  "Contains elements with problems": "Enthält Elemente mit Problemen",
+  "{count} problems in this element": "{count} Probleme in diesem Element",
+  "Navigation mode. Use ↑↓←→ to navigate.": "Navigationsmodus. Verwenden Sie ↑↓←→ zum Navigieren.",
+  "[=] Regular expression": "[=] Regulärer Ausdruck",  
+  "[?] Fuzzy search": "[?] Unscharfe Suche",
+  "Jump to {anchor} ({line})": "Springe zu {anchor} ({line})",
+  "start": "start",
+  "end": "ende",
+  "Line {line}": "Zeile {line}",
+  "Insert a region pair to fold the content between them": "Fügen Sie ein Regionenpaar ein, um den Inhalt dazwischen zu falten",
+  "Code Region (Outline-Map)": "Code-Region (Outline-Map)",
+  "Insert a tag to mark a specific point in the source code": "Fügen Sie ein Tag ein, um einen bestimmten Punkt im Quellcode zu markieren",
+  "Code Tag (Outline-Map)": "Code-Tag (Outline-Map)",
+  "Re-sorting the outline...": "Das Umriss wird neu sortiert...",
+  "No symbols found in document {fileName}.": "Keine Symbole im Dokument {fileName} gefunden."
+}

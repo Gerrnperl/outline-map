@@ -1,0 +1,21 @@
+{
+  "Navigate with ↑↓←→ (append @ to filter symbols or /=? to search)": "通過 ↑↓←→ 進行鍵盤導航（追加 @ 來篩選符號或 /=? 來搜尋）",
+  "Search for {0}": "搜尋 {0}",
+  "Depth: {0}": "深度: {0}",
+  "The active editor cannot provide outline information.": "當前編輯器無法提供大綱資訊。",
+  "Contains elements with problems": "包含存在問題的元素",
+  "{count} problems in this element": "此元素存在 {count} 個問題",
+  "Navigation mode. Use ↑↓←→ to navigate.": "導航模式，使用 ↑↓←→ 進行導航",
+  "[=] Regular expression": "[=] 正規表示式",  
+  "[?] Fuzzy search": "[?] 模糊搜尋",
+  "Jump to {anchor} ({line})": "跳轉到 {anchor} ({line})",
+  "start": "開始",
+  "end": "結束",
+  "Line {line}": "行 {line}",
+  "Insert a region pair to fold the content between them": "插入一對區域標記來摺疊它們之間的內容",
+  "Code Region (Outline-Map)": "代碼區域 (Outline-Map)",
+  "Insert a tag to mark a specific point in the source code": "插入一個標記來標記源代碼中的特定位置",
+  "Code Tag (Outline-Map)": "代碼標記 (Outline-Map)",
+  "Re-sorting the outline...": "正在重新排序大綱...",
+  "No symbols found in document {fileName}.": "在文件 {fileName} 中找不到符號。"
+}

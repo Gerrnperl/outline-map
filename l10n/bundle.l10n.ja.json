@@ -1,0 +1,21 @@
+{
+  "Navigate with ↑↓←→ (append @ to filter symbols or /=? to search)": "↑↓←→ でナビゲート (シンボルをフィルタリングするには @ を追加、検索するには /=? を追加)",
+  "Search for {0}": "{0} を検索",
+  "Depth: {0}": "深さ: {0}",
+  "The active editor cannot provide outline information.": "アクティブなエディターはアウトライン情報を提供できません。",
+  "Contains elements with problems": "問題のある要素が含まれています",
+  "{count} problems in this element": "この要素に {count} 個の問題があります",
+  "Navigation mode. Use ↑↓←→ to navigate.": "ナビゲーションモード。ナビゲートには ↑↓←→ を使用します。",
+  "[=] Regular expression": "[=] 正規表現",  
+  "[?] Fuzzy search": "[?] ファジー検索",
+  "Jump to {anchor} ({line})": "{anchor} ({line}) にジャンプ",
+  "start": "開始",
+  "end": "終了",
+  "Line {line}": "行 {line}",
+  "Insert a region pair to fold the content between them": "それらの間のコンテンツを折りたたむためにリージョンペアを挿入",
+  "Code Region (Outline-Map)": "コード領域 (Outline-Map)",
+  "Insert a tag to mark a specific point in the source code": "ソースコードの特定のポイントをマークするためのタグを挿入",
+  "Code Tag (Outline-Map)": "コードタグ (Outline-Map)",
+  "Re-sorting the outline...": "アウトラインを再整理しています...",
+  "No symbols found in document {fileName}.": "ドキュメント {fileName} にシンボルが見つかりません。"
+}
